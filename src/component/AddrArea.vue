@@ -1,7 +1,7 @@
 <template>
   <div class="hAddr">
         <span class="title">지도중심기준 행정동 주소정보</span>
-        <span id="centerAddr"></span>
+        <span id="centerAddr">{{ addr }}</span>
   </div>
 </template>
 <style>
@@ -10,3 +10,11 @@
 #centerAddr {display:block;margin-top:2px;font-weight: normal;}
 .bAddr {padding:5px;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;}
 </style>
+<script>
+export default {
+  name: 'AddrArea',
+
+  props: ['addr']
+}
+
+</script>
