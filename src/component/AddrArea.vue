@@ -1,5 +1,5 @@
 <template>
-  <div class="hAddr" v-on:click="convertGeocord">
+  <div class="hAddr" v-on:click="jsonAxios">
         <span class="title">지도중심기준 행정동 주소정보</span>
         <span id="centerAddr">{{ addr }}</span>
   </div>
@@ -12,6 +12,7 @@
 </style>
 <script>
 import proj4 from "proj4"
+import DataPaser from "../model/dataPaser.js"
 //import JsonParser from "../model/json-parser.js"
 export default {
   name: 'AddrArea',
@@ -24,7 +25,7 @@ export default {
       let secondProjection = proj4.defs('EPSG:4326')
 
       let convertRes = proj4(firstProjection,secondProjection,[955114.49242179352,1943186.4108217508])
-      this.$EventBus.$emit('setCenterMethod', convertRes[1],convertRes[0])
+      this.$EventBus.$emit('setCenterMethod', 37.570718567288466,126.97763237920154)
       this.jsonAxios()
       //onst JsonPaser = new JsonParser()
       //let res = JsonPaser.loadfile()
@@ -32,17 +33,33 @@ export default {
       //let proj4 = new proj4()
     },
     jsonAxios(){
-      const baseURI = 'http://110.13.170.148:8080';
-      this.$http.get(`${baseURI}/src/assets/xycrd_sample.json`)
+      const baseURI = 'http://www.f-link.co.kr';
+      let config = {
+        method: 'post',
+        url: `${baseURI}/container/OP-413.php`,
+        headers: { 'content-type': 'application/x-www-form-urlencoded' },
+        data: {
+          'baseXycrd':'126.98037.571',
+          'bdMgtSn':'1111012200100240000032840'
+        }
+      }
+      this.$http(config)
       .then((result) => {
-        //console.log(result)
+        console.log(result)
         //console.log(result.status)
         if(result.status === 200){
           //let res = JSON.parse(result.data)
-          console.log(result.data.features)
+          let data = result.data.data.rows[0]
+          //console.log(data)
+          let dataGeo = JSON.parse(data.geomJson)
+          console.log(dataGeo.coordinates[0])
+
+          let parser = new DataPaser(data)
+          //console.log(parser.hinterlandGeocode())
+          //console.log()
+          this.$EventBus.$emit('setPolyonMethod', parser.hinterlandGeocode())
+          this.$EventBus.$emit('setCenterMethod', 37.570718567288466,126.97763237920154)
         }
-        //let res = JSON.parse(result)
-        //console.log(res.status)
 
       })
     }

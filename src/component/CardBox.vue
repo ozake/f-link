@@ -1,0 +1,59 @@
+<template>
+  <!--프랜차이즈 박스-->
+			<ul>
+				<li class="fr_logo"><img src="http://img.mk.co.kr/2018/franchise/hollys.jpg" alt="할리스커피"></li>
+				<li class="fr_tit">할리스 커피</li>
+				<dl>
+					<dt>분류</dt>
+					<dd>외식 > 피자</dd>
+					<dt>대표자</dt>
+					<dd>홍길동</dd>
+					<dt>창업 비용</dt>
+					<dd>10000만원 (20평)</dd>
+					<dt>총 가맹점 수</dt>
+					<dd>500개</dd>
+				</dl>
+        <label :for="id" class="check_info_label"><span>추가 정보 요청</span></label>
+        <input type="checkbox" :id="id" class="check_info" />
+				<!-- <a href="#"><button class="btn_info">추가 정보 요청 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </button></a> -->
+			</ul>
+			<!--//프랜차이즈 박스-->
+</template>
+<style scoped>
+.check_info {
+	visibility: hidden;
+}
+.check_info_label {
+  display: inline-block;
+  font-size: 15px;
+  width: 212px;
+  height: 33px;
+  border: 1px solid #4db007;
+  color: #4db007;
+  margin: 10px 0 0 20px;
+  cursor: pointer;
+  text-align: center;
+  line-height: 33px;
+  box-sizing:border-box;
+}
+.check_info_label > span {
+  margin-right: 5px;
+  font-size: 15px;
+  padding-right: 18.5px;
+  background: url(http://img.mk.co.kr/2018/franchise/chech_off.jpg) no-repeat right center/12px;
+}
+</style>
+<script>
+export default {
+  name: 'CardBox',
+  props: ['item', 'index'],
+  data(){
+    return {
+      id: null
+    }
+  },
+  mounted () {
+    this.id = this._uid
+  }
+}
+</script>
