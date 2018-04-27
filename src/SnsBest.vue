@@ -111,6 +111,7 @@ export default {
     }
   },
   created(){
+    this.$EventBus.$emit('HeaderActive', 'theme')
     const baseURI = 'http://www.f-link.co.kr';
     let config = {
       method: 'post',

@@ -23,7 +23,7 @@
   					<img src="http://img.mk.co.kr/2018/franchise/th_img04.jpg" alt="SNS 조회 BEST">
   					<li class="th_tit">SNS 조회 BEST</li>
   					<li class="th_txt">포털과 SNS에서 <br>많이 언급되는 브랜드</li>
-  					<button class="th_btn" type="button"><a href="#">테마보기</a></button>
+  					<button class="th_btn" type="button"><router-link to="snsBest">테마보기</router-link></button>
   				</ul>
 			</div>
 
@@ -34,6 +34,9 @@ export default {
   name: 'ThemeBest',
   components:{
 
+  },
+  created() {
+    this.$EventBus.$emit('HeaderActive', 'theme')
   }
 }
 </script>

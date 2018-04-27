@@ -1,27 +1,37 @@
 <template>
   <div id="content">
-    <div id="map">
+    <!-- 지도영역-->
+		<div class="store_map" id="map">
       <AddrArea :addr="addr"></AddrArea>
     </div>
+    <AsideMap></AsideMap>
   </div>
 </template>
 
 <script>
 import AddrArea from "./AddrArea.vue"
+import AsideMap from "./AsideMap.vue"
 import proj4 from "proj4"
+import ApiModel from "../model/apiModel.js"
 export default {
   name: 'store',
   data () {
     return {
       addr: '서울특별시 중구',
       centerCode : '',
-      mapInstance: ''
+      mapInstance: '',
+      ftcCate2Cd : '0108',
+      markers : [],
+      FcenterCode : '',
+      isFranchise : false,
+      mapLevel : ''
     }
   },
   props:{
   },
   components:{
-    AddrArea
+    AddrArea,
+    AsideMap
   },
   mounted() {
     this.$nextTick(function () {
@@ -30,7 +40,7 @@ export default {
       let container = document.getElementById('map'); //지도를 담을 영역의 DOM 레퍼런스
       let options = { //지도를 생성할 때 필요한 기본 옵션
         center: new daum.maps.LatLng(37.56611900511385, 126.97774128459538), //지도의 중심좌표.
-        level: 3 //지도의 레벨(확대, 축소 정도)
+        level: 4 //지도의 레벨(확대, 축소 정도)
       };
 
       let map = new daum.maps.Map(container, options); //지도 생성 및 객체 리턴
@@ -50,7 +60,7 @@ export default {
       let zoomControl = new daum.maps.ZoomControl();
       map.addControl(zoomControl, daum.maps.ControlPosition.RIGHT);
       console.log("지도 셋팅 완료")
-
+      this.mapLevel = map.getLevel()
       this.mapEventListener(map,geocoder,this)
       this.searchAddrFromCoords(geocoder, map.getCenter(), this.displayCenterInfo)
 
@@ -59,25 +69,38 @@ export default {
       this.$EventBus.$on('setPolyonMethod', this.setPolygon)
 
 
-      this.setPolyline()
+      //this.setPolyline()
     })
 
   },
+  created() {
+    this.$EventBus.$emit('HeaderActive', 'store')
+  },
   methods:{
     setAddr(data){
-      this.addr = data;
+      this.addr = data
     },
     getMapInstance(){
       return this.mapInstance
     },
     mapEventListener(map,geocoder,vm){
-      let result;
-      let status;
       daum.maps.event.addListener(map, 'dragend', () => {
-          //console.log(map.getCenter())
           this.searchAddrFromCoords(geocoder, map.getCenter(), this.displayCenterInfo)
-
-        })
+      })
+      daum.maps.event.addListener(map, 'bounds_changed', () => {
+          let level = map.getLevel()
+          if(this.mapLevel !== level){
+            this.mapLevel = level
+            this.searchAddrFromCoords(geocoder, map.getCenter(), this.displayCenterInfo)
+            if(level <= 3){
+              this.getFranchiseList(this.centerCode,this.ftcCate2Cd,this.FcenterCode)
+            }
+            else{
+              this.getFranchiseList(this.centerCode,this.ftcCate2Cd)
+            }
+            
+          }
+      })
     },
     searchAddrFromCoords(geocoder,coords,callback){
       geocoder.coord2RegionCode(coords.getLng(), coords.getLat(), callback)
@@ -92,11 +115,23 @@ export default {
                 if (result[i].region_type === 'B') {
                     addrText = result[i].address_name
                     let code = result[i].code
+                    let fullCode = code
                     this.setAddr(addrText+"/ 법정동코드: "+code)
-                    if( this.centerCode !== code ){
-                      this.centerCode = code
-                      this.getFranchiseList()
+                    code = code.substring(0,5)
+                    fullCode = fullCode.substring(0,8)
+                    
+                    if(this.mapLevel <= 3){
+                      if( this.FcenterCode !== fullCode )
+                        this.FcenterCode = fullCode
+                        this.getFranchiseList(code,this.ftcCate2Cd,fullCode)
                     }
+                    else{
+                      if( this.centerCode !== code ){
+                        this.centerCode = code
+                        this.getFranchiseList(code,this.ftcCate2Cd)
+                      }
+                    }
+                    
 
                     break;
                 }
@@ -142,7 +177,7 @@ export default {
         strokeOpacity: 0.8,
         strokeStyle: 'dashed',
         fillColor: '#00EEEE',
-        fillOpacity: 0.4
+        fillOpacity: 0.6
       })
 
       polygon.setMap(this.mapInstance)
@@ -177,7 +212,7 @@ export default {
 
       polyline.setMap(this.mapInstance)
     },
-    getFranchiseList(){
+    getBrandList(centerCode, franchiseNo='20080100047'){
       const baseURI = 'http://www.f-link.co.kr';
       let config = {
         method: 'post',
@@ -186,15 +221,15 @@ export default {
         data: {
           'pageNo':'1',
           'row':'50',
-          'emdCd':this.centerCode,
-          'franchiseNo':'20080100047'
+          'emdCd':centerCode,
+          'franchiseNo':franchiseNo
         }
       }
       this.$http(config)
       .then((result) => {
-        //console.log(result)
+        console.log(result)
         if(result.status === 200){
-          //let data = result.data.data
+          let data = result.data.data
           let rows = data.rows
           //console.log(rows)
           let position = []
@@ -225,15 +260,93 @@ export default {
         }
 
       })
+    },
+    getFranchiseList(code,ftcCate2Cd,fullCode=''){
+      let model = new ApiModel(this.$http)
+      let emdCd = ''
+      let rows = '100'
+      if(this.mapLevel <= 3){
+        emdCd = fullCode
+        rows = '1000'
+        console.log('404실행1')
+        this.makersClean()
+        model.getOP404(code, ftcCate2Cd, rows, '1', emdCd).then((result)=>{
+          if(result.status === 200){
+            console.log('404응답1')
+            this.makeMakers(result,this.isFranchise)
+          }
+        })
+      }
+      else {
+        this.makersClean()
+        for(let i=1; i<=5; i++){
+          console.log('404실행'+i)
+          model.getOP404(code, ftcCate2Cd, rows, `${i}`, emdCd).then((result)=>{
+            if(result.status === 200){
+              console.log('404응답'+i)
+              this.makeMakers(result,this.isFranchise)
+            }
+          })
+        }
+        
+        /* console.log('404실행2')
+        model.getOP404(code, ftcCate2Cd, '3', '3', emdCd).then((result)=>{
+          if(result.status === 200){
+            console.log('404응답2')
+            this.makeMakers(result,this.isFranchise)
+          }
+        }) */
+      }
+      
+    },
+    makersClean(){
+      for (const v of this.markers){
+        v.setMap(null);
+      }
+      this.makers = []
+    },
+    makeMakers(result, isFranchise=false){
+      let data = result.data.data
+      let rows = data.rows
+      let x = null
+      let y = null
+      
+
+      for (const value of rows) {
+        //console.log(value)
+        x = Number(value.xAxis)
+        y = Number(value.yAxis)
+        let marker = null
+        if(isFranchise){
+          if(value.isFranchise === '1'){
+            marker = this.setMaker(x,y,value)
+          }
+        }
+        else {
+          marker = this.setMaker(x,y,value)
+        } 
+        this.markers.push(marker)
+      }
+
+    },
+    setMaker(x,y,value){
+      let tmparr = [] = this.convGeo([x,y])
+      let marker = new daum.maps.Marker({
+          map: this.mapInstance, // 마커를 표시할 지도
+          position: new daum.maps.LatLng(tmparr[1], tmparr[0]), // 마커를 표시할 위치
+          title : value.refBnm, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
+      })
+      return marker
     }
+    
+
   }
 
 }
 </script>
 
 <style>
-#map {
-  height: 75vh;
-  width: 100vw;
+.store_map {
+  height: 835px;
 }
 </style>

@@ -349,6 +349,7 @@ export default {
   props:{
   },
   created(){
+    this.$EventBus.$emit('HeaderActive', 'franchise')
     this.listItems = this.makeArrayModuler(this.items,5)
     const agent = navigator.userAgent.toLowerCase()
     if ( (navigator.appName == 'Netscape' && agent.indexOf('trident') != -1) || (agent.indexOf("msie") != -1)) {

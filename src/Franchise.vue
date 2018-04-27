@@ -102,8 +102,8 @@ export default {
   props:{
   },
   created(){
-
     this.listItems = this.makeArrayModuler(this.items,5)
+    this.$EventBus.$emit('HeaderActive', 'franchise')
   },
   methods:{
     makeArrayModuler(array, mod=1){
