@@ -1,12 +1,12 @@
 <template>
   <div class="box_content" v-bind:class="{ lastBox: this.lastbox }">
-    <router-link :to="{ name: 'franchise-view', params: {id: item.regnumber } }">
+    <router-link :to="{ name: 'franchise-view', params: {id: item.id } }">
       <div class="img-border"></div>
-      <!-- <img src="http://img.mk.co.kr/2018/franchise/pizza.jpg" alt="미스터피자"> -->
-      <img v-bind:src="item.img1" />
+      <img src="http://img.mk.co.kr/2018/franchise/pizza.jpg" alt="미스터피자">
+
   		<div class="content-title">
-        <div>{{item.brand}}</div>
-        <div>{{item.total}}원 ({{item.storearea}}평)</div>
+        <div>{{item.title}}</div>
+        <div>{{item.prcost}} ({{item.area}}평)</div>
       </div>
     </router-link>
 	</div>

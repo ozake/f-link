@@ -8,7 +8,7 @@
 
         <!--프랜차이즈 기본정보-->
         <div class="frinfo">
-          <h3>네네피자</h3>
+          <h3>{{this.displayItem.brand}}</h3>
           <div class="frimg">
             <img src="http://img.mk.co.kr/2018/franchise/pizza2.jpg" alt="네네피자로고">
             <button class="btn_tel">전화 상담 (02-2000-5450)</button>
@@ -16,15 +16,15 @@
 
           <dl>
             <dt>회사명</dt>
-            <dd>(주) 네네피자  </dd>
+            <dd>{{this.displayItem.company}}  </dd>
             <dt>대표자</dt>
-            <dd>홍길동</dd>
+            <dd>-</dd>
             <dt>창업 비용</dt>
-            <dd>10000만원 (20평)</dd>
+            <dd>{{this.displayItem.total}} ({{this.displayItem.storearea}}평)</dd>
             <dt>평당 평균 매출액</dt>
             <dd>500만원</dd>
             <dt>홈페이지 </dt>
-            <dd>http://www.mk.co.kr</dd>
+            <dd>-</dd>
             <p>※ 본 서비스는 공정거래위원회 ‘가맹사업거래 정보공개서’에 기초한 정보입니다.</p>
           </dl>
 
@@ -44,7 +44,7 @@
               </tr>
               <tr class="row2">
               <th>예상창업비용</th>
-              <td>1억 1400만원</td>
+              <td>{{this.displayItem.prcost}}</td>
               </tr>
               <tr class="row3">
               <th>가맹비</th>
@@ -80,7 +80,7 @@
               </tr>
               <tr class="row3">
               <th>기준 면적 </th>
-              <td>15평</td>
+              <td>{{this.displayItem.area}}평</td>
               </tr>
           </table>
 
@@ -265,7 +265,7 @@
             <!--지점리스트-->
             <div class="branch_list">
               <ul>
-                <li>
+                <!-- <li>
                   <span>1</span>
                   <p class="branch_name">매경피자 1호점</p>
                   <p>서울특별시 중구 퇴계로 212 대한극장 1,2층 지번 </p>
@@ -303,14 +303,14 @@
                   <p>서울특별시 중구 퇴계로 212 대한극장 1,2층 지번 </p>
                   <p class="branch_info">02-2000-5450</p>
                   <p class="branch_info">영업 개시일 : 2015.01</p>
-                </li>
+                </li> -->
               </ul>
 
             </div>
             <!--//지점리스트-->
 
             <!--지도영역-->
-            <div class="branch_map"></div>
+            <div class="branch_map" id="branch_map" style="overflow:hidden; height: 462px;"></div>
             <!--//지도영역-->
 
 
@@ -335,6 +335,7 @@
 <script>
 import SubHeaderSelect from "./component/SubHeaderSelect.vue"
 import RightSales from "./component/RightSales.vue"
+import ApiModel from "./model/apiModel.js"
 export default {
   name: 'FranchiseView',
   components:{
@@ -343,18 +344,144 @@ export default {
   },
   data(){
     return {
-      isIe:false
+      isIe:false,
+      items: [
+        {
+          id:1,
+          title: "본죽",
+          prcost: "5740만원",
+          area: "23",
+          company:"본아이에프(주)"
+        },
+        {
+          id:2,
+          title: "한솥",
+          prcost: "7500만원",
+          area: "15",
+          company:"한솥(주)"
+        },
+        {
+          id:3,
+          title: "고봉민김밥",
+          prcost: "4980만원",
+          area: "28",
+          company:"케이비앰(주)"
+        },
+        {
+          id:4,
+          title: "놀부부대찌개",
+          prcost: "1억210만원",
+          area: "45",
+          company:"놀부(주)"
+        },
+        {
+          id:5,
+          title: "가장맛있는족발",
+          prcost: "1억5350만원",
+          area: "50",
+          company:"가장맛있는족발(주)"
+        },
+        {
+          id:6,
+          title: "원할머니",
+          prcost: "9930만원",
+          area: "30",
+          company:"원앤원(주)"
+        },
+        {
+          id:7,
+          title: "조마루감자탕",
+          prcost: "8860만원",
+          area: "30",
+          company:"조마루(주)"
+        },
+        {
+          id:8,
+          title: "하남돼지집",
+          prcost: "1억1320만원",
+          area: "40",
+          company:"하남애프앤비(주)"
+        },
+        {
+          id:9,
+          title: "신마포갈매기",
+          prcost: "1억3300만원",
+          area: "50",
+          company:"디딤(주)"
+        },
+        {
+          id:10,
+          title: "채선당",
+          prcost: "1억8250만원",
+          area: "60",
+          company:"채선당(주)"
+        }
+      ],
+      displayItem : {}
     }
   },
   props:{
   },
   created(){
     this.$EventBus.$emit('HeaderActive', 'franchise')
-    this.listItems = this.makeArrayModuler(this.items,5)
+    //this.listItems = this.makeArrayModuler(this.items,5)
     const agent = navigator.userAgent.toLowerCase()
     if ( (navigator.appName == 'Netscape' && agent.indexOf('trident') != -1) || (agent.indexOf("msie") != -1)) {
-     this.isIe = true
-   }
+      this.isIe = true
+    }
+    this.getFranchiseView(this.$route.params.id).then((result)=>{
+      this.displayItem = result[0]
+    })
+    //console.log(this.$route.params.id)
+
+    /* for (const value of this.items) {
+      console.log(value.id)
+      if(this.$route.params.id == value.id){
+        this.displayItem = {
+          id:value.id,
+          company:value.company,
+          title:value.title,
+          prcost:value.prcost,
+          area:value.area
+        }
+      }
+    } */
+  },
+  watch: {
+    // 라우트가 변경되면 메소드를 다시 호출됩니다.
+    '$route': 'fetchData'
+  },
+  mounted() {
+    this.$nextTick(function () {
+      // 모든 화면이 렌더링된 후 실행합니다.
+      console.log("지도 셋팅 시작")
+      let container = document.getElementById('branch_map'); //지도를 담을 영역의 DOM 레퍼런스
+      let options = { //지도를 생성할 때 필요한 기본 옵션
+        center: new daum.maps.LatLng(37.56611900511385, 126.97774128459538), //지도의 중심좌표.
+        level: 4 //지도의 레벨(확대, 축소 정도)
+      };
+
+      let map = new daum.maps.Map(container, options); //지도 생성 및 객체 리턴
+      // 주소-좌표 변환 객체를 생성합니다
+      let geocoder = new daum.maps.services.Geocoder();
+      // 중심 좌표나 확대 수준이 변경됐을 때 지도 중심 좌표에 대한 주소 정보를 표시하도록 이벤트를 등록합니다
+
+      // 일반 지도와 스카이뷰로 지도 타입을 전환할 수 있는 지도타입 컨트롤을 생성합니다
+      let mapTypeControl = new daum.maps.MapTypeControl();
+
+      // 지도에 컨트롤을 추가해야 지도위에 표시됩니다
+      // daum.maps.ControlPosition은 컨트롤이 표시될 위치를 정의하는데 TOPRIGHT는 오른쪽 위를 의미합니다
+      map.addControl(mapTypeControl, daum.maps.ControlPosition.TOPRIGHT);
+
+      // 지도 확대 축소를 제어할 수 있는  줌 컨트롤을 생성합니다
+      let zoomControl = new daum.maps.ZoomControl();
+      map.addControl(zoomControl, daum.maps.ControlPosition.RIGHT);
+      console.log("지도 셋팅 완료")
+
+
+      //this.setPolyline()
+    })
+
   },
   methods:{
 
@@ -378,6 +505,39 @@ export default {
         }
       }
       return resArr;
+    },
+    fetchData(){
+      this.getFranchiseView(this.$route.params.id).then((result)=>{
+        this.displayItem = result
+      })
+      /* for (const value of this.items) {
+        if(this.$route.params.id === value.id){
+          this.displayItem = {
+            id:value.id,
+            title:value.title,
+            prcost:value.prcost,
+            area:value.area
+          }
+        }
+      } */
+
+    },
+    async getFranchiseView(frnchiseCode){
+      let model = new ApiModel(this.$http)
+      let result = await model.getFranchiseView(frnchiseCode)
+      if(result.status === 200){
+        let data = result.data
+        for (const value of data) {
+          let img1 = value.img1
+          if(value.img1 === ''){
+            img1 = "http://img.mk.co.kr/2018/franchise/pizza.jpg"
+          }else{
+            img1 = "//file.mk.co.kr"+img1.slice(12)
+          }
+          value.img1 = img1
+        }
+        return data
+      }
     }
 
   }

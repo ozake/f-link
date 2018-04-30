@@ -17,8 +17,11 @@ Vue.use(Router)
 const router = new Router({
   mode: 'history',
   scrollBehavior: () => ({ y: 0 }),
-  routes
+  routes,
+  linkActiveClass: "",
 })
+
+//Vue.prototype.$route = router
 
 new Vue({
   router,

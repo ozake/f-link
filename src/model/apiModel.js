@@ -62,4 +62,29 @@ export default class ApiModel {
       }
       return this.http(this.config)
     }
+
+
+    /**
+     * 카테고리별 프렌차이즈 리스트 출력
+     * @param {*} categoryName 
+     * @param {*} row 
+     * @param {*} pageNo 
+     */
+    getFranchiseList(categoryName='한식', row='10', pageNo='1'){
+      this.apiNo = '101'
+      this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
+      this.config.data = `category2=${categoryName}`
+      return this.http(this.config)
+    }
+
+    /**
+     * 프렌차이즈 브랜드 정보 가져오기
+     * @param {*} franchiseCode 
+     */
+    getFranchiseView(franchiseCode='20080100243'){
+      this.apiNo = '102'
+      this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
+      this.config.data = `regnumber=${franchiseCode}`
+      return this.http(this.config)
+    }
 }

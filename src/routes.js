@@ -20,9 +20,17 @@ export default [
   },
   {
     path: '/franchise',
-    name: 'franchise-page',
-    component: Franchise
-  },
+    component: Franchise,
+    name: 'franchise-default',
+    children: [
+      {
+        path: ':categoryCode',
+        name: 'franchise-list',
+        props: true,
+        component: Franchise
+      }
+    ]
+  }, 
   {
     path: '/franchiseList',
     name: 'franchise-list',
