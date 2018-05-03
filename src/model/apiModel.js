@@ -89,4 +89,16 @@ export default class ApiModel {
       this.config.data = `regnumber=${franchiseCode}`
       return this.http(this.config)
     }
+
+    /**
+     * 프렌차이즈 연도별 점포 정보 가져오기
+     * @param {*} franchiseCode
+     * @returns {promise}  
+     */
+    getFranchYearData(franchiseCode='20080100243'){
+      this.apiNo = '103'
+      this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
+      this.config.data = `regnumber=${franchiseCode}`
+      return this.http(this.config)
+    }
 }

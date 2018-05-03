@@ -1,3 +1,6 @@
+/**
+ * 큐 컬렉션 클래스
+ */
 export default class Queue {
 
     constructor(){
@@ -24,6 +27,7 @@ export default class Queue {
 
     /**
      * 큐에 가장 처음 담긴 데이터를 반환하며 반환한 데이터는 큐에서 삭제하는 메소드
+     * 배열의 길이가 0이면 undefined를 리턴한다.
      * @returns {*}
      */
     getQueue(){
@@ -37,5 +41,7 @@ export default class Queue {
     getQueueLength(){
         return this.queue.length
     }
+
+
 
 }

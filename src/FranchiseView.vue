@@ -265,14 +265,14 @@
             <!--지점리스트-->
             <div class="branch_list">
               <ul>
-                <!-- <li>
-                  <span>1</span>
-                  <p class="branch_name">매경피자 1호점</p>
-                  <p>서울특별시 중구 퇴계로 212 대한극장 1,2층 지번 </p>
-                  <p class="branch_info">02-2000-5450</p>
-                  <p class="branch_info">영업 개시일 : 2015.01</p>
+                <li v-for="(store,idx) in storeList">
+                  <span>{{idx+1}}</span>
+                  <p class="branch_name">{{store.refBnm}}</p>
+                  <p>{{store.addr}}</p>
+                  <p class="branch_info">{{store.tel}}</p>
+                  <p class="branch_info">영업 개시일 : {{store.firstDate}}</p>
                 </li>
-
+                <!--
                 <li>
                   <span>2</span>
                   <p class="branch_name">매경피자 1호점</p>
@@ -336,6 +336,8 @@
 import SubHeaderSelect from "./component/SubHeaderSelect.vue"
 import RightSales from "./component/RightSales.vue"
 import ApiModel from "./model/apiModel.js"
+import { convertGeo } from "./model/util.js"
+import { Queue } from './model/colections';
 export default {
   name: 'FranchiseView',
   components:{
@@ -346,9 +348,15 @@ export default {
     return {
       isIe:false,
       displayItem : {},
-      apiModel : new ApiModel(this.$http)
+      yearData : {},
+      apiModel : new ApiModel(this.$http),
+      centerCode : '',
+      storeList : [],
+      mapInstance : '',
+      queue : new Queue()
     }
   },
+  
   props:{
   },
   created(){
@@ -358,27 +366,25 @@ export default {
     if ( (navigator.appName == 'Netscape' && agent.indexOf('trident') != -1) || (agent.indexOf("msie") != -1)) {
       this.isIe = true
     }
-    this.getFranchiseView(this.$route.params.id).then((result)=>{
+    let ap1 = this.getFranchiseView(this.$route.params.id)
+    let ap2 = this.getFranchiseYearData(this.$route.params.id)
+    console.log(ap1)
+    console.log(ap2)
+    Promise.all([ap1,ap2]).then((result)=>{
+      console.log("프로미스 결과"+result)
+      /* let data1 = result[0]
+      let data2 = result[1]
+      console.log(data1)
+      console.log(data2) */
+      //this.displayItem = data1[0]
+
+    })
+
+    /* this.getFranchiseView(this.$route.params.id).then((result)=>{
       console.log(result[0])
       this.displayItem = result[0]
-    })
-    this.getStoreList(this.$route.params.id).then((result)=>{
-      console.log(result.rows)
-    })
-    //console.log(this.$route.params.id)
-
-    /* for (const value of this.items) {
-      console.log(value.id)
-      if(this.$route.params.id == value.id){
-        this.displayItem = {
-          id:value.id,
-          company:value.company,
-          title:value.title,
-          prcost:value.prcost,
-          area:value.area
-        }
-      }
-    } */
+    }) */
+    
   },
   watch: {
     // 라우트가 변경되면 메소드를 다시 호출됩니다.
@@ -410,7 +416,9 @@ export default {
       let zoomControl = new daum.maps.ZoomControl();
       map.addControl(zoomControl, daum.maps.ControlPosition.RIGHT);
       console.log("지도 셋팅 완료")
-
+      this.mapEventListener(map,geocoder)
+      this.mapInstance = map
+      this.searchAddrFromCoords(geocoder, map.getCenter(), this.displayCenterInfo)
 
       //this.setPolyline()
     })
@@ -447,8 +455,9 @@ export default {
     async getFranchiseView(frnchiseCode){
       //let model = new ApiModel(this.$http)
       let result = await this.apiModel.getFranchiseView(frnchiseCode)
+      let data = null
       if(result.status === 200){
-        let data = result.data
+        data = result.data
         let paging = data.shift()
         for (const value of data) {
           let img1 = value.img1
@@ -462,13 +471,92 @@ export default {
         return data
       }
     },
+    async getFranchiseYearData(frnchiseCode){
+      let result = await this.apiModel.getFranchiseYearData(frnchiseCode)
+      let data = null
+      if(result.status === 200){
+        data = result.data  
+      }
+      return data
+    },
     async getStoreList(frnchiseCode, centerCode=''){
-      let result = await this.apiModel.getOP402(frnchiseCode, '100', '1')
+      let result = await this.apiModel.getOP402(frnchiseCode, '100', '1', centerCode)
       if(result.status === 200){
         let data = result.data.data
-        //console.log(data)
+        console.log(data)
         return data
       }
+    },
+    mapEventListener(map,geocoder){
+      daum.maps.event.addListener(map, 'dragend', () => {
+          this.searchAddrFromCoords(geocoder, map.getCenter(), this.displayCenterInfo)
+      })
+    },
+    searchAddrFromCoords(geocoder,coords,callback){
+      geocoder.coord2RegionCode(coords.getLng(), coords.getLat(), callback)
+    },
+    displayCenterInfo(result, status) {
+      let addrText = '';
+        if (status === daum.maps.services.Status.OK) {
+
+            for(let i = 0; i < result.length; i++) {
+                // 법정동의 region_type 값은 'B' 이므로
+                if (result[i].region_type === 'B') {
+                    addrText = result[i].address_name
+                    let code = result[i].code
+                    code = code.substring(0,8)
+                    if(this.centerCode !== code){
+                      this.centerCode = code
+                      //console.log(code)
+                      this.getStoreList(this.$route.params.id, code).then((result)=>{
+                        this.storeList = result.rows
+                        this.makeMakers(result.rows)
+                      })
+                    }
+                    //this.setAddr(addrText+"/ 법정동코드: "+code)
+                    
+                    break;
+                }
+            }
+        }
+    },
+    makeMakers(rows){
+      let x = null
+      let y = null
+      this.makersClean()
+      for (const value of rows) {
+        //console.log(value)
+        x = Number(value.xAxis)
+        y = Number(value.yAxis)
+        let marker = null
+        marker = this.setMaker(x,y,value)
+        this.queue.setQueue(marker)
+      }
+
+    },
+    setMaker(x,y,value){
+      let tmparr = [] 
+      tmparr = convertGeo([x,y])
+      let marker = new daum.maps.Marker({
+          map: this.mapInstance, // 마커를 표시할 지도
+          position: new daum.maps.LatLng(tmparr[1], tmparr[0]), // 마커를 표시할 위치
+          title : value.refBnm, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
+      })
+      return marker
+    },
+    makersClean(){
+      let tmp = undefined
+      let length = this.queue.getQueueLength()
+      if(length !== 0){
+        for(let i=0; i<length; i++){
+          tmp = this.queue.getQueue()
+          if(typeof tmp === 'undefined'){
+            break;
+          }
+          tmp.setMap(null)
+        }
+      }
+           
     }
 
   }

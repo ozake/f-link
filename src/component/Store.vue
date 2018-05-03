@@ -61,7 +61,7 @@ export default {
       map.addControl(zoomControl, daum.maps.ControlPosition.RIGHT);
       console.log("지도 셋팅 완료")
       this.mapLevel = map.getLevel()
-      this.mapEventListener(map,geocoder,this)
+      this.mapEventListener(map,geocoder)
       this.searchAddrFromCoords(geocoder, map.getCenter(), this.displayCenterInfo)
 
       this.$EventBus.$on('setCenterMethod', this.setCenterMap)
@@ -83,7 +83,7 @@ export default {
     getMapInstance(){
       return this.mapInstance
     },
-    mapEventListener(map,geocoder,vm){
+    mapEventListener(map,geocoder){
       daum.maps.event.addListener(map, 'dragend', () => {
           this.searchAddrFromCoords(geocoder, map.getCenter(), this.displayCenterInfo)
       })
