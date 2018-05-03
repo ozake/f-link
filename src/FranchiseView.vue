@@ -10,21 +10,21 @@
         <div class="frinfo">
           <h3>{{this.displayItem.brand}}</h3>
           <div class="frimg">
-            <img src="http://img.mk.co.kr/2018/franchise/pizza2.jpg" alt="네네피자로고">
-            <button class="btn_tel">전화 상담 (02-2000-5450)</button>
+            <img v-bind:src="displayItem.img1" />
+            <button class="btn_tel">전화 상담 ({{this.displayItem.tel}})</button>
           </div>
 
           <dl>
             <dt>회사명</dt>
-            <dd>{{this.displayItem.company}}  </dd>
+            <dd>{{this.displayItem.company}}</dd>
             <dt>대표자</dt>
-            <dd>-</dd>
+            <dd>{{this.displayItem.ceo}}</dd>
             <dt>창업 비용</dt>
             <dd>{{this.displayItem.total}} ({{this.displayItem.storearea}}평)</dd>
             <dt>평당 평균 매출액</dt>
             <dd>500만원</dd>
             <dt>홈페이지 </dt>
-            <dd>-</dd>
+            <dd>{{this.displayItem.url}}</dd>
             <p>※ 본 서비스는 공정거래위원회 ‘가맹사업거래 정보공개서’에 기초한 정보입니다.</p>
           </dl>
 
@@ -40,27 +40,27 @@
               <caption>가맹 창업 조건</caption>
               <tr class="row1">
               <th>가맹 계약 기간</th>
-              <td>최초 3년 / 연장 2년</td>
+              <td>최초 {{this.displayItem.initial}}년 / 연장 {{this.displayItem.extended}}년</td>
               </tr>
               <tr class="row2">
               <th>예상창업비용</th>
-              <td>{{this.displayItem.prcost}}</td>
+              <td>{{this.displayItem.total}}천원</td>
               </tr>
               <tr class="row3">
               <th>가맹비</th>
-              <td>1000만원</td>
+              <td>{{this.displayItem.membership}}천원</td>
               </tr>
               <tr class="row3">
               <th>교육비</th>
-              <td>2000만원</td>
+              <td>{{this.displayItem.educost}}천원</td>
               </tr>
               <tr class="row3">
               <th>보증금</th>
-              <td>5000만원</td>
+              <td>{{this.displayItem.deposit}}천원</td>
               </tr>
               <tr class="row3">
               <th>기타비용</th>
-              <td>2000만원</td>
+              <td>{{this.displayItem.othercost}}천원</td>
               </tr>
           </table>
 
@@ -72,15 +72,15 @@
               </tr>
               <tr class="row2">
               <th>인테리어 비용 </th>
-              <td>1억원</td>
+              <td>{{this.displayItem.interiorcost}}천원</td>
               </tr>
               <tr class="row3">
               <th>평당 비용</th>
-              <td>150만원</td>
+              <td>{{this.displayItem.sicost}}천원</td>
               </tr>
               <tr class="row3">
               <th>기준 면적 </th>
-              <td>{{this.displayItem.area}}평</td>
+              <td>{{this.displayItem.storearea}}평</td>
               </tr>
           </table>
 
@@ -117,11 +117,11 @@
               </tr>
 
               <tr>
-              <td>2016 </td>
-              <td>109 </td>
-              <td>45</td>
-              <td>2</td>
-              <td>314</td>
+              <td>{{this.displayItem.year}} </td>
+              <td>{{this.displayItem.rcount}} </td>
+              <td>{{this.displayItem.ecount}}</td>
+              <td>{{this.displayItem.ccount}}</td>
+              <td>{{this.displayItem.mcount}}</td>
               </tr>
 
               <tr>
@@ -155,7 +155,7 @@
              </tr>
 
               <tr>
-              <td>2016 </td>
+              <td>{{this.displayItem.year}} </td>
               <td>109 </td>
               <td>45</td>
               <td>2</td>
@@ -183,7 +183,7 @@
 
              <tr>
               <td>임직원수</td>
-              <th>2 /17</th>
+              <th>{{this.displayItem.executives}} /{{this.displayItem.employee}}</th>
               <td>브랜드수</td>
               <th>3</th>
              </tr>
@@ -345,79 +345,8 @@ export default {
   data(){
     return {
       isIe:false,
-      items: [
-        {
-          id:1,
-          title: "본죽",
-          prcost: "5740만원",
-          area: "23",
-          company:"본아이에프(주)"
-        },
-        {
-          id:2,
-          title: "한솥",
-          prcost: "7500만원",
-          area: "15",
-          company:"한솥(주)"
-        },
-        {
-          id:3,
-          title: "고봉민김밥",
-          prcost: "4980만원",
-          area: "28",
-          company:"케이비앰(주)"
-        },
-        {
-          id:4,
-          title: "놀부부대찌개",
-          prcost: "1억210만원",
-          area: "45",
-          company:"놀부(주)"
-        },
-        {
-          id:5,
-          title: "가장맛있는족발",
-          prcost: "1억5350만원",
-          area: "50",
-          company:"가장맛있는족발(주)"
-        },
-        {
-          id:6,
-          title: "원할머니",
-          prcost: "9930만원",
-          area: "30",
-          company:"원앤원(주)"
-        },
-        {
-          id:7,
-          title: "조마루감자탕",
-          prcost: "8860만원",
-          area: "30",
-          company:"조마루(주)"
-        },
-        {
-          id:8,
-          title: "하남돼지집",
-          prcost: "1억1320만원",
-          area: "40",
-          company:"하남애프앤비(주)"
-        },
-        {
-          id:9,
-          title: "신마포갈매기",
-          prcost: "1억3300만원",
-          area: "50",
-          company:"디딤(주)"
-        },
-        {
-          id:10,
-          title: "채선당",
-          prcost: "1억8250만원",
-          area: "60",
-          company:"채선당(주)"
-        }
-      ],
-      displayItem : {}
+      displayItem : {},
+      apiModel : new ApiModel(this.$http)
     }
   },
   props:{
@@ -430,7 +359,11 @@ export default {
       this.isIe = true
     }
     this.getFranchiseView(this.$route.params.id).then((result)=>{
+      console.log(result[0])
       this.displayItem = result[0]
+    })
+    this.getStoreList(this.$route.params.id).then((result)=>{
+      console.log(result.rows)
     })
     //console.log(this.$route.params.id)
 
@@ -458,7 +391,7 @@ export default {
       let container = document.getElementById('branch_map'); //지도를 담을 영역의 DOM 레퍼런스
       let options = { //지도를 생성할 때 필요한 기본 옵션
         center: new daum.maps.LatLng(37.56611900511385, 126.97774128459538), //지도의 중심좌표.
-        level: 4 //지도의 레벨(확대, 축소 정도)
+        level: 5 //지도의 레벨(확대, 축소 정도)
       };
 
       let map = new daum.maps.Map(container, options); //지도 생성 및 객체 리턴
@@ -510,23 +443,13 @@ export default {
       this.getFranchiseView(this.$route.params.id).then((result)=>{
         this.displayItem = result
       })
-      /* for (const value of this.items) {
-        if(this.$route.params.id === value.id){
-          this.displayItem = {
-            id:value.id,
-            title:value.title,
-            prcost:value.prcost,
-            area:value.area
-          }
-        }
-      } */
-
     },
     async getFranchiseView(frnchiseCode){
-      let model = new ApiModel(this.$http)
-      let result = await model.getFranchiseView(frnchiseCode)
+      //let model = new ApiModel(this.$http)
+      let result = await this.apiModel.getFranchiseView(frnchiseCode)
       if(result.status === 200){
         let data = result.data
+        let paging = data.shift()
         for (const value of data) {
           let img1 = value.img1
           if(value.img1 === ''){
@@ -536,6 +459,14 @@ export default {
           }
           value.img1 = img1
         }
+        return data
+      }
+    },
+    async getStoreList(frnchiseCode, centerCode=''){
+      let result = await this.apiModel.getOP402(frnchiseCode, '100', '1')
+      if(result.status === 200){
+        let data = result.data.data
+        //console.log(data)
         return data
       }
     }

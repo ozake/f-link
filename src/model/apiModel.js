@@ -22,13 +22,13 @@ export default class ApiModel {
     /**
      * OP-402 API 조회 메소드
      * 리턴형은 http Axios의 promise형으로 반환
-     * @param {*} centerCode 
      * @param {*} franchiseNo 
      * @param {*} pageNo 
      * @param {*} row
+     * @param {*} centerCode //법정동 코드 
      * @returns {promise} 
      */
-    getOP402(centerCode, franchiseNo='20080100047', row='10', pageNo='1'){
+    getOP402(franchiseNo='20080100047', row='10', pageNo='1',centerCode=''){
       this.apiNo = '402';
       this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
       this.config.data = {
@@ -68,7 +68,8 @@ export default class ApiModel {
      * 카테고리별 프렌차이즈 리스트 출력
      * @param {*} categoryName 
      * @param {*} row 
-     * @param {*} pageNo 
+     * @param {*} pageNo
+     * @returns {promise}  
      */
     getFranchiseList(categoryName='한식', row='10', pageNo='1'){
       this.apiNo = '101'
@@ -79,7 +80,8 @@ export default class ApiModel {
 
     /**
      * 프렌차이즈 브랜드 정보 가져오기
-     * @param {*} franchiseCode 
+     * @param {*} franchiseCode
+     * @returns {promise}  
      */
     getFranchiseView(franchiseCode='20080100243'){
       this.apiNo = '102'

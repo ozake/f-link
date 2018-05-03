@@ -6,7 +6,7 @@
       <img v-bind:src="item.img1" />
   		<div class="content-title">
         <div>{{item.brand}}</div>
-        <div>{{item.total}}원 ({{item.storearea}}평)</div>
+        <div>{{item.total}}천원 ({{item.storearea}}평)</div>
       </div>
     </router-link>
 	</div>

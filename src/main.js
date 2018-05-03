@@ -4,6 +4,7 @@ import Main from './Main.vue'
 import axios from 'axios'
 import Router from 'vue-router'
 import routes from './routes'
+import ApiModel from './model/apiModel'; 
 //import 'babel-polyfill'
 require('es6-promise').polyfill();
 

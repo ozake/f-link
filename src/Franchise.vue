@@ -61,68 +61,6 @@ export default {
   },
   data(){
     return {
-      items: [
-        {
-          id:1,
-          title: "본죽",
-          prcost: "5740만원",
-          area: "23"
-        },
-        {
-          id:2,
-          title: "한솥",
-          prcost: "7500만원",
-          area: "15"
-        },
-        {
-          id:3,
-          title: "고봉민김밥",
-          prcost: "4980만원",
-          area: "28"
-        },
-        {
-          id:4,
-          title: "놀부부대찌개",
-          prcost: "1억210만원",
-          area: "45"
-        },
-        {
-          id:5,
-          title: "가장맛있는족발",
-          prcost: "1억5350만원",
-          area: "50"
-        },
-        {
-          id:6,
-          title: "원할머니",
-          prcost: "9930만원",
-          area: "30"
-        },
-        {
-          id:7,
-          title: "조마루감자탕",
-          prcost: "8860만원",
-          area: "30"
-        },
-        {
-          id:8,
-          title: "하남돼지집",
-          prcost: "1억1320만원",
-          area: "40"
-        },
-        {
-          id:9,
-          title: "신마포갈매기",
-          prcost: "1억3300만원",
-          area: "50"
-        },
-        {
-          id:10,
-          title: "채선당",
-          prcost: "1억8250만원",
-          area: "60"
-        }
-      ],
       listItems : '',
       categoryCode : [
         {code:"0101", categoryName : "한식"},         
@@ -146,7 +84,8 @@ export default {
         {code:"0214", categoryName : "세탁"},
         {code:"0303", categoryName : "의류 / 패션"} */
       ],
-      rItems : []
+      rItems : [],
+      apiModel : new ApiModel(this.$http)
     }
   },
   props:{
@@ -201,7 +140,7 @@ export default {
         console.log("error")
       }else{
         console.log(categoryname)
-        let model = new ApiModel(this.$http)
+        //let model = new ApiModel(this.$http)
         /* model.getFranchiseList(categoryname).then((result)=>{
           //console.log(result)
           if(result.status === 200){
@@ -211,9 +150,10 @@ export default {
             return data
           }
         }) */
-        let result = await model.getFranchiseList(categoryname)
+        let result = await this.apiModel.getFranchiseList(categoryname)
         if(result.status === 200){
             let data = result.data
+            let paging = data.shift()
             for (const value of data) {
               let img1 = value.img1
               if(value.img1 === ''){
