@@ -96,41 +96,33 @@
 
           <!--가맹점수-->
           <table width="805"  border="0" cellpadding="0" cellspacing="0" class="infotable1">
-             <caption>가맹점수</caption>
+            <caption>가맹점수</caption>
 
-             <colgroup>
-                              <col width="200">
-                <col width="121">
-                <col width="121">
+            <colgroup>
+              <col width="200">
               <col width="121">
               <col width="121">
               <col width="121">
-                           </colgroup>
+              <col width="121">
+              <col width="121">
+            </colgroup>
 
-             <tr>
+            <tr>
               <td rowspan="3">가맹점 수</td>
               <th>연도 </th>
               <th>신규개점 </th>
               <th>계약종료 </th>
               <th>계약해지 </th>
               <th>명의변경</th>
-              </tr>
+            </tr>
 
-              <tr>
-              <td>{{this.displayItem.year}} </td>
-              <td>{{this.displayItem.rcount}} </td>
-              <td>{{this.displayItem.ecount}}</td>
-              <td>{{this.displayItem.ccount}}</td>
-              <td>{{this.displayItem.mcount}}</td>
-              </tr>
-
-              <tr>
-              <td>2015</td>
-              <td>84</td>
-              <td>1</td>
-              <td>49</td>
-              <td>203</td>
-              </tr>
+            <tr v-for="ydata in yearData">
+              <td>{{ydata.year}} </td>
+              <td>{{ydata.rcount}} </td>
+              <td>{{ydata.ecount}}</td>
+              <td>{{ydata.ccount}}</td>
+              <td>{{ydata.mcount}}</td>
+            </tr>
 
           </table>
 
@@ -154,19 +146,12 @@
               <th>폐업률</th>
              </tr>
 
-              <tr>
-              <td>{{this.displayItem.year}} </td>
-              <td>109 </td>
-              <td>45</td>
-              <td>2</td>
+            <tr v-for="ydata in yearData">
+              <td>{{ydata.year}} </td>
+              <td>{{ydata.totalStore}} </td>
+              <td>{{ydata.closerStore}}</td>
+              <td>{{ydata.closerRate}}</td>
             </tr>
-
-              <tr>
-              <td>2015</td>
-              <td>84</td>
-              <td>1</td>
-              <td>49</td>
-              </tr>
 
           </table>
 
@@ -348,7 +333,7 @@ export default {
     return {
       isIe:false,
       displayItem : {},
-      yearData : {},
+      yearData : [],
       apiModel : new ApiModel(this.$http),
       centerCode : '',
       storeList : [],
@@ -356,7 +341,11 @@ export default {
       queue : new Queue()
     }
   },
-  
+  computed: {
+    closureRate : function (){
+
+    }
+  },
   props:{
   },
   created(){
@@ -368,16 +357,28 @@ export default {
     }
     let ap1 = this.getFranchiseView(this.$route.params.id)
     let ap2 = this.getFranchiseYearData(this.$route.params.id)
-    console.log(ap1)
-    console.log(ap2)
     Promise.all([ap1,ap2]).then((result)=>{
-      console.log("프로미스 결과"+result)
-      /* let data1 = result[0]
+      //console.log(result)
+      let data1 = result[0]
       let data2 = result[1]
-      console.log(data1)
-      console.log(data2) */
-      //this.displayItem = data1[0]
-
+      let tmpArray = []
+      console.log(data2[0])
+      this.displayItem = data1[0]
+      for (let v of data2) {
+        let totalStore = Number(v.fcount) + Number(v.rcount)
+        totalStore = Number(totalStore)
+        let closerStore = Number(v.ecount) + Number(v.ccount)
+        closerStore = Number(closerStore)
+        let closerRate = (closerStore/totalStore) * 100
+        closerRate = closerRate.toFixed(1)
+        v.totalStore = totalStore
+        v.closerStore = closerStore
+        v.closerRate = closerRate
+        tmpArray.push(v)
+      }
+      this.yearData = tmpArray
+      //console.log(tmpArray)
+      //this.yearData = data2
     })
 
     /* this.getFranchiseView(this.$route.params.id).then((result)=>{

@@ -95,7 +95,7 @@ export default class ApiModel {
      * @param {*} franchiseCode
      * @returns {promise}  
      */
-    getFranchYearData(franchiseCode='20080100243'){
+    getFranchiseYearData(franchiseCode='20080100243'){
       this.apiNo = '103'
       this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
       this.config.data = `regnumber=${franchiseCode}`
