@@ -5,6 +5,9 @@ import FranchiseList from './FranchiseList.vue'
 import FranchiseView from './FranchiseView.vue'
 import ThemeBest from './ThemeBest.vue'
 import SnsBest from './SnsBest.vue'
+import sCapitalBest from './sCapitalBest.vue'
+import SteadyBest from './SteadyBest.vue'
+import GrowthBest from './GrowthBest.vue'
 //import CounterPage from 'components/CounterPage'
 
 export default [
@@ -50,6 +53,45 @@ export default [
     path: '/snsBest',
     name: 'sns-best',
     component: SnsBest
+  },
+  {
+    path: '/scapitalBest',
+    name: 'scapital-default',
+    component: sCapitalBest,
+    children: [
+      {
+        path: ':page',
+        name: 'scapital-list',
+        props: true,
+        component: sCapitalBest
+      }
+    ]
+  },
+  {
+    path: '/steadyBest',
+    name: 'steady-default',
+    component: SteadyBest,
+    children: [
+      {
+        path: ':page',
+        name: 'steady-list',
+        props: true,
+        component: SteadyBest
+      }
+    ]
+  },
+  {
+    path: '/growthBest',
+    name: 'growth-default',
+    component: GrowthBest,
+    children: [
+      {
+        path: ':page',
+        name: 'growth-list',
+        props: true,
+        component: GrowthBest
+      }
+    ]
   },
   {
     path: '*',

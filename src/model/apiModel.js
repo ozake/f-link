@@ -101,4 +101,45 @@ export default class ApiModel {
       this.config.data = `regnumber=${franchiseCode}`
       return this.http(this.config)
     }
+
+
+    /**
+     * 소자본 창업 BEST 리스트
+     * @param {*} pageNo 
+     * @returns {promise}
+     */
+    getScapitalBest(pageNo='0'){
+      this.apiNo = '105'
+      this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
+      this.config.data = `cmd=1&page=${pageNo}`
+      return this.http(this.config)
+    }
+
+
+    /**
+     * 스테디셀러 BEST 리스트
+     * @param {*} pageNo 
+     * @returns {promise}
+     */
+    getSteadyBest(pageNo='0'){
+      this.apiNo = '105'
+      this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
+      this.config.data = `cmd=2&page=${pageNo}`
+      return this.http(this.config)
+    }
+
+
+    /**
+     * 매장증가율 BEST 리스트
+     * @param {*} pageNo 
+     * @returns {promise}
+     */
+    getGrowthBest(pageNo='0'){
+      this.apiNo = '105'
+      this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
+      this.config.data = `cmd=3&page=${pageNo}`
+      return this.http(this.config)
+    }
+
+
 }
