@@ -338,6 +338,7 @@ export default {
       centerCode : '',
       storeList : [],
       mapInstance : '',
+      geocorderInstance : '',
       queue : new Queue()
     }
   },
@@ -362,7 +363,7 @@ export default {
       let data1 = result[0]
       let data2 = result[1]
       let tmpArray = []
-      console.log(data2[0])
+      console.log(data1[0])
       this.displayItem = data1[0]
       for (let v of data2) {
         let totalStore = Number(v.fcount) + Number(v.rcount)
@@ -377,8 +378,11 @@ export default {
         tmpArray.push(v)
       }
       this.yearData = tmpArray
-      //console.log(tmpArray)
-      //this.yearData = data2
+
+      this.addressTogeocode(data1[0].address).then((coords)=>{
+        console.log(coords)
+        //this.setMapCenter(coords)
+      })
     })
 
     /* this.getFranchiseView(this.$route.params.id).then((result)=>{
@@ -394,6 +398,7 @@ export default {
   mounted() {
     this.$nextTick(function () {
       // 모든 화면이 렌더링된 후 실행합니다.
+
       console.log("지도 셋팅 시작")
       let container = document.getElementById('branch_map'); //지도를 담을 영역의 DOM 레퍼런스
       let options = { //지도를 생성할 때 필요한 기본 옵션
@@ -404,7 +409,6 @@ export default {
       let map = new daum.maps.Map(container, options); //지도 생성 및 객체 리턴
       // 주소-좌표 변환 객체를 생성합니다
       let geocoder = new daum.maps.services.Geocoder();
-      // 중심 좌표나 확대 수준이 변경됐을 때 지도 중심 좌표에 대한 주소 정보를 표시하도록 이벤트를 등록합니다
 
       // 일반 지도와 스카이뷰로 지도 타입을 전환할 수 있는 지도타입 컨트롤을 생성합니다
       let mapTypeControl = new daum.maps.MapTypeControl();
@@ -417,11 +421,16 @@ export default {
       let zoomControl = new daum.maps.ZoomControl();
       map.addControl(zoomControl, daum.maps.ControlPosition.RIGHT);
       console.log("지도 셋팅 완료")
+      //console.log(this.displayItem.address)
+
+      // 중심 좌표나 확대 수준이 변경됐을 때 지도 중심 좌표에 대한 주소 정보를 표시하도록 이벤트를 등록합니다
       this.mapEventListener(map,geocoder)
       this.mapInstance = map
-      this.searchAddrFromCoords(geocoder, map.getCenter(), this.displayCenterInfo)
+      this.geocorderInstance = geocoder
 
-      //this.setPolyline()
+      console.log("마운티드 종료")
+      //this.searchAddrFromCoords(geocoder, map.getCenter(), this.displayCenterInfo)
+
     })
 
   },
@@ -558,6 +567,30 @@ export default {
         }
       }
            
+    },
+    async addressTogeocode(address){
+      let geocoder = new daum.maps.services.Geocoder()
+      let coords = ''
+      console.log("address:"+address)
+      //console.log(this.geocorderInstance)
+      // 주소로 좌표를 검색합니다
+      //this.geocorderInstance.addressSearch('서울특별시 강남구 테헤란로 405 BGF리테일', function (result, status){
+      geocoder.addressSearch('서울특별시 강남구 테헤란로 405 BGF리테일', function (result, status){
+          // 정상적으로 검색이 완료됐으면 
+          if (status === daum.maps.services.Status.OK) {
+
+            coords = new daum.maps.LatLng(result[0].y, result[0].x)
+            //map.setCenter(coords);
+            return coords
+          } 
+      })      
+    },
+    setMapCenter(coords){
+      console.log(coords)
+      // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+      if(this.mapInstance !== ''){
+        this.mapInstance.setCenter(coords)
+      }
     }
 
   }

@@ -22,6 +22,13 @@ const router = new Router({
   linkActiveClass: "",
 })
 
+router.beforeEach((to, from, next) => {
+  // ...
+  //myStorage = window.localStorage;
+  console.log(localStorage)
+  next()
+})
+
 //Vue.prototype.$route = router
 
 new Vue({
