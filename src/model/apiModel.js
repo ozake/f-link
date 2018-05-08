@@ -34,7 +34,7 @@ export default class ApiModel {
       this.config.data = {
         'pageNo':pageNo,
         'row':row,
-        //'emdCd':centerCode,
+        'emdCd':centerCode,
         'franchiseNo':franchiseNo
       }
       return this.http(this.config)

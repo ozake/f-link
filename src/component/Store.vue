@@ -13,6 +13,7 @@ import AddrArea from "./AddrArea.vue"
 import AsideMap from "./AsideMap.vue"
 import proj4 from "proj4"
 import ApiModel from "../model/apiModel.js"
+import { Queue } from '../model/colections';
 export default {
   name: 'store',
   data () {
@@ -21,10 +22,10 @@ export default {
       centerCode : '',
       mapInstance: '',
       ftcCate2Cd : '0108',
-      markers : [],
       FcenterCode : '',
       isFranchise : false,
-      mapLevel : ''
+      mapLevel : '',
+      queue : new Queue()
     }
   },
   props:{
@@ -300,10 +301,17 @@ export default {
       
     },
     makersClean(){
-      for (const v of this.markers){
-        v.setMap(null);
+      let tmp = undefined
+      let length = this.queue.getQueueLength()
+      if(length !== 0){
+        for(let i=0; i<length; i++){
+          tmp = this.queue.getQueue()
+          if(typeof tmp === 'undefined'){
+            break;
+          }
+          tmp.setMap(null)
+        }
       }
-      this.makers = []
     },
     makeMakers(result, isFranchise=false){
       let data = result.data.data
@@ -325,7 +333,7 @@ export default {
         else {
           marker = this.setMaker(x,y,value)
         } 
-        this.markers.push(marker)
+        this.queue.setQueue(marker)
       }
 
     },

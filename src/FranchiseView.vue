@@ -570,23 +570,23 @@ export default {
     },
     async addressTogeocode(address){
       let geocoder = new daum.maps.services.Geocoder()
-      let coords = ''
+      //let coords = ''
       console.log("address:"+address)
       //console.log(this.geocorderInstance)
       // 주소로 좌표를 검색합니다
       //this.geocorderInstance.addressSearch('서울특별시 강남구 테헤란로 405 BGF리테일', function (result, status){
-      geocoder.addressSearch('서울특별시 강남구 테헤란로 405 BGF리테일', function (result, status){
+      geocoder.addressSearch(address, (result, status) => {
           // 정상적으로 검색이 완료됐으면 
           if (status === daum.maps.services.Status.OK) {
 
-            coords = new daum.maps.LatLng(result[0].y, result[0].x)
+            let coords = new daum.maps.LatLng(result[0].y, result[0].x)
             //map.setCenter(coords);
-            return coords
+            this.setMapCenter(coords)
+            this.searchAddrFromCoords(geocoder, this.mapInstance.getCenter(), this.displayCenterInfo)
           } 
       })      
     },
     setMapCenter(coords){
-      console.log(coords)
       // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
       if(this.mapInstance !== ''){
         this.mapInstance.setCenter(coords)
