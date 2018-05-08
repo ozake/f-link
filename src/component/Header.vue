@@ -3,7 +3,7 @@
 <div id="header">
   <!-- 로고,로그인 -->
   <h1><router-link to="/"><img src="http://img.mk.co.kr/2018/franchise/fc_logo.jpg" alt="franchise link"></router-link></h1>
-  <p class="login"><a href="http://www.f-link.co.kr/index.php?TM=M&MM=1">로그인</a><span class="line">|</span> <a href="http://www.f-link.co.kr/index.php?TM=M&MM=2">회원가입</a></p>
+  <p class="login"><a v-if="Nauth" href="http://www.f-link.co.kr/index.php?TM=M&MM=1">로그인</a><a v-else href="http://www.f-link.co.kr/index.php?TM=M&MM=4">{{localStorage.id}}</a><span class="line">|</span> <a href="http://www.f-link.co.kr/index.php?TM=M&MM=2">회원가입</a></p>
   <!-- //로고,로그인 -->
 
   <!-- GNB -->
@@ -36,12 +36,15 @@ export default {
       franchiseActive : false,
       themeBestActive : false,
       storeActive : false,
+      Nauth : true,
       activeClass : 'on',
-      inActiveClass : 'off'
+      inActiveClass : 'off',
+      localstroage : ''
     }
   },
   created() {
     this.$EventBus.$on('HeaderActive', this.setActiveClass)
+    this.getAuth()
   },
   methods : {
     setActiveClass(text) {
@@ -61,6 +64,14 @@ export default {
           this.themeBestActive = false
           this.franchiseActive = false
           break;
+      }
+    },
+    getAuth(){
+      if(!localStorage.getItem('ID')) {
+        this.Nauth = false
+      }
+      else{
+        this.localstroage = localStorage
       }
     }
   }
