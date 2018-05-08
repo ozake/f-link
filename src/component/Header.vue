@@ -3,7 +3,9 @@
 <div id="header">
   <!-- 로고,로그인 -->
   <h1><router-link to="/"><img src="http://img.mk.co.kr/2018/franchise/fc_logo.jpg" alt="franchise link"></router-link></h1>
-  <p class="login"><a v-if="Nauth" href="http://www.f-link.co.kr/index.php?TM=M&MM=1">로그인</a><a v-else href="http://www.f-link.co.kr/index.php?TM=M&MM=4">{{localStorage.id}}</a><span class="line">|</span> <a href="http://www.f-link.co.kr/index.php?TM=M&MM=2">회원가입</a></p>
+  <p class="login">
+    <a v-if="Nauth" href="http://www.f-link.co.kr/index.php?TM=M&MM=1">로그인</a><a v-else href="http://www.f-link.co.kr/index.php?TM=M&MM=4">{{localstroage.ID}}</a><span class="line">|</span> <a v-if="Nauth" href="http://www.f-link.co.kr/index.php?TM=M&MM=2">회원가입</a><a v-else href="http://www.f-link.co.kr/index.php?TM=M&MM=5">회원수정</a>
+  </p>
   <!-- //로고,로그인 -->
 
   <!-- GNB -->
@@ -67,11 +69,12 @@ export default {
       }
     },
     getAuth(){
-      if(!localStorage.getItem('ID')) {
+      if(localStorage.getItem('ID')) {
         this.Nauth = false
+        this.localstroage = localStorage
       }
       else{
-        this.localstroage = localStorage
+        
       }
     }
   }
