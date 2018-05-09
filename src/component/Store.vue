@@ -4,7 +4,7 @@
 		<div class="store_map" id="map">
       <AddrArea :addr="addr"></AddrArea>
     </div>
-    <AsideMap></AsideMap>
+    <AsideMap :brand="brand"></AsideMap>
   </div>
 </template>
 
@@ -25,7 +25,11 @@ export default {
       FcenterCode : '',
       isFranchise : false,
       mapLevel : '',
-      queue : new Queue()
+      queue : new Queue(),
+      geoCoder : '',
+      brand : [],
+      brandQueue : new Queue()
+
     }
   },
   props:{
@@ -42,12 +46,14 @@ export default {
       let options = { //지도를 생성할 때 필요한 기본 옵션
         center: new daum.maps.LatLng(37.56611900511385, 126.97774128459538), //지도의 중심좌표.
         level: 4 //지도의 레벨(확대, 축소 정도)
+
       };
 
       let map = new daum.maps.Map(container, options); //지도 생성 및 객체 리턴
       this.mapInstance = map
       // 주소-좌표 변환 객체를 생성합니다
       let geocoder = new daum.maps.services.Geocoder();
+      this.geoCoder = geocoder
       // 중심 좌표나 확대 수준이 변경됐을 때 지도 중심 좌표에 대한 주소 정보를 표시하도록 이벤트를 등록합니다
 
       // 일반 지도와 스카이뷰로 지도 타입을 전환할 수 있는 지도타입 컨트롤을 생성합니다
@@ -60,10 +66,11 @@ export default {
       // 지도 확대 축소를 제어할 수 있는  줌 컨트롤을 생성합니다
       let zoomControl = new daum.maps.ZoomControl();
       map.addControl(zoomControl, daum.maps.ControlPosition.RIGHT);
+      map.setMaxLevel(6);
       console.log("지도 셋팅 완료")
       this.mapLevel = map.getLevel()
       this.mapEventListener(map,geocoder)
-      this.searchAddrFromCoords(geocoder, map.getCenter(), this.displayCenterInfo)
+      //this.searchAddrFromCoords(geocoder, map.getCenter(), this.displayCenterInfo)
 
       this.$EventBus.$on('setCenterMethod', this.setCenterMap)
 
@@ -76,10 +83,19 @@ export default {
   },
   created() {
     this.$EventBus.$emit('HeaderActive', 'store')
+    this.$EventBus.$on('setftcCate2Cd', this.setftcCate2Cd)
+  },
+  watch: {
+    ftcCate2Cd : function (val){
+      this.searchAddrFromCoords(this.geoCoder, this.mapInstance.getCenter(), this.displayCenterInfo)
+    }
   },
   methods:{
     setAddr(data){
       this.addr = data
+    },
+    setftcCate2Cd(data){
+      this.ftcCate2Cd = data
     },
     getMapInstance(){
       return this.mapInstance
@@ -299,6 +315,7 @@ export default {
         }) */
       }
       
+      
     },
     makersClean(){
       let tmp = undefined
@@ -312,13 +329,15 @@ export default {
           tmp.setMap(null)
         }
       }
+      this.brandQueue.queue = []
     },
     makeMakers(result, isFranchise=false){
       let data = result.data.data
       let rows = data.rows
       let x = null
       let y = null
-      
+      let tmpQueue = new Queue()
+      let flag = null
 
       for (const value of rows) {
         //console.log(value)
@@ -328,14 +347,20 @@ export default {
         if(isFranchise){
           if(value.isFranchise === '1'){
             marker = this.setMaker(x,y,value)
+            this.queue.setQueue(marker)
+            flag = tmpQueue.setNoOverlapQue(value.franchiseNo)
           }
         }
         else {
           marker = this.setMaker(x,y,value)
-        } 
-        this.queue.setQueue(marker)
+          this.queue.setQueue(marker)
+          flag = tmpQueue.setNoOverlapQue(value.franchiseNo)
+        }  
+        if(!flag){
+          this.setBrandQueue(value)
+        }
       }
-
+      this.brand = this.brandQueue.queue
     },
     setMaker(x,y,value){
       let tmparr = [] = this.convGeo([x,y])
@@ -345,9 +370,19 @@ export default {
           title : value.refBnm, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
       })
       return marker
+    },
+    setBrandQueue(value){
+      if(value.isFranchise === '1'){
+        if(value.brand !== null && value.brand !== ''){
+          let data = {
+            franchiseNo : value.franchiseNo,
+            brand : value.brand
+          }
+          this.brandQueue.setQueue(data)
+        }
+        
+      }
     }
-    
-
   }
 
 }

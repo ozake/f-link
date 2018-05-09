@@ -21,16 +21,16 @@
 				<!-- 매장찾기 선택-->
 
 				<div class="selectArea">
-						<select v-bind:class="[isIe ? ieClass : '', selectClass]" @change="getSectorM()">
+						<select v-bind:class="[isIe ? ieClass : '', selectClass]" v-model="selected">
 							<option>업종</option>
 							<option v-for="item in sector" :value="item.code">{{item.categoryName}}</option>
 						</select>					
 				</div>
 
 				<div class="selectArea">
-					<select v-bind:class="[isIe ? ieClass : '', selectClass]">
+					<select v-bind:class="[isIe ? ieClass : '', selectClass]" v-model="sectorSelected">
 						<option>중분류</option>
-						<option v-for="item in sectorMcode" :code="item.code">{{item.categoryName}}</option>
+						<option v-for="item in sectorMcode" :value="item.code">{{item.categoryName}}</option>
 					</select>					
 				</div>
 
@@ -49,112 +49,10 @@
 				<div class="brand_ch">
 
 					<ul>
-						<li>
-							<input class="chk" type="checkbox" id="brand">
-							<label for="brand">할리스</label>								
+						<li v-for="item in brand">
+							<input class="chk" type="checkbox" :id="item.franchiseNo" :value="item.franchiseNo">
+							<label :for="item.franchiseNo">{{item.brand}}</label>								
 						</li>
-
-						<li>
-							<input class="chk" type="checkbox" id="brand">
-							<label for="brand">스타벅스</label>								
-						</li>
-
-						<li>
-							<input class="chk" type="checkbox" id="brand">
-							<label for="brand">이디야</label>								
-						</li>
-
-						<li>
-							<input class="chk" type="checkbox" id="brand">
-							<label for="brand">카페베네</label>								
-						</li>
-
-						<li>
-							<input class="chk" type="checkbox" id="brand">
-							<label for="brand">할리스</label>								
-						</li>
-
-						<li>
-							<input class="chk" type="checkbox" id="brand">
-							<label for="brand">스타벅스</label>								
-						</li>
-
-						<li>
-							<input class="chk" type="checkbox" id="brand">
-							<label for="brand">달콤커피</label>								
-						</li>
-
-						<li>
-							<input class="chk" type="checkbox" id="brand">
-							<label for="brand">네네피자</label>								
-						</li>
-
-						<li>
-							<input class="chk" type="checkbox" id="brand">
-							<label for="brand">미스터피자</label>								
-						</li>
-
-						<li>
-							<input class="chk" type="checkbox" id="brand">
-							<label for="brand">도미노피자</label>								
-						</li>
-
-						<li>
-							<input class="chk" type="checkbox" id="brand">
-							<label for="brand">달콤커피</label>								
-						</li>
-
-						<li>
-							<input class="chk" type="checkbox" id="brand">
-							<label for="brand">카페베네</label>								
-						</li>
-
-						<li>
-							<input class="chk" type="checkbox" id="brand">
-							<label for="brand">할리스</label>								
-						</li>
-
-						<li>
-							<input class="chk" type="checkbox" id="brand">
-							<label for="brand">스타벅스</label>								
-						</li>
-
-						<li>
-							<input class="chk" type="checkbox" id="brand">
-							<label for="brand">달콤커피</label>								
-						</li>
-
-						<li>
-							<input class="chk" type="checkbox" id="brand">
-							<label for="brand">카페베네</label>								
-						</li>
-
-						
-						<li>
-							<input class="chk" type="checkbox" id="brand">
-							<label for="brand">카페베네</label>								
-						</li>
-						<li>
-							<input class="chk" type="checkbox" id="brand">
-							<label for="brand">이디야</label>								
-						</li>
-
-						<li>
-							<input class="chk" type="checkbox" id="brand">
-							<label for="brand">네네피자</label>								
-						</li>
-
-						<li>
-							<input class="chk" type="checkbox" id="brand">
-							<label for="brand">미스터피자</label>								
-						</li>
-
-						<li>
-							<input class="chk" type="checkbox" id="brand">
-							<label for="brand">도미노피자</label>								
-						</li>
-
-
 					</ul>				
 
 				</div>
@@ -244,8 +142,13 @@ export default {
     	ieClass : 'select-box-ie',
     	selectClass : 'select-box',
 		sector: [],
-		sectorMcode : []
+		sectorMcode : [],
+		selected : '업종',
+		sectorSelected : '중분류'
      }
+  },
+  props:{
+	  brand : Array
   },
   created(){
     const agent = navigator.userAgent.toLowerCase()
@@ -255,8 +158,21 @@ export default {
 	this.getSector()
 
   },
+  watch: {
+	  selected : function (val){
+		  if(val !== '외식'){
+			this.getSectorM(val)
+		  }
+	  },
+	  sectorSelected : function (val) {
+		  if(val !== '중분류'){
+			  this.$EventBus.$emit('setftcCate2Cd', val)
+		  }
+	  }
+  },
   methods: {
 	  getSector(){
+		  //this.$http.get("http://www.f-link.co.kr/dist/sectorCode.json").then((result)=>{
 		  this.$http.get("./src/assets/sectorCode.json").then((result)=>{
 			  if(result.status === 200){
 				  let data = result.data
@@ -265,14 +181,12 @@ export default {
 		  })
 		  
 	  },
-	  getSectorM(event){
-		console.log(event)
-		//   this.$http.get("./src/assets/sectorMcode.json").then((result)=>{
-		// 	  if(result.status === 200){
-		// 		  let data = result.data
-		// 		  this.sectorMcode = data.sectorM
-		// 	  }
-		//   })
+	  getSectorM(val){
+		  for (const value of this.sector) {
+			  if(value.code === val){
+				  this.sectorMcode = value.sectorMcode
+			  }
+		  }
 	  }
   }
 
