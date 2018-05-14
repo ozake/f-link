@@ -2,7 +2,7 @@ export default class ApiModel {
     
     /**
      * ApiModel 클래스 생성자 함수
-     * axios 모듈을 생성자 함수 인자로 넘겨준다
+     * axios 모듈을 반드시 생성자 함수 인자로 넘겨준다
      * @param {Axios} $http Axios모듈 인자
      */
     constructor($http) {
@@ -41,13 +41,13 @@ export default class ApiModel {
     }
 
     /**
-     * 
+     * OP-404 API 조회 메소드
      * @param {*} centerCode 구단위 코드
      * @param {*} ftcCate2Cd 업종코드
      * @param {*} row 표시할 데이터 갯수
      * @param {*} pageNo 페이지 넘버
      * @param {*} emdCd 법정동 코드
-     * @returns {promise}
+     * @returns {Promise}
      */
     getOP404(centerCode, ftcCate2Cd = '0101', row='10', pageNo='1', emdCd=''){
       centerCode = centerCode.substring(0,5);
@@ -59,6 +59,29 @@ export default class ApiModel {
         'sggCd':centerCode,
         'emdCd':emdCd,
         'ftcCate2Cd':ftcCate2Cd
+      }
+      return this.http(this.config)
+    }
+
+    /**
+     * OP-405 API 조회 메소드
+     * @param {*} centerCode 구단위 코드
+     * @param {*} franchiseNo 프렌차이즈번호
+     * @param {*} row 표시할 데이터 갯수
+     * @param {*} pageNo 페이지 넘버
+     * @param {*} emdCd 법정동 코드
+     * @returns {Promise} 
+     */
+    getOP405(centerCode, franchiseNo = '', row='10', pageNo='1', emdCd=''){
+      centerCode = centerCode.substring(0,5);
+      this.apiNo = '405'
+      this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
+      this.config.data = {
+        'pageNo':pageNo,
+        'row':row,
+        'sggCd':centerCode,
+        'emdCd':emdCd,
+        'franchiseNo':franchiseNo
       }
       return this.http(this.config)
     }

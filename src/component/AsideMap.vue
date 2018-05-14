@@ -49,8 +49,8 @@
 				<div class="brand_ch">
 
 					<ul>
-						<li v-for="item in brand">
-							<input class="chk" type="checkbox" :id="item.franchiseNo" :value="item.franchiseNo">
+						<li v-for="item in brandList">
+							<input class="chk" type="checkbox" :id="item.franchiseNo" :value="item.franchiseNo" v-model="brandCk">
 							<label :for="item.franchiseNo">{{item.brand}}</label>								
 						</li>
 					</ul>				
@@ -138,26 +138,41 @@ export default {
   name: 'AsideMap',
   data(){
 	return {
-		isIe : false,
+		//isIe : false,
     	ieClass : 'select-box-ie',
     	selectClass : 'select-box',
 		sector: [],
 		sectorMcode : [],
 		selected : '업종',
-		sectorSelected : '중분류'
+		sectorSelected : '중분류',
+		brandCk : [],
+		brandList : []
      }
   },
   props:{
-	  brand : Array
+	  brand : Array,
+	  updateFlag : Boolean,
+	  isIe : Boolean
   },
+  /* computed: {
+	  brand : function () {
+		  if(this.updateFlag){
+			  console.log(this.updateFlag)
+		  }
+	  }
+  }, */
   created(){
-    const agent = navigator.userAgent.toLowerCase()
+    /* const agent = navigator.userAgent.toLowerCase()
     if ( (navigator.appName == 'Netscape' && agent.indexOf('trident') != -1) || (agent.indexOf("msie") != -1)) {
      this.isIe = true
-   	}
+   	} */
 	this.getSector()
+	/* if(this.updateFlag){
+		this.brandList = this.brand
+	} */
 
   },
+  
   watch: {
 	  selected : function (val){
 		  if(val !== '외식'){
@@ -168,12 +183,36 @@ export default {
 		  if(val !== '중분류'){
 			  this.$EventBus.$emit('setftcCate2Cd', val)
 		  }
+	  },
+	  brandCk : function (val) {
+		  //console.log(val)
+		  //let tmp = val.pop()
+		  //console.log(this.brandCk.length)
+		  if(Array.isArray(this.brandCk) && this.brandCk.length !== 0){
+			  this.$EventBus.$emit('brandChecked', this.brandCk)
+		  }else{
+			  if(!this.updateFlag){
+				this.$EventBus.$emit('brandUnchecked')
+			  }
+			  
+		  }
+		  
+	  },
+	  brand : function (val) {
+		//console.log(this.updateFlag)
+		if(this.updateFlag){
+			this.brandCk = []
+			this.brandList = this.brand
+		}
 	  }
   },
   methods: {
 	  getSector(){
-		  //this.$http.get("http://www.f-link.co.kr/dist/sectorCode.json").then((result)=>{
-		  this.$http.get("./src/assets/sectorCode.json").then((result)=>{
+		  let url = "./dist/sectorCode.json"
+		  if(location.hostname === "110.13.170.148"){
+			  url = "./src/assets/sectorCode.json"
+		  }
+		  this.$http.get(url).then((result)=>{
 			  if(result.status === 200){
 				  let data = result.data
 				  this.sector = data.sector

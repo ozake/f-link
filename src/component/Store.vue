@@ -4,7 +4,7 @@
 		<div class="store_map" id="map">
       <AddrArea :addr="addr"></AddrArea>
     </div>
-    <AsideMap :brand="brand"></AsideMap>
+    <AsideMap :brand="brand" :isIe="isIe" :updateFlag="updateFlag"></AsideMap>
   </div>
 </template>
 
@@ -21,15 +21,18 @@ export default {
       addr: '서울특별시 중구',
       centerCode : '',
       mapInstance: '',
-      ftcCate2Cd : '0108',
+      ftcCate2Cd : '',
       FcenterCode : '',
       isFranchise : false,
       mapLevel : '',
       queue : new Queue(),
       geoCoder : '',
       brand : [],
-      brandQueue : new Queue()
-
+      brandQueue : new Queue(),
+      isIe : false,
+      apiModel : new ApiModel(this.$http),
+      franchiseNo : '',
+      updateFlag : true
     }
   },
   props:{
@@ -70,25 +73,42 @@ export default {
       console.log("지도 셋팅 완료")
       this.mapLevel = map.getLevel()
       this.mapEventListener(map,geocoder)
-      //this.searchAddrFromCoords(geocoder, map.getCenter(), this.displayCenterInfo)
+      this.searchAddrFromCoords(geocoder, map.getCenter(), this.displayCenterInfo)
 
       this.$EventBus.$on('setCenterMethod', this.setCenterMap)
 
       this.$EventBus.$on('setPolyonMethod', this.setPolygon)
 
+      this.$EventBus.$on('setftcCate2Cd', this.setftcCate2Cd)
 
+      this.$EventBus.$on('brandChecked', this.setFranchiseNo)
+
+      this.$EventBus.$on('brandUnchecked', ()=>{
+        this.getFranchiseList(this.centerCode,this.ftcCate2Cd,this.FcenterCode)
+      })
       //this.setPolyline()
     })
 
   },
   created() {
     this.$EventBus.$emit('HeaderActive', 'store')
-    this.$EventBus.$on('setftcCate2Cd', this.setftcCate2Cd)
+    const agent = navigator.userAgent.toLowerCase()
+    if ( (navigator.appName == 'Netscape' && agent.indexOf('trident') != -1) || (agent.indexOf("msie") != -1)) {
+     this.isIe = true
+   	}
   },
   watch: {
     ftcCate2Cd : function (val){
-      this.searchAddrFromCoords(this.geoCoder, this.mapInstance.getCenter(), this.displayCenterInfo)
+      if(this.mapLevel <= 3){
+        this.getFranchiseList(this.centerCode,this.ftcCate2Cd,this.FcenterCode)
+      }
+      else{
+        this.getFranchiseList(this.centerCode,this.ftcCate2Cd)
+      }
     }
+    /* franchiseNo : function (val){
+      this.getBrandList(this.centerCode,val)
+    } */
   },
   methods:{
     setAddr(data){
@@ -97,9 +117,18 @@ export default {
     setftcCate2Cd(data){
       this.ftcCate2Cd = data
     },
-    getMapInstance(){
-      return this.mapInstance
+    setFranchiseNo(data){
+      //let tmparr = []
+      //tmparr = data
+      //let tmp = tmparr.pop()
+      //console.log(tmparr)
+      this.franchiseNo = data
+      this.$nextTick(function() {
+        this.makersClean()
+        this.getBrandList(this.centerCode,this.franchiseNo)
+      })
     },
+
     mapEventListener(map,geocoder){
       daum.maps.event.addListener(map, 'dragend', () => {
           this.searchAddrFromCoords(geocoder, map.getCenter(), this.displayCenterInfo)
@@ -136,20 +165,23 @@ export default {
                     this.setAddr(addrText+"/ 법정동코드: "+code)
                     code = code.substring(0,5)
                     fullCode = fullCode.substring(0,8)
-                    
                     if(this.mapLevel <= 3){
-                      if( this.FcenterCode !== fullCode )
-                        this.FcenterCode = fullCode
-                        this.getFranchiseList(code,this.ftcCate2Cd,fullCode)
-                    }
+                        if( this.FcenterCode !== fullCode ){
+                          this.FcenterCode = fullCode
+                          if(this.ftcCate2Cd !== ''){
+                            this.getFranchiseList(code,this.ftcCate2Cd,fullCode)
+                          }
+                          
+                        }
+                      }
                     else{
                       if( this.centerCode !== code ){
                         this.centerCode = code
-                        this.getFranchiseList(code,this.ftcCate2Cd)
+                        if(this.ftcCate2Cd !== ''){
+                          this.getFranchiseList(code,this.ftcCate2Cd)
+                        }
                       }
                     }
-                    
-
                     break;
                 }
             }
@@ -229,67 +261,26 @@ export default {
 
       polyline.setMap(this.mapInstance)
     },
-    getBrandList(centerCode, franchiseNo='20080100047'){
-      const baseURI = 'http://www.f-link.co.kr';
-      let config = {
-        method: 'post',
-        url: `${baseURI}/container/OP-402.php`,
-        headers: { 'content-type': 'application/x-www-form-urlencoded' },
-        data: {
-          'pageNo':'1',
-          'row':'50',
-          'emdCd':centerCode,
-          'franchiseNo':franchiseNo
-        }
+    getBrandList(code,franchiseNo){
+      let rows = '1000'
+      this.makersClean()
+      let idx = 1
+      for (const value of this.franchiseNo) {
+        this.apiModel.getOP405(code, value, '1000', '1').then((result)=>{
+          if(result.status === 200){
+            this.makeMakers(result)
+            this.updateFlag = false
+          }
+        })
       }
-      this.$http(config)
-      .then((result) => {
-        console.log(result)
-        if(result.status === 200){
-          let data = result.data.data
-          let rows = data.rows
-          //console.log(rows)
-          let position = []
-          let positionObj = new Object()
-          let x = null
-          let y = null
-          let tmparr = []
-          for (const value of rows) {
-            x = value.xAxis
-            x = Number(x)
-            y = value.yAxis
-            y = Number(y)
-            tmparr = this.convGeo([x,y])
-            positionObj = {
-              title: value.refBnm,
-              latlng: new daum.maps.LatLng(tmparr[1], tmparr[0])
-            }
-            position.push(positionObj)
-          }
-
-          for (const val of position) {
-            let marker = new daum.maps.Marker({
-                  map: this.mapInstance, // 마커를 표시할 지도
-                  position: val.latlng, // 마커를 표시할 위치
-                  title : val.title, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
-            });
-          }
-        }
-
-      })
-    },
-    getFranchiseList(code,ftcCate2Cd,fullCode=''){
-      let model = new ApiModel(this.$http)
-      let emdCd = ''
-      let rows = '100'
-      if(this.mapLevel <= 3){
+      /* if(this.mapLevel <= 3){
         emdCd = fullCode
         rows = '1000'
-        console.log('404실행1')
+        console.log('405실행1')
         this.makersClean()
-        model.getOP404(code, ftcCate2Cd, rows, '1', emdCd).then((result)=>{
+        this.apiModel.getOP405(code, franchiseNo, rows, '1', fullCode).then((result)=>{
           if(result.status === 200){
-            console.log('404응답1')
+            console.log('405응답1')
             this.makeMakers(result,this.isFranchise)
           }
         })
@@ -297,25 +288,60 @@ export default {
       else {
         this.makersClean()
         for(let i=1; i<=5; i++){
-          console.log('404실행'+i)
-          model.getOP404(code, ftcCate2Cd, rows, `${i}`, emdCd).then((result)=>{
+          console.log('405실행'+i)
+          this.apiModel.getOP405(code, franchiseNo, rows, `${i}`, fullCode).then((result)=>{
             if(result.status === 200){
-              console.log('404응답'+i)
+              console.log('405응답'+i)
               this.makeMakers(result,this.isFranchise)
             }
           })
         }
-        
-        /* console.log('404실행2')
-        model.getOP404(code, ftcCate2Cd, '3', '3', emdCd).then((result)=>{
-          if(result.status === 200){
-            console.log('404응답2')
-            this.makeMakers(result,this.isFranchise)
-          }
-        }) */
+      } */
+    },
+    getFranchiseList(code,ftcCate2Cd,fullCode=''){
+      //let model = new ApiModel(this.$http)
+      let emdCd = ''
+      let rows = '100'
+      this.updateFlag = true
+      if(this.isIe === true){
+        rows = '30'
       }
-      
-      
+      if(this.mapLevel <= 3){
+        emdCd = fullCode
+        rows = '1000'
+        console.log('404실행1')
+        this.makersClean()
+        this.apiModel.getOP404(code, ftcCate2Cd, rows, '1', emdCd).then((result)=>{
+          if(result.status === 200){
+            console.log('404응답1')
+            this.makeMakers(result,this.isFranchise)
+            this.brand = this.brandQueue.getQueueAll()
+          }
+        })
+      }
+      else {
+        this.makersClean()
+        this.getOP404Fivetimes(code, ftcCate2Cd, rows).then(()=>{
+          this.brand = this.brandQueue.getQueueAll()
+        })
+      }
+    },
+    async getOP404Fivetimes(code, ftcCate2Cd, rows){
+      let promiseArr = []
+      for(let i=1; i<=5; i++){
+        let promise = new Promise((resolve, reject)=>{
+          console.log('404실행'+i)
+          this.apiModel.getOP404(code, ftcCate2Cd, rows, `${i}`).then((result)=>{
+            if(result.status === 200){
+              console.log('404응답'+i)
+              this.makeMakers(result,this.isFranchise)
+              resolve()
+            }
+          })
+        })
+        promiseArr.push(promise)
+      }
+      return Promise.all(promiseArr)
     },
     makersClean(){
       let tmp = undefined
@@ -360,7 +386,7 @@ export default {
           this.setBrandQueue(value)
         }
       }
-      this.brand = this.brandQueue.queue
+      
     },
     setMaker(x,y,value){
       let tmparr = [] = this.convGeo([x,y])
@@ -380,7 +406,6 @@ export default {
           }
           this.brandQueue.setQueue(data)
         }
-        
       }
     }
   }

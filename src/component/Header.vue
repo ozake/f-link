@@ -4,7 +4,9 @@
   <!-- 로고,로그인 -->
   <h1><router-link to="/"><img src="http://img.mk.co.kr/2018/franchise/fc_logo.jpg" alt="franchise link"></router-link></h1>
   <p class="login">
-    <a v-if="Nauth" href="http://www.f-link.co.kr/index.php?TM=M&MM=1">로그인</a><a v-else href="http://www.f-link.co.kr/index.php?TM=M&MM=4">{{localstroage.ID}}</a><span class="line">|</span> <a v-if="Nauth" href="http://www.f-link.co.kr/index.php?TM=M&MM=2">회원가입</a><a v-else href="http://www.f-link.co.kr/index.php?TM=M&MM=5">회원수정</a>
+    <a v-if="Nauth" href="http://www.f-link.co.kr/index.php?TM=M&MM=1">로그인</a><a v-else href="http://www.f-link.co.kr/index.php?TM=M&MM=4">{{localstroage.ID}} 로그아웃</a><span class="line">|</span>
+    <template v-if="Nauth"><a href="http://www.f-link.co.kr/index.php?TM=M&MM=2">회원가입</a><template v-if="isMkUser"><span class="line">|</span><a href="http://www.f-link.co.kr/index.php?TM=M&MM=3">아이디·비밀번호찾기</a></template></template>
+    <template v-else><a href="http://www.f-link.co.kr/index.php?TM=M&MM=5">회원정보수정</a><span class="line">|</span><a href="http://www.f-link.co.kr/index.php?TM=M&MM=6">비밀번호 변경</a></template>
   </p>
   <!-- //로고,로그인 -->
 
@@ -39,6 +41,7 @@ export default {
       themeBestActive : false,
       storeActive : false,
       Nauth : true,
+      isMkUser : false,
       activeClass : 'on',
       inActiveClass : 'off',
       localstroage : ''
@@ -72,6 +75,9 @@ export default {
       if(localStorage.getItem('ID')) {
         this.Nauth = false
         this.localstroage = localStorage
+        if(localStorage.getItem('PROVIDER') === 'MK'){
+          this.isMkUser = true
+        }
       }
       else{
         
