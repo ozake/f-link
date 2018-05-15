@@ -14,6 +14,14 @@ export default {
   components:{
     Header,
     Footer
+  },
+  beforeDestroy() {
+    alert('beforeDestroy')
+  },
+  destroyed() {
+    alert('Destroyed')
+    //console.log('Destroyed')
   }
+  
 }
 </script>

@@ -364,12 +364,15 @@ export default {
       let y = null
       let tmpQueue = new Queue()
       let flag = null
+      let overlay = null
+      let closeBtnDom = null
 
       for (const value of rows) {
         //console.log(value)
         x = Number(value.xAxis)
         y = Number(value.yAxis)
         let marker = null
+        
         if(isFranchise){
           if(value.isFranchise === '1'){
             marker = this.setMaker(x,y,value)
@@ -379,6 +382,10 @@ export default {
         }
         else {
           marker = this.setMaker(x,y,value)
+          overlay = this.setOverlay(marker,value)
+          
+          this.overlayEventListener(marker,overlay,value.bdMgtSn)
+
           this.queue.setQueue(marker)
           flag = tmpQueue.setNoOverlapQue(value.franchiseNo)
         }  
@@ -396,6 +403,45 @@ export default {
           title : value.refBnm, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
       })
       return marker
+    },
+    setOverlay(marker, value){
+      let content = 
+      `<!-- 지점선택박스-->
+				<div class="branch">
+					<div class="branch_box">
+						<h4>${value.refBnm}<span class='close_btn'><a href='#none' id='img${value.bdMgtSn}'><img src="http://img.mk.co.kr/2018/franchise/btn_close1.gif" alt="닫기"></a></span></h4>
+						<div class="branch_content_wrap">
+              <img src="http://img.mk.co.kr/2018/franchise/pizza2.jpg" alr="네네피자" class="logo">
+              <div class="branch_right_box">
+                <p>전화번호 : ${value.tel}</p>
+                <p>주소 : ${value.addr}</p>
+                <button type='button'>자세히 보기</button>
+              </div>
+            </div>
+					</div>
+					<p class="box_bottom"><img src="http://img.mk.co.kr/2018/franchise/box_bottom.png"></p>
+				</div>
+			<!-- //지점선택박스-->`
+      let overlay = new daum.maps.CustomOverlay({
+        content: content,
+        position: marker.getPosition(),
+        
+      })
+      overlay.setZIndex(100)
+      return overlay
+    },
+    overlayEventListener(marker,overlay,bdMgtSn){
+      // 마커를 클릭했을 때 커스텀 오버레이를 표시합니다
+      daum.maps.event.addListener(marker, 'click', ()=>{
+          overlay.setMap(this.mapInstance);
+          let closeBtnDom = document.getElementById('img'+bdMgtSn)
+          closeBtnDom.addEventListener('click',()=>{
+            overlay.setMap(null)
+          })
+      })
+      /* daum.maps.event.addListener(closeBtnDom, 'click', ()=>{
+          overlay.setMap(null);
+      }) */
     },
     setBrandQueue(value){
       if(value.isFranchise === '1'){
@@ -416,5 +462,78 @@ export default {
 <style>
 .store_map {
   height: 835px;
+}
+.branch {
+    width: 300px;
+    height: 200px;
+    position: absolute;
+    bottom: 40px;
+    left: -145px;
+    z-index: 1000;
+}
+.branch_box {
+    width: 300px;
+    height: 180px;
+    border: 1px solid #9fa29e;
+    background-color: #fff;
+}
+.branch_box h4 {
+    font-size: 17px;
+    color: #fff;
+    background-color: #656565;
+    width: 285px;
+    height: 40px;
+    line-height: 40px;
+    padding-left: 15px;
+    font-weight: 400;
+    margin-bottom: 20px;
+}
+.branch_box .close_btn {
+  border: 0px;
+  background: none;
+}
+.branch_box .logo {
+    width: 100px;
+    margin: 0 15px 15px 10px;
+    float: left;
+}
+.branch_box p {
+    color: #888;
+    font-weight: 400;
+}
+.branch_box button {
+    width: 90px;
+    height: 22px;
+    border: 1px solid #2c3d63;
+    color: #2c3d63;
+    background-color: #fff;
+    margin: 0 auto;
+    margin-top: 34px!important;
+    font-size: 13px;
+}
+.branch .box_bottom {
+    z-index: 10000;
+    position: absolute;
+    bottom: 4px;
+    left: 140px;
+}
+.branch_box h4 .close_btn {
+    margin:0 12px;
+    float: right;
+}
+.branch_content_wrap {
+  overflow: hidden;
+}
+.branch_content_wrap img {
+  float: left;
+}
+.branch_right_box {
+  overflow: hidden;
+  float: right;
+}
+.branch_right_box p {
+  width: 175px;
+  word-break:break-all;
+  white-space: pre-line;
 }
 </style>
