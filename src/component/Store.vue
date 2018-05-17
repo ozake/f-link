@@ -23,7 +23,7 @@ export default {
       mapInstance: '',
       ftcCate2Cd : '',
       FcenterCode : '',
-      isFranchise : false,
+      nonFranchise : false,
       mapLevel : '',
       queue : new Queue(),
       geoCoder : '',
@@ -32,7 +32,8 @@ export default {
       isIe : false,
       apiModel : new ApiModel(this.$http),
       franchiseNo : '',
-      updateFlag : true
+      updateFlag : true,
+      cluster : ''
     }
   },
   props:{
@@ -86,6 +87,10 @@ export default {
       this.$EventBus.$on('brandUnchecked', ()=>{
         this.getFranchiseList(this.centerCode,this.ftcCate2Cd,this.FcenterCode)
       })
+
+      this.$EventBus.$on('nonFranchise', (val)=>{
+        this.nonFranchise = val
+      })
       //this.setPolyline()
     })
 
@@ -99,6 +104,14 @@ export default {
   },
   watch: {
     ftcCate2Cd : function (val){
+      if(this.mapLevel <= 3){
+        this.getFranchiseList(this.centerCode,this.ftcCate2Cd,this.FcenterCode)
+      }
+      else{
+        this.getFranchiseList(this.centerCode,this.ftcCate2Cd)
+      }
+    },
+    nonFranchise : function (){
       if(this.mapLevel <= 3){
         this.getFranchiseList(this.centerCode,this.ftcCate2Cd,this.FcenterCode)
       }
@@ -299,6 +312,9 @@ export default {
       } */
     },
     getFranchiseList(code,ftcCate2Cd,fullCode=''){
+      if(ftcCate2Cd === ''){
+        return
+      }
       //let model = new ApiModel(this.$http)
       let emdCd = ''
       let rows = '100'
@@ -314,7 +330,7 @@ export default {
         this.apiModel.getOP404(code, ftcCate2Cd, rows, '1', emdCd).then((result)=>{
           if(result.status === 200){
             console.log('404응답1')
-            this.makeMakers(result,this.isFranchise)
+            this.makeMakers(result,this.nonFranchise)
             this.brand = this.brandQueue.getQueueAll()
           }
         })
@@ -323,6 +339,7 @@ export default {
         this.makersClean()
         this.getOP404Fivetimes(code, ftcCate2Cd, rows).then(()=>{
           this.brand = this.brandQueue.getQueueAll()
+          this.cluster = this.makeCluster(this.queue.queue)
         })
       }
     },
@@ -334,7 +351,7 @@ export default {
           this.apiModel.getOP404(code, ftcCate2Cd, rows, `${i}`).then((result)=>{
             if(result.status === 200){
               console.log('404응답'+i)
-              this.makeMakers(result,this.isFranchise)
+              this.makeMakers(result,this.nonFranchise)
               resolve()
             }
           })
@@ -346,7 +363,13 @@ export default {
     makersClean(){
       let tmp = undefined
       let length = this.queue.getQueueLength()
+      console.log(length)
+      
       if(length !== 0){
+        if(this.mapLevel > 5){
+          let clusterer = this.cluster
+          clusterer.clear()
+        }
         for(let i=0; i<length; i++){
           tmp = this.queue.getQueue()
           if(typeof tmp === 'undefined'){
@@ -357,7 +380,7 @@ export default {
       }
       this.brandQueue.queue = []
     },
-    makeMakers(result, isFranchise=false){
+    makeMakers(result, nonFranchise=false){
       let data = result.data.data
       let rows = data.rows
       let x = null
@@ -366,16 +389,18 @@ export default {
       let flag = null
       let overlay = null
       let closeBtnDom = null
+      let marker = null
 
       for (const value of rows) {
         //console.log(value)
         x = Number(value.xAxis)
         y = Number(value.yAxis)
-        let marker = null
         
-        if(isFranchise){
+        if(!nonFranchise){
           if(value.isFranchise === '1'){
             marker = this.setMaker(x,y,value)
+            overlay = this.setOverlay(marker,value)
+            this.overlayEventListener(marker,overlay,value.bdMgtSn)
             this.queue.setQueue(marker)
             flag = tmpQueue.setNoOverlapQue(value.franchiseNo)
           }
@@ -392,29 +417,41 @@ export default {
         if(!flag){
           this.setBrandQueue(value)
         }
+
       }
       
     },
     setMaker(x,y,value){
       let tmparr = [] = this.convGeo([x,y])
       let marker = new daum.maps.Marker({
-          map: this.mapInstance, // 마커를 표시할 지도
+          //map: this.mapInstance, // 마커를 표시할 지도
           position: new daum.maps.LatLng(tmparr[1], tmparr[0]), // 마커를 표시할 위치
           title : value.refBnm, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
       })
+      if(this.mapLevel !== 6){
+        marker.setMap(this.mapInstance)
+      }
       return marker
     },
     setOverlay(marker, value){
+      let refBnm = value.refBnm
+      //console.log(refBnm.length)
+      /* if(refBnm.length > 15){
+        refBnm = refBnm.slice(0,15)
+        refBnm = refBnm+".."
+      } */
       let content = 
       `<!-- 지점선택박스-->
 				<div class="branch">
 					<div class="branch_box">
-						<h4>${value.refBnm}<span class='close_btn'><a href='#none' id='img${value.bdMgtSn}'><img src="http://img.mk.co.kr/2018/franchise/btn_close1.gif" alt="닫기"></a></span></h4>
+						<h4><span class="brand_name">${refBnm}</span><span class='close_btn'><a href='#none' id='img${value.bdMgtSn}'><img src="http://img.mk.co.kr/2018/franchise/btn_close1.gif" alt="닫기"></a></span></h4>
 						<div class="branch_content_wrap">
-              <img src="http://img.mk.co.kr/2018/franchise/pizza2.jpg" alr="네네피자" class="logo">
+              <img src="http://img.mk.co.kr/2018/franchise/pizza2.jpg" alt="${refBnm}" class="logo">
               <div class="branch_right_box">
-                <p>전화번호 : ${value.tel}</p>
-                <p>주소 : ${value.addr}</p>
+                <div class="branch_right_text">
+                  <p>전화번호 : ${value.tel}</p>
+                  <p>주소 : ${value.addr}</p>
+                </div>
                 <button type='button'>자세히 보기</button>
               </div>
             </div>
@@ -453,6 +490,27 @@ export default {
           this.brandQueue.setQueue(data)
         }
       }
+    },
+    makeCluster(markers){
+      let clusterer = new daum.maps.MarkerClusterer({
+        map: this.mapInstance,
+        markers: markers,
+        gridSize: 120,
+        averageCenter: true,
+        minLevel: 6,
+        disableClickZoom: true,
+        styles: [{
+          width: '82px',
+          height: '88px',
+          textAlign: 'center',
+          background: 'url(http://img.mk.co.kr/2018/franchise/store_icon01.png) no-repeat',
+          color: '#fff',
+          fontSize: '25px',
+          fontWeight: '500',
+          paddingTop: '30px'
+        }]
+      })
+      return clusterer
     }
   }
 
@@ -465,7 +523,7 @@ export default {
 }
 .branch {
     width: 300px;
-    height: 200px;
+    height: 210px;
     position: absolute;
     bottom: 40px;
     left: -145px;
@@ -473,7 +531,7 @@ export default {
 }
 .branch_box {
     width: 300px;
-    height: 180px;
+    height: 190px;
     border: 1px solid #9fa29e;
     background-color: #fff;
 }
@@ -487,10 +545,7 @@ export default {
     padding-left: 15px;
     font-weight: 400;
     margin-bottom: 20px;
-}
-.branch_box .close_btn {
-  border: 0px;
-  background: none;
+    overflow: hidden;
 }
 .branch_box .logo {
     width: 100px;
@@ -508,7 +563,8 @@ export default {
     color: #2c3d63;
     background-color: #fff;
     margin: 0 auto;
-    margin-top: 34px!important;
+    margin-top: 5px!important;
+    margin-bottom: 5px!important;
     font-size: 13px;
 }
 .branch .box_bottom {
@@ -519,6 +575,8 @@ export default {
 }
 .branch_box h4 .close_btn {
     margin:0 12px;
+    /* position: absolute;
+    right: 0; */
     float: right;
 }
 .branch_content_wrap {
@@ -530,10 +588,25 @@ export default {
 .branch_right_box {
   overflow: hidden;
   float: right;
+  padding: 5px;
 }
 .branch_right_box p {
-  width: 175px;
+  width: 165px;
   word-break:break-all;
   white-space: pre-line;
+}
+.branch_right_text{
+  height: 80px;
+  overflow: hidden;
+}
+.brand_name{
+  float: left;
+  width: 240px;
+  text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  word-wrap: normal !important;
+  display: block;
 }
 </style>

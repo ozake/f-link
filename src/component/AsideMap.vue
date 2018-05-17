@@ -38,7 +38,7 @@
 					<input class="chk" type="checkbox" id="allselect">
 					<label for="allselect">전체선택</label>
 
-					<input class="chk" type="checkbox" id="nofranchise">
+					<input class="chk" type="checkbox" id="nofranchise" v-model="nonFranchise">
 					<label for="nofranchise">프랜차이즈 아닌 매장도 표시</label>
 				</div>
 
@@ -146,7 +146,8 @@ export default {
 		selected : '업종',
 		sectorSelected : '중분류',
 		brandCk : [],
-		brandList : []
+		brandList : [],
+		nonFranchise : false
      }
   },
   props:{
@@ -180,9 +181,10 @@ export default {
 		  }
 	  },
 	  sectorSelected : function (val) {
-		  if(val !== '중분류'){
-			  this.$EventBus.$emit('setftcCate2Cd', val)
+		  if(val === '중분류'){
+			  val = ''
 		  }
+		  this.$EventBus.$emit('setftcCate2Cd', val)
 	  },
 	  brandCk : function (val) {
 		  //console.log(val)
@@ -204,6 +206,9 @@ export default {
 			this.brandCk = []
 			this.brandList = this.brand
 		}
+	  },
+	  nonFranchise : function (val) {
+		  this.$EventBus.$emit('nonFranchise', val)
 	  }
   },
   methods: {

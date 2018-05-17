@@ -25,7 +25,7 @@ const router = new Router({
 router.beforeEach((to, from, next) => {
   // ...
   //myStorage = window.localStorage;
-  console.log(localStorage)
+  console.log(sessionStorage)
   next()
 })
 

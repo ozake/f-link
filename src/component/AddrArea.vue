@@ -1,5 +1,5 @@
 <template>
-  <div class="hAddr" v-on:click="jsonAxios">
+  <div class="hAddr">
         <span class="title">지도중심기준 행정동 주소정보</span>
         <span id="centerAddr">{{ addr }}</span>
   </div>
