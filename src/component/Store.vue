@@ -1,16 +1,36 @@
 <template>
   <div id="content">
+    <transition name="fade">
+      <!-- 검정배경-->
+      <div class="black" v-if="RecommBld" v-on:click="RecommBld = false"></div>
+      <!-- //검정배경-->
+    </transition>
+    
+    <!-- <transition name="fade"> -->
+      <recomm-bld v-if="RecommBld" :RecommBld="RecommBld" :RecommLayer="RecommLayer" :data="RecommList"></recomm-bld>
+    <!-- </transition> -->
+
     <!-- 지도영역-->
 		<div class="store_map" id="map">
       <AddrArea :addr="addr"></AddrArea>
+      <!-- 건물 추천서비스-->
+      <div class="building" v-on:click="recommBldOnOff">
+        <p>건물 추천서비스</p>
+        <span>창업 시, 예상매출이<br>
+        높은 건물을 추천합니다.</span>
+      </div>
+      <!-- //건물 추천서비스-->
     </div>
     <AsideMap :brand="brand" :isIe="isIe" :updateFlag="updateFlag"></AsideMap>
+    
+
   </div>
 </template>
 
 <script>
 import AddrArea from "./AddrArea.vue"
 import AsideMap from "./AsideMap.vue"
+import RecommBld from "./RecommBld.vue"
 import proj4 from "proj4"
 import ApiModel from "../model/apiModel.js"
 import { Queue } from '../model/colections';
@@ -24,7 +44,7 @@ export default {
       ftcCate2Cd : '',
       FcenterCode : '',
       nonFranchise : false,
-      mapLevel : '',
+      mapLevel : '',  
       queue : new Queue(),
       geoCoder : '',
       brand : [],
@@ -33,14 +53,23 @@ export default {
       apiModel : new ApiModel(this.$http),
       franchiseNo : '',
       updateFlag : true,
-      cluster : ''
+      cluster : '',
+      RecommBld : false,
+      RecommCategory : '',
+      RecommLayer : true,
+      RecommCcode : '',
+      RecommQueue : new Queue(),
+      RecommMarkers : new Queue(),
+      RecommList : []
+
     }
   },
   props:{
   },
   components:{
     AddrArea,
-    AsideMap
+    AsideMap,
+    RecommBld
   },
   mounted() {
     this.$nextTick(function () {
@@ -91,6 +120,17 @@ export default {
       this.$EventBus.$on('nonFranchise', (val)=>{
         this.nonFranchise = val
       })
+
+      this.$EventBus.$on('recommCategory', (val)=>{
+        this.RecommCategory = val
+        if(val !== ''){
+          this.getRecommBld(val)
+        }
+      })
+
+      this.$EventBus.$on('recommLayer', (val)=>{
+        this.RecommLayer = val
+      })
       //this.setPolyline()
     })
 
@@ -117,6 +157,11 @@ export default {
       }
       else{
         this.getFranchiseList(this.centerCode,this.ftcCate2Cd)
+      }
+    },
+    RecommBld : function(val){
+      if(!val){
+        this.RecommCategory = ''
       }
     }
     /* franchiseNo : function (val){
@@ -178,6 +223,7 @@ export default {
                     this.setAddr(addrText+"/ 법정동코드: "+code)
                     code = code.substring(0,5)
                     fullCode = fullCode.substring(0,8)
+                    this.RecommCcode = fullCode
                     if(this.mapLevel <= 3){
                         if( this.FcenterCode !== fullCode ){
                           this.FcenterCode = fullCode
@@ -511,8 +557,33 @@ export default {
         }]
       })
       return clusterer
+    },
+    recommBldOnOff(){
+      if(!this.RecommBld){
+        this.RecommBld = true
+        this.RecommLayer = true
+      } else{
+        this.RecommBld = false
+      }
+    },
+    getRecommBld(data){
+      this.apiModel.getOP407(this.RecommCcode,data,'100').then((result)=>{
+        if(result.status === 200){
+          this.makeRecommList(result)
+        }
+      })
+
+    },
+    makeRecommList(result){
+      let data = result.data.data
+      let rows = data.rows
+      for (const value of rows) {
+        this.RecommQueue.setQueue(value)
+      }
+      this.RecommList = this.RecommQueue.getQueueAll()
     }
   }
+
 
 }
 </script>
@@ -608,5 +679,14 @@ export default {
   white-space: nowrap;
   word-wrap: normal !important;
   display: block;
+}
+.building {
+  z-index: 1000 !important;
+}
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .2s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 </style>

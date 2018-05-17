@@ -86,6 +86,28 @@ export default class ApiModel {
       return this.http(this.config)
     }
 
+    /**
+     * OP-407 API 조회 메소드
+     * 건물추천리스트 조회
+     * @param {*} emdCd 법정동코드
+     * @param {*} ftcCate2Cd 업종코드
+     * @param {*} row 표시할 데이터 갯수
+     * @param {*} pageNo 페이지 넘버
+     * @returns {Promise} 
+     */
+    getOP407(emdCd='', ftcCate2Cd = '', row='10', pageNo='1'){
+      emdCd = emdCd.substring(0,8);
+      this.apiNo = '407'
+      this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
+      this.config.data = {
+        'pageNo':pageNo,
+        'row':row,
+        'emdCd':emdCd,
+        'ftcCate2Cd':ftcCate2Cd
+      }
+      return this.http(this.config)
+    }
+
 
     /**
      * 카테고리별 프렌차이즈 리스트 출력
