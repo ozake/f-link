@@ -4,7 +4,7 @@
         <layer-popup v-if="RecommLayer"></layer-popup>
         </transition>
         <transition name="fade">
-        <aside-recomm v-show="!RecommLayer" :data="data"></aside-recomm>
+        <aside-recomm v-show="!RecommLayer" :data="data" :categoryName="categoryName"></aside-recomm>
         </transition>
         <!-- 다른업종 검색 -->
         <transition name="fade">
@@ -28,7 +28,8 @@ export default {
   props: {
       RecommBld: Boolean,
       RecommLayer: Boolean,
-      data: Array
+      data: Array,
+      categoryName : String
   },
   components:{
     LayerPopup,

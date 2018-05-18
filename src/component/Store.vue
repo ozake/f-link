@@ -2,12 +2,12 @@
   <div id="content">
     <transition name="fade">
       <!-- 검정배경-->
-      <div class="black" v-if="RecommBld" v-on:click="RecommBld = false"></div>
+      <div class="black" v-if="RecommLayer" v-on:click="recommBldOnOff"></div>
       <!-- //검정배경-->
     </transition>
     
     <!-- <transition name="fade"> -->
-      <recomm-bld v-if="RecommBld" :RecommBld="RecommBld" :RecommLayer="RecommLayer" :data="RecommList"></recomm-bld>
+      <recomm-bld v-if="RecommBld" :RecommBld="RecommBld" :RecommLayer="RecommLayer" :data="RecommList" :categoryName="RecommCname"></recomm-bld>
     <!-- </transition> -->
 
     <!-- 지도영역-->
@@ -56,7 +56,8 @@ export default {
       cluster : '',
       RecommBld : false,
       RecommCategory : '',
-      RecommLayer : true,
+      RecommCname : '',
+      RecommLayer : false,
       RecommCcode : '',
       RecommQueue : new Queue(),
       RecommMarkers : new Queue(),
@@ -121,16 +122,20 @@ export default {
         this.nonFranchise = val
       })
 
-      this.$EventBus.$on('recommCategory', (val)=>{
+      this.$EventBus.$on('recommCategory', (val, val2)=>{
+        //console.log(val+val2)
         this.RecommCategory = val
         if(val !== ''){
           this.getRecommBld(val)
+          this.RecommCname = val2
         }
       })
 
       this.$EventBus.$on('recommLayer', (val)=>{
         this.RecommLayer = val
       })
+
+      this.$EventBus.$on('recommOnOff', this.recommBldOnOff)
       //this.setPolyline()
     })
 
@@ -562,11 +567,17 @@ export default {
       if(!this.RecommBld){
         this.RecommBld = true
         this.RecommLayer = true
+        this.mapInstance.setDraggable(false)
+        this.mapInstance.setLevel(3)
       } else{
         this.RecommBld = false
+        this.RecommLayer = false
+        this.recommMarkerClean()
+        this.mapInstance.setDraggable(true)
       }
     },
     getRecommBld(data){
+      this.recommMarkerClean()
       this.apiModel.getOP407(this.RecommCcode,data,'100').then((result)=>{
         if(result.status === 200){
           this.makeRecommList(result)
@@ -577,11 +588,99 @@ export default {
     makeRecommList(result){
       let data = result.data.data
       let rows = data.rows
+      let idx = 0
       for (const value of rows) {
         this.RecommQueue.setQueue(value)
+        this.searchCoordsFromAddr(value, idx)
+        idx++
       }
       this.RecommList = this.RecommQueue.getQueueAll()
+    },
+    searchCoordsFromAddr(value, idx){
+      // 주소로 좌표를 검색합니다
+      this.geoCoder.addressSearch(value.addr, (result, status) => {
+
+          // 정상적으로 검색이 완료됐으면 
+          if (status === daum.maps.services.Status.OK) {
+
+              let coords = new daum.maps.LatLng(result[0].y, result[0].x)
+
+              let icon = new daum.maps.MarkerImage(
+                'http://img.mk.co.kr/2018/franchise/icon_loca02.png',
+                new daum.maps.Size(20, 30),
+                {
+                  offset: new daum.maps.Point(15, 30),
+                  alt: value.buldNm,
+                  shape: "rect",
+                  coords: "0,0,20,30"
+                })
+
+              // 결과값으로 받은 위치를 마커로 표시합니다
+              let marker = new daum.maps.Marker({
+                  map: this.mapInstance,
+                  position: coords,
+                  image: icon,
+                  title: value.addr
+              });
+
+              marker.setZIndex(10);
+
+              this.RecommMarkers.setQueue(marker)
+
+              if(idx === 1){
+                this.mapInstance.setCenter(coords)
+              }
+
+              daum.maps.event.addListener(marker, 'click', () => {
+                this.mapInstance.setCenter(coords)
+              })
+
+              // 마커에 커서가 오버됐을 때 마커 위에 표시할 인포윈도우를 생성합니다
+              let iwContent = `<div style="padding:5px;height:65px;">${value.addr}<br/>${value.buldNm}</div>` // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+
+              // 인포윈도우를 생성합니다
+              let infowindow = new daum.maps.InfoWindow({
+                  content : iwContent
+              })
+              infowindow.setZIndex(100)
+
+              // 마커에 마우스오버 이벤트를 등록합니다
+              daum.maps.event.addListener(marker, 'mouseover', () => {
+                // 마커에 마우스오버 이벤트가 발생하면 인포윈도우를 마커위에 표시합니다
+                  infowindow.open(this.mapInstance, marker)
+              })
+
+              // 마커에 마우스아웃 이벤트를 등록합니다
+              daum.maps.event.addListener(marker, 'mouseout', () => {
+                  // 마커에 마우스아웃 이벤트가 발생하면 인포윈도우를 제거합니다
+                  infowindow.close()
+              })
+
+              // 인포윈도우로 장소에 대한 설명을 표시합니다
+              /* var infowindow = new daum.maps.InfoWindow({
+                  content: '<div style="width:150px;text-align:center;padding:6px 0;">우리회사</div>'
+              });
+              infowindow.open(map, marker); */
+
+          } 
+      })    
+    },
+    recommMarkerClean(){
+      let tmp = undefined
+      let length = this.RecommMarkers.getQueueLength()
+      
+      if(length !== 0){
+        this.RecommList = []
+        for(let i=0; i<length; i++){
+          tmp = this.RecommMarkers.getQueue()
+          if(typeof tmp === 'undefined'){
+            break;
+          }
+          tmp.setMap(null)
+        }
+      }
     }
+
   }
 
 
