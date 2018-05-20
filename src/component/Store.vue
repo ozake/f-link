@@ -5,7 +5,7 @@
       <div class="black" v-if="RecommLayer" v-on:click="recommBldOnOff"></div>
       <!-- //검정배경-->
     </transition>
-    
+
     <!-- <transition name="fade"> -->
       <recomm-bld v-if="RecommBld" :RecommBld="RecommBld" :RecommLayer="RecommLayer" :data="RecommList" :categoryName="RecommCname"></recomm-bld>
     <!-- </transition> -->
@@ -22,7 +22,7 @@
       <!-- //건물 추천서비스-->
     </div>
     <AsideMap :brand="brand" :isIe="isIe" :updateFlag="updateFlag"></AsideMap>
-    
+
 
   </div>
 </template>
@@ -44,7 +44,7 @@ export default {
       ftcCate2Cd : '',
       FcenterCode : '',
       nonFranchise : false,
-      mapLevel : '',  
+      mapLevel : '',
       queue : new Queue(),
       geoCoder : '',
       brand : [],
@@ -207,7 +207,7 @@ export default {
             else{
               this.getFranchiseList(this.centerCode,this.ftcCate2Cd)
             }
-            
+
           }
       })
     },
@@ -235,7 +235,7 @@ export default {
                           if(this.ftcCate2Cd !== ''){
                             this.getFranchiseList(code,this.ftcCate2Cd,fullCode)
                           }
-                          
+
                         }
                       }
                     else{
@@ -415,7 +415,7 @@ export default {
       let tmp = undefined
       let length = this.queue.getQueueLength()
       console.log(length)
-      
+
       if(length !== 0){
         if(this.mapLevel > 5){
           let clusterer = this.cluster
@@ -446,7 +446,7 @@ export default {
         //console.log(value)
         x = Number(value.xAxis)
         y = Number(value.yAxis)
-        
+
         if(!nonFranchise){
           if(value.isFranchise === '1'){
             marker = this.setMaker(x,y,value)
@@ -459,18 +459,18 @@ export default {
         else {
           marker = this.setMaker(x,y,value)
           overlay = this.setOverlay(marker,value)
-          
+
           this.overlayEventListener(marker,overlay,value.bdMgtSn)
 
           this.queue.setQueue(marker)
           flag = tmpQueue.setNoOverlapQue(value.franchiseNo)
-        }  
+        }
         if(!flag){
           this.setBrandQueue(value)
         }
 
       }
-      
+
     },
     setMaker(x,y,value){
       let tmparr = [] = this.convGeo([x,y])
@@ -491,7 +491,7 @@ export default {
         refBnm = refBnm.slice(0,15)
         refBnm = refBnm+".."
       } */
-      let content = 
+      let content =
       `<!-- 지점선택박스-->
 				<div class="branch">
 					<div class="branch_box">
@@ -503,7 +503,7 @@ export default {
                   <p>전화번호 : ${value.tel}</p>
                   <p>주소 : ${value.addr}</p>
                 </div>
-                <button type='button'>자세히 보기</button>
+                <a href='./storeView/${value.bdMgtSn}'><button type='button'>자세히 보기</button></a>
               </div>
             </div>
 					</div>
@@ -513,7 +513,7 @@ export default {
       let overlay = new daum.maps.CustomOverlay({
         content: content,
         position: marker.getPosition(),
-        
+
       })
       overlay.setZIndex(100)
       return overlay
@@ -523,7 +523,7 @@ export default {
       daum.maps.event.addListener(marker, 'click', ()=>{
           overlay.setMap(this.mapInstance);
           let closeBtnDom = document.getElementById('img'+bdMgtSn)
-          closeBtnDom.addEventListener('click',()=>{
+            closeBtnDom.addEventListener('click',()=>{
             overlay.setMap(null)
           })
       })
@@ -600,7 +600,7 @@ export default {
       // 주소로 좌표를 검색합니다
       this.geoCoder.addressSearch(value.addr, (result, status) => {
 
-          // 정상적으로 검색이 완료됐으면 
+          // 정상적으로 검색이 완료됐으면
           if (status === daum.maps.services.Status.OK) {
 
               let coords = new daum.maps.LatLng(result[0].y, result[0].x)
@@ -662,13 +662,13 @@ export default {
               });
               infowindow.open(map, marker); */
 
-          } 
-      })    
+          }
+      })
     },
     recommMarkerClean(){
       let tmp = undefined
       let length = this.RecommMarkers.getQueueLength()
-      
+
       if(length !== 0){
         this.RecommList = []
         for(let i=0; i<length; i++){

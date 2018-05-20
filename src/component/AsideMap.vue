@@ -24,14 +24,14 @@
 						<select v-bind:class="[isIe ? ieClass : '', selectClass]" v-model="selected">
 							<option>업종</option>
 							<option v-for="item in sector" :value="item.code">{{item.categoryName}}</option>
-						</select>					
+						</select>
 				</div>
 
 				<div class="selectArea">
 					<select v-bind:class="[isIe ? ieClass : '', selectClass]" v-model="sectorSelected">
 						<option>중분류</option>
 						<option v-for="item in sectorMcode" :value="item.code">{{item.categoryName}}</option>
-					</select>					
+					</select>
 				</div>
 
 				<div class="search_ch">
@@ -51,12 +51,12 @@
 					<ul>
 						<li v-for="item in brandList">
 							<input class="chk" type="checkbox" :id="item.franchiseNo" :value="item.franchiseNo" v-model="brandCk">
-							<label :for="item.franchiseNo">{{item.brand}}</label>								
+							<label :for="item.franchiseNo">{{item.brand}}</label>
 						</li>
-					</ul>				
+					</ul>
 
 				</div>
-					<!-- 브랜드 체크-->		
+					<!-- 브랜드 체크-->
 
 		</div>
 		<!-- //매장찾기-->
@@ -74,12 +74,12 @@
 			<ul>
 				<li>
 					<span>보증금</span>
-					<input title="보증금" class="i_text" type="text"> ~ <input title="보증금" class="i_text" type="text">	
+					<input title="보증금" class="i_text" type="text"> ~ <input title="보증금" class="i_text" type="text">
 					만원
 				</li>
 				<li>
 					<span>월세</span>
-					<input title="월세" class="i_text" type="text"> ~ <input title="월세" class="i_text" type="text">	
+					<input title="월세" class="i_text" type="text"> ~ <input title="월세" class="i_text" type="text">
 					만원
 				</li>
 				<li>
@@ -102,7 +102,7 @@
 					<p class="premium "><span class="icon">권</span>1억5000만원</p>
 					<p class="text">1층  115㎡(35PY)<br>
 						용산구청역 도보 3분<br>
-					</p>							
+					</p>
 				</li>
 
 				<li>
@@ -112,10 +112,10 @@
 					<p class="premium "><span class="icon">권</span>1억5000만원</p>
 					<p class="text">1층  115㎡(35PY)<br>
 						용산구청역 도보 3분<br>
-					</p>						
+					</p>
 				</li>
 
-				
+
 				<li>
 					<h5>시카고피자 대학로점</h5>
 					<img src="http://img.mk.co.kr/2018/franchise/img01.jpg" alt="시카고피자 대학로점">
@@ -123,7 +123,7 @@
 					<p class="premium "><span class="icon">권</span>1억5000만원</p>
 					<p class="text">1층  115㎡(35PY)<br>
 						용산구청역 도보 3분<br>
-					</p>							
+					</p>
 				</li>
 			</ul>
 		</div>
@@ -173,7 +173,7 @@ export default {
 	} */
 
   },
-  
+
   watch: {
 	  selected : function (val){
 		  if(val !== '외식'){
@@ -196,9 +196,9 @@ export default {
 			  if(!this.updateFlag){
 				this.$EventBus.$emit('brandUnchecked')
 			  }
-			  
+
 		  }
-		  
+
 	  },
 	  brand : function (val) {
 		//console.log(this.updateFlag)
@@ -214,7 +214,7 @@ export default {
   methods: {
 	  getSector(){
 		  let url = "./dist/sectorCode.json"
-		  if(location.hostname === "110.13.170.148"){
+		  if(location.hostname === "110.13.170.148" || location.hostname === "127.0.0.1"){
 			  url = "./src/assets/sectorCode.json"
 		  }
 		  this.$http.get(url).then((result)=>{
@@ -223,7 +223,7 @@ export default {
 				  this.sector = data.sector
 			  }
 		  })
-		  
+
 	  },
 	  getSectorM(val){
 		  for (const value of this.sector) {

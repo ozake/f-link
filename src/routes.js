@@ -1,4 +1,5 @@
 import Store from './component/Store.vue'
+import StoreView from './StoreView.vue'
 import Main from './Main.vue'
 import Franchise from './Franchise.vue'
 import FranchiseList from './FranchiseList.vue'
@@ -22,6 +23,11 @@ export default [
     component: Store
   },
   {
+    path: '/storeView/:id',
+    name: 'store-view',
+    component: StoreView
+  },
+  {
     path: '/franchise',
     component: Franchise,
     name: 'franchise-default',
@@ -33,7 +39,7 @@ export default [
         component: Franchise
       }
     ]
-  }, 
+  },
   {
     path: '/franchiseList',
     name: 'franchise-list',

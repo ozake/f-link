@@ -4,7 +4,7 @@
 		<div class="frlist">
       <!--프랜차이즈 현황 리스트-->
 			<div class="thlistbox">
-        <CardBoxNbtn v-for="(item, index) in items" :index="index" :item="item"></CardBoxNbtn>
+        <CardBoxNbtn v-for="(item, index) in listItems" :index="index" :item="item"></CardBoxNbtn>
 			</div>
 			<!--//프랜차이즈 현황 리스트-->
 
@@ -125,12 +125,21 @@ export default {
     }
     this.$http(config)
     .then((result) => {
-      //console.log(result)
-      //console.log(result.status)
       if(result.status === 200){
-        //let res = JSON.parse(result.data)
         let data = result.data.data
+        data = data.rows
+        for (const value of data) {
+          let img1 = value.img1
+          //console.log(img1)
+          if(img1 === '' || img1 === null ){
+            img1 = "http://img.mk.co.kr/2018/franchise/pizza.jpg"
+          }else{
+            img1 = "//file.mk.co.kr"+img1.slice(12)
+          }
+          value.img1 = img1
+        }
         console.log(data)
+        this.listItems = data
       }
 
     })
