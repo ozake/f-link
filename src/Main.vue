@@ -16,6 +16,9 @@ export default {
   name: 'Main',
   components:{
     MainSearch
+  },
+  created() {
+    this.$EventBus.$emit('HeaderActive', '')
   }
 }
 </script>

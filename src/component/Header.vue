@@ -69,6 +69,10 @@ export default {
           this.themeBestActive = false
           this.franchiseActive = false
           break;
+        default :
+          this.storeActive = false
+          this.themeBestActive = false
+          this.franchiseActive = false
       }
     },
     getAuth(){
@@ -81,7 +85,7 @@ export default {
         }
       }
       else{
-        
+
       }
     }
   }
