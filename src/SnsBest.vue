@@ -137,6 +137,7 @@ export default {
             img1 = "//file.mk.co.kr"+img1.slice(12)
           }
           value.img1 = img1
+          value.regnumber = value.franchiseNo
         }
         console.log(data)
         this.listItems = data

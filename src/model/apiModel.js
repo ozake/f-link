@@ -186,5 +186,43 @@ export default class ApiModel {
       return this.http(this.config)
     }
 
+    /**
+     * 부동산 매물 리스트 조회
+     * @param {*} pageNo 
+     * @param {*} rows 
+     * @param {*} sggCd
+     * @returns {promise}
+     */
+    getEstateList(pageNo='0',rows='20',sggCd=''){
+      this.apiNo = '107'
+      this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
+      this.config.data = `display=${rows}&page=${pageNo}&code=${ssgCd}`
+      return this.http(this.config)
+    }
+
+    /**
+     * 검색시 업종을 검색하는 메소드
+     * @param {String} txt 
+     * @returns {promise}
+     */
+    getSectorSearch(txt){
+      this.apiNo = '1001'
+      this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
+      this.config.data = `searchTxt=${txt}`
+      return this.http(this.config)
+    }
+
+    /**
+     * 검색시 업종을 검색하는 메소드
+     * @param {String} txt 
+     * @returns {promise}
+     */
+    getFranchiseSearch(txt){
+      this.apiNo = '1002'
+      this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
+      this.config.data = `searchTxt=${txt}`
+      return this.http(this.config)
+    }
+
 
 }

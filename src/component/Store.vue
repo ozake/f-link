@@ -234,6 +234,7 @@ export default {
                           this.FcenterCode = fullCode
                           if(this.ftcCate2Cd !== ''){
                             this.getFranchiseList(code,this.ftcCate2Cd,fullCode)
+                            
                           }
 
                         }
@@ -243,6 +244,7 @@ export default {
                         this.centerCode = code
                         if(this.ftcCate2Cd !== ''){
                           this.getFranchiseList(code,this.ftcCate2Cd)
+
                         }
                       }
                     }
@@ -679,6 +681,15 @@ export default {
           tmp.setMap(null)
         }
       }
+    },
+    getEstateList(code){
+      code = code+'00000'
+      this.apiModel.getEstateList(pageNo='1',rows='100',code='').then((result)=>{
+        if(result.status === 200){
+          console.log(result)
+        }
+      })
+        
     }
 
   }

@@ -2,11 +2,11 @@
     <div>
       <!-- 메인 검색-->
       <div class="msearch">
-        <form name="search" id="search" v-on:keyup="(event)=>{if(event.key === 'Enter')return false}">
+        <form name="search" id="search">
           <fieldset class="searcharea">
             <legend>검색</legend>
-            <input v-if="fActive" name="s_keyword" title="검색어 입력" type="text" placeholder="프랜차이즈명, 회사명으로 검색" v-on:input="typing" v-bind:value="searchTxt" v-on:keyup="keymonitor" ref="search">
-            <input v-if="storeActive" name="s_keyword" title="검색어 입력" type="text" placeholder="지역, 업종으로 검색" v-on:input="typing" v-bind:value="searchTxt" v-on:keyup="keymonitor" ref="search"> 
+            <input v-if="fActive" name="s_keyword" title="검색어 입력" type="text" placeholder="업종, 프랜차이즈명, 회사명으로 검색" v-on:input="typing" v-bind:value="searchTxt" ref="search">
+            <input v-if="storeActive" name="s_keyword" title="검색어 입력" type="text" placeholder="지역, 업종으로 검색" v-on:input="typing" v-bind:value="searchTxt" ref="search"> 
             <button type="button" v-on:click="searchFc"><img src="http://img.mk.co.kr/2018/franchise/msearch.png" alt="검색하기"></button>
           </fieldset>
           <!-- 메인 검색 레이어-->
@@ -51,8 +51,7 @@ export default {
       this.$nextTick(function () {
         this.searchFc(val)
       })
-    },
-
+    }
   },
   methods: {
     typing(e) {
@@ -65,8 +64,40 @@ export default {
         return
       }
       this.searchAreaToggle = true
+      let searchArr = []
+      val = val.replace(/\s\s/g, " ")
+      searchArr = val.split( ' ', 2 )
+      console.log(searchArr)
+      console.log(searchArr.length)
       if(this.fActive){
-        this.apiModel.getFranchiseSearch(val).then((result)=>{
+        if(searchArr.length === 1){
+          this.sectorSelected = false
+          let sector = searchArr[0]
+          this.apiModel.getSectorSearch(sector).then((result)=>{
+              //console.log(result)
+              if(result.status === 200){
+                let data = result.data
+                let tmpArr = []
+                let tmp = ''
+                for (const value of data) {
+                  tmp = { href: '#none', displayTxt: value.category2, flag:'sector' }
+                  tmpArr.push(tmp)
+                }
+                this.searchDisplay = tmpArr
+              }
+            })
+
+        }
+        if(searchArr.length === 2){
+          if(this.sectorSelected){
+
+            this.sFranTxt = searchArr[1]
+            if(searchArr[1] === '' ){
+              this.sFranTxt = ''
+              this.searchDisplay = ''
+            }
+            else {
+              this.apiModel.getFranchiseSearch(this.sFranTxt).then((result)=>{
                 //console.log(result)
                 if(result.status === 200){
                   let data = result.data
@@ -79,6 +110,16 @@ export default {
                   this.searchDisplay = tmpArr
                 }
               })
+            }
+            
+          }else{
+            alert('업종을 선택해주세요.')
+            this.searchTxt = val.replace(/\s/g, "")
+          }
+          
+        }
+
+
       }
 
     },
@@ -98,13 +139,6 @@ export default {
         this.franchiseSelectedTxt = txt
         this.searchTxt = this.sectorSelectedTxt + ' ' + this.franchiseSelectedTxt
       }
-    },
-    keymonitor(event){
-      console.log(event.key)
-       if(event.key == "Enter")
-       {
-         console.log("enter key was pressed!");
-       }
     }
   }
 }
