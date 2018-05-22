@@ -1,33 +1,14 @@
 <template>
   <!--추천매물-->
   <div class="recommend">
-    <h6>피자업종 추천 매물</h6>
+    <h6>추천 매물</h6>
 
-    <ul>
-      <li><img src="http://img.mk.co.kr/2018/franchise/img01.jpg" alt="네네피자"></li>
-      <li class="monthly"><span class="icon">월</span>보 5000 / 월400</li>
-      <li class="premium "><span class="icon">권</span>1억5000만원</li>
-      <li class="text">1층  115㎡(35PY)<br>
-         용산구청역 도보 3분<br>
-         추천업종 : 한식, 분식
-      </li>
-    </ul>
-
-    <ul>
-      <li><img src="http://img.mk.co.kr/2018/franchise/img01.jpg" alt="네네피자"></li>
-      <li class="monthly"><span class="icon">월</span>보 5000 / 월400</li>
-      <li class="text">1층  115㎡(35PY)<br>
-         용산구청역 도보 3분<br>
-      </li>
-    </ul>
-
-    <ul>
-      <li><img src="http://img.mk.co.kr/2018/franchise/img01.jpg" alt="네네피자"></li>
-      <li class="monthly"><span class="icon">월</span>보 5000 / 월400</li>
-      <li class="premium "><span class="icon">권</span>1억5000만원</li>
-      <li class="text">1층  115㎡(35PY)<br>
-         용산구청역 도보 3분<br>
-         추천업종 : 한식, 분식
+    <ul v-for="item in estateList">
+      <li><img class="img" v-bind:src="item.img_url" /></li>
+      <li class="monthly"><span class="icon">월</span>보 {{item.pre_price}} / 월{{item.month_price}}</li>
+      <!-- <li class="premium "><span class="icon">권</span>1억5000만원</li> -->
+      <li class="text">{{item.corrp_flr}}층  {{item.supp_meter}}㎡<br>
+         추천업종 : {{item.rec_using}}
       </li>
     </ul>
 
@@ -36,12 +17,16 @@
   <!--//추천매물-->
 </template>
 <style scoped>
-
+.img {
+  width: 95%;
+}
 </style>
 <script>
 export default {
   name: 'RightSales',
-  props: [],
+  props: {
+    estateList : Array
+  },
   data(){
     return {
     }

@@ -132,7 +132,7 @@ export default {
           let img1 = value.img1
           //console.log(img1)
           if(img1 === '' || img1 === null ){
-            img1 = "http://img.mk.co.kr/2018/franchise/pizza.jpg"
+            img1 = "/src/assets/fc_noimg_253128.jpg"
           }else{
             img1 = "//file.mk.co.kr"+img1.slice(12)
           }

@@ -8,22 +8,18 @@
 
       <!--대분류-->
       <div class="select-box">
-        <select v-bind:class="[this.isIe ? ieClass : '', nonIeClass]">
-          <option>대분류</option>
-          <option>외식</option>
-          <option>패스트푸드</option>
-          <option>교육</option>
+        <select v-bind:class="[this.isIe ? ieClass : '', nonIeClass]" v-model="selected">
+          <option>업종</option>
+          <option v-for="item in sector" :value="item.code">{{item.categoryName}}</option>
         </select>
       </div>
       <!--//대분류-->
 
       <!--중분류-->
       <div class="select-box">
-        <select v-bind:class="[isIe ? ieClass : '', nonIeClass]">
+        <select v-bind:class="[isIe ? ieClass : '', nonIeClass]" v-model="sectorSelected">
           <option>중분류</option>
-          <option>피자</option>
-          <option>커피</option>
-          <option>부대찌개</option>
+          <option v-for="item in sectorMcode" :value="item.code">{{item.categoryName}}</option>
         </select>
       </div>
       <!--//중분류-->
@@ -114,8 +110,12 @@ export default {
   },
    data(){
      return {
-       ieClass : 'box_title_ie',
-       nonIeClass : 'box_title'
+        ieClass : 'box_title_ie',
+        nonIeClass : 'box_title',
+        sector: [],
+       	sectorMcode : [],
+		    selected : '업종',
+		    sectorSelected : '중분류'
      }
    },
    created(){
@@ -123,6 +123,40 @@ export default {
      if ( (navigator.appName == 'Netscape' && agent.indexOf('trident') != -1) || (agent.indexOf("msie") != -1)) {
       this.isIe = true
     }
+    this.getSector()
+  },
+  watch: {
+    selected : function (val){
+		  if(val !== '외식'){
+			this.getSectorM(val)
+		  }
+	  },
+	  sectorSelected : function (val) {
+		  if(val === '중분류'){
+			  val = ''
+		  }
+	  }
+  },
+  methods: {
+    	getSector(){
+        let url = "./dist/sectorCode.json"
+        if(location.hostname === "110.13.170.148" || location.hostname === "127.0.0.1"){
+          url = "/src/assets/sectorCode.json"
+        }
+        this.$http.get(url).then((result)=>{
+          if(result.status === 200){
+            let data = result.data
+            this.sector = data.sector
+          }
+        })
+    },
+    getSectorM(val){
+		  for (const value of this.sector) {
+			  if(value.code === val){
+				  this.sectorMcode = value.sectorMcode
+			  }
+		  }
+	  }
   }
 }
 

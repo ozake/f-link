@@ -21,7 +21,7 @@
       </div>
       <!-- //건물 추천서비스-->
     </div>
-    <AsideMap :brand="brand" :isIe="isIe" :updateFlag="updateFlag"></AsideMap>
+    <AsideMap :brand="brand" :isIe="isIe" :updateFlag="updateFlag" :estateList="estateList"></AsideMap>
 
 
   </div>
@@ -61,7 +61,8 @@ export default {
       RecommCcode : '',
       RecommQueue : new Queue(),
       RecommMarkers : new Queue(),
-      RecommList : []
+      RecommList : [],
+      estateList : []
 
     }
   },
@@ -229,12 +230,12 @@ export default {
                     code = code.substring(0,5)
                     fullCode = fullCode.substring(0,8)
                     this.RecommCcode = fullCode
+                    this.getEstateList(code)
                     if(this.mapLevel <= 3){
                         if( this.FcenterCode !== fullCode ){
                           this.FcenterCode = fullCode
                           if(this.ftcCate2Cd !== ''){
                             this.getFranchiseList(code,this.ftcCate2Cd,fullCode)
-                            
                           }
 
                         }
@@ -244,7 +245,7 @@ export default {
                         this.centerCode = code
                         if(this.ftcCate2Cd !== ''){
                           this.getFranchiseList(code,this.ftcCate2Cd)
-
+                          //this.getEstateList(code)
                         }
                       }
                     }
@@ -684,12 +685,30 @@ export default {
     },
     getEstateList(code){
       code = code+'00000'
-      this.apiModel.getEstateList(pageNo='1',rows='100',code='').then((result)=>{
+      console.log('부동산리스트')
+      let pageNo = '1'
+      let rows = '10'
+      this.apiModel.getEstateList(pageNo,rows,code='').then((result)=>{
         if(result.status === 200){
           console.log(result)
+          let data = result.data
+          let paging = data.shift()
+          for (const value of data) {
+            let img = value.img_url
+            if(img === ''){
+              img = '/src/assets/fc_noimg_263168.jpg'
+            }
+            else {
+              let tmparr = []
+            tmparr = img.split( ',', 2 )
+            img = tmparr[0]
+            }
+            value.img_url = img
+          }
+          this.estateList = data
         }
       })
-        
+
     }
 
   }

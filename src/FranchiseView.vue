@@ -10,7 +10,7 @@
         <div class="frinfo">
           <h3>{{this.displayItem.brand}}</h3>
           <div class="frimg">
-            <img v-bind:src="displayItem.img1" />
+            <img v-bind:src="displayItem.img3" />
             <button class="btn_tel">전화 상담 ({{this.displayItem.tel}})</button>
           </div>
 
@@ -20,9 +20,9 @@
             <dt>대표자</dt>
             <dd>{{this.displayItem.ceo}}</dd>
             <dt>창업 비용</dt>
-            <dd>{{this.displayItem.total}} ({{this.displayItem.storearea}}평)</dd>
+            <dd>{{this.displayItem.total}}천원 ({{this.displayItem.storearea}}평)</dd>
             <dt>평당 평균 매출액</dt>
-            <dd>500만원</dd>
+            <dd>{{displayItem.sicost}}천원</dd>
             <dt>홈페이지 </dt>
             <dd>{{this.displayItem.url}}</dd>
             <p>※ 본 서비스는 공정거래위원회 ‘가맹사업거래 정보공개서’에 기초한 정보입니다.</p>
@@ -307,7 +307,7 @@
       </div>
       <!--//지점안내-->
       </div>
-      <RightSales></RightSales>
+      <RightSales :estateList="estateList"></RightSales>
 
     </div>
 
@@ -339,7 +339,8 @@ export default {
       storeList : [],
       mapInstance : '',
       geocorderInstance : '',
-      queue : new Queue()
+      queue : new Queue(),
+      estateList : []
     }
   },
   computed: {
@@ -389,7 +390,7 @@ export default {
       console.log(result[0])
       this.displayItem = result[0]
     }) */
-    
+
   },
   watch: {
     // 라우트가 변경되면 메소드를 다시 호출됩니다.
@@ -470,14 +471,15 @@ export default {
         data = result.data
         let paging = data.shift()
         for (const value of data) {
-          let img1 = value.img1
-          if(value.img1 === ''){
-            img1 = "http://img.mk.co.kr/2018/franchise/pizza.jpg"
+          let img3 = value.img3
+          if(value.img3 === ''){
+            img3 = "/src/assets/fc_noimg_263168.jpg"
           }else{
-            img1 = "//file.mk.co.kr"+img1.slice(12)
+            img3 = "//file.mk.co.kr"+img3.slice(12)
           }
-          value.img1 = img1
+          value.img3 = img3
         }
+        console.log(data)
         return data
       }
     },
@@ -485,7 +487,7 @@ export default {
       let result = await this.apiModel.getFranchiseYearData(frnchiseCode)
       let data = null
       if(result.status === 200){
-        data = result.data  
+        data = result.data
       }
       return data
     },
@@ -515,6 +517,8 @@ export default {
                     addrText = result[i].address_name
                     let code = result[i].code
                     code = code.substring(0,8)
+
+                    this.getEstateList(code.substring(0,5))
                     if(this.centerCode !== code){
                       this.centerCode = code
                       //console.log(code)
@@ -524,7 +528,7 @@ export default {
                       })
                     }
                     //this.setAddr(addrText+"/ 법정동코드: "+code)
-                    
+
                     break;
                 }
             }
@@ -545,7 +549,7 @@ export default {
 
     },
     setMaker(x,y,value){
-      let tmparr = [] 
+      let tmparr = []
       tmparr = convertGeo([x,y])
       let marker = new daum.maps.Marker({
           map: this.mapInstance, // 마커를 표시할 지도
@@ -566,7 +570,7 @@ export default {
           tmp.setMap(null)
         }
       }
-           
+
     },
     async addressTogeocode(address){
       let geocoder = new daum.maps.services.Geocoder()
@@ -576,21 +580,48 @@ export default {
       // 주소로 좌표를 검색합니다
       //this.geocorderInstance.addressSearch('서울특별시 강남구 테헤란로 405 BGF리테일', function (result, status){
       geocoder.addressSearch(address, (result, status) => {
-          // 정상적으로 검색이 완료됐으면 
+          // 정상적으로 검색이 완료됐으면
           if (status === daum.maps.services.Status.OK) {
 
             let coords = new daum.maps.LatLng(result[0].y, result[0].x)
             //map.setCenter(coords);
             this.setMapCenter(coords)
             this.searchAddrFromCoords(geocoder, this.mapInstance.getCenter(), this.displayCenterInfo)
-          } 
-      })      
+          }
+      })
     },
     setMapCenter(coords){
       // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
       if(this.mapInstance !== ''){
         this.mapInstance.setCenter(coords)
       }
+    },
+    getEstateList(code){
+      code = code+'00000'
+      console.log('부동산리스트')
+      let pageNo = '1'
+      let rows = '3'
+      this.apiModel.getEstateList(pageNo,rows,code='').then((result)=>{
+        if(result.status === 200){
+          console.log(result)
+          let data = result.data
+          let paging = data.shift()
+          for (const value of data) {
+            let img = value.img_url
+            if(img === ''){
+              img = '/src/assets/fc_noimg_253128.jpg'
+            }
+            else {
+              let tmparr = []
+            tmparr = img.split( ',', 2 )
+            img = tmparr[0]
+            }
+            value.img_url = img
+          }
+          this.estateList = data
+        }
+      })
+
     }
 
   }

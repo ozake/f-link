@@ -1,5 +1,5 @@
 export default class ApiModel {
-    
+
     /**
      * ApiModel 클래스 생성자 함수
      * axios 모듈을 반드시 생성자 함수 인자로 넘겨준다
@@ -22,11 +22,11 @@ export default class ApiModel {
     /**
      * OP-402 API 조회 메소드
      * 리턴형은 http Axios의 promise형으로 반환
-     * @param {*} franchiseNo 
-     * @param {*} pageNo 
+     * @param {*} franchiseNo
+     * @param {*} pageNo
      * @param {*} row
-     * @param {*} centerCode //법정동 코드 
-     * @returns {promise} 
+     * @param {*} centerCode //법정동 코드
+     * @returns {promise}
      */
     getOP402(franchiseNo='20080100047', row='10', pageNo='1',centerCode=''){
       this.apiNo = '402';
@@ -70,7 +70,7 @@ export default class ApiModel {
      * @param {*} row 표시할 데이터 갯수
      * @param {*} pageNo 페이지 넘버
      * @param {*} emdCd 법정동 코드
-     * @returns {Promise} 
+     * @returns {Promise}
      */
     getOP405(centerCode, franchiseNo = '', row='10', pageNo='1', emdCd=''){
       centerCode = centerCode.substring(0,5);
@@ -93,7 +93,7 @@ export default class ApiModel {
      * @param {*} ftcCate2Cd 업종코드
      * @param {*} row 표시할 데이터 갯수
      * @param {*} pageNo 페이지 넘버
-     * @returns {Promise} 
+     * @returns {Promise}
      */
     getOP407(emdCd='', ftcCate2Cd = '', row='10', pageNo='1'){
       emdCd = emdCd.substring(0,8);
@@ -111,10 +111,10 @@ export default class ApiModel {
 
     /**
      * 카테고리별 프렌차이즈 리스트 출력
-     * @param {*} categoryName 
-     * @param {*} row 
+     * @param {*} categoryName
+     * @param {*} row
      * @param {*} pageNo
-     * @returns {promise}  
+     * @returns {promise}
      */
     getFranchiseList(categoryName='한식', row='10', pageNo='1'){
       this.apiNo = '101'
@@ -126,7 +126,7 @@ export default class ApiModel {
     /**
      * 프렌차이즈 브랜드 정보 가져오기
      * @param {*} franchiseCode
-     * @returns {promise}  
+     * @returns {promise}
      */
     getFranchiseView(franchiseCode='20080100243'){
       this.apiNo = '102'
@@ -138,7 +138,7 @@ export default class ApiModel {
     /**
      * 프렌차이즈 연도별 점포 정보 가져오기
      * @param {*} franchiseCode
-     * @returns {promise}  
+     * @returns {promise}
      */
     getFranchiseYearData(franchiseCode='20080100243'){
       this.apiNo = '103'
@@ -150,7 +150,7 @@ export default class ApiModel {
 
     /**
      * 소자본 창업 BEST 리스트
-     * @param {*} pageNo 
+     * @param {*} pageNo
      * @returns {promise}
      */
     getScapitalBest(pageNo='0'){
@@ -163,7 +163,7 @@ export default class ApiModel {
 
     /**
      * 스테디셀러 BEST 리스트
-     * @param {*} pageNo 
+     * @param {*} pageNo
      * @returns {promise}
      */
     getSteadyBest(pageNo='0'){
@@ -176,7 +176,7 @@ export default class ApiModel {
 
     /**
      * 매장증가율 BEST 리스트
-     * @param {*} pageNo 
+     * @param {*} pageNo
      * @returns {promise}
      */
     getGrowthBest(pageNo='0'){
@@ -188,21 +188,21 @@ export default class ApiModel {
 
     /**
      * 부동산 매물 리스트 조회
-     * @param {*} pageNo 
-     * @param {*} rows 
+     * @param {*} pageNo
+     * @param {*} rows
      * @param {*} sggCd
      * @returns {promise}
      */
     getEstateList(pageNo='0',rows='20',sggCd=''){
       this.apiNo = '107'
       this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
-      this.config.data = `display=${rows}&page=${pageNo}&code=${ssgCd}`
+      this.config.data = `display=${rows}&page=${pageNo}&code=${sggCd}`
       return this.http(this.config)
     }
 
     /**
      * 검색시 업종을 검색하는 메소드
-     * @param {String} txt 
+     * @param {String} txt
      * @returns {promise}
      */
     getSectorSearch(txt){
@@ -214,7 +214,7 @@ export default class ApiModel {
 
     /**
      * 검색시 업종을 검색하는 메소드
-     * @param {String} txt 
+     * @param {String} txt
      * @returns {promise}
      */
     getFranchiseSearch(txt){

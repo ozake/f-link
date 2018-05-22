@@ -95,34 +95,12 @@
 		<div class="st_list">
 
 			<ul>
-				<li>
-					<h5>시카고피자 대학로점</h5>
-					<img src="http://img.mk.co.kr/2018/franchise/img01.jpg" alt="시카고피자 대학로점">
-					<p class="monthly"><span class="icon">월</span>보 5000 / 월400</p>
-					<p class="premium "><span class="icon">권</span>1억5000만원</p>
-					<p class="text">1층  115㎡(35PY)<br>
-						용산구청역 도보 3분<br>
-					</p>
-				</li>
-
-				<li>
-					<h5>시카고피자 대학로점</h5>
-					<img src="http://img.mk.co.kr/2018/franchise/img01.jpg" alt="시카고피자 대학로점">
-					<p class="monthly"><span class="icon">월</span>보 5000 / 월400</p>
-					<p class="premium "><span class="icon">권</span>1억5000만원</p>
-					<p class="text">1층  115㎡(35PY)<br>
-						용산구청역 도보 3분<br>
-					</p>
-				</li>
-
-
-				<li>
-					<h5>시카고피자 대학로점</h5>
-					<img src="http://img.mk.co.kr/2018/franchise/img01.jpg" alt="시카고피자 대학로점">
-					<p class="monthly"><span class="icon">월</span>보 5000 / 월400</p>
-					<p class="premium "><span class="icon">권</span>1억5000만원</p>
-					<p class="text">1층  115㎡(35PY)<br>
-						용산구청역 도보 3분<br>
+				<li v-for="item in estateList">
+					<h5>{{item.build_kind}}</h5>
+					<img v-bind:src="item.img_url" />
+					<p class="monthly"><span class="icon">월</span>보 {{item.pre_price}} / 월{{item.month_price}}</p>
+					<!-- <p class="premium "><span class="icon">권</span>1억5000만원</p> -->
+					<p class="text">{{item.corrp_flr}}층  {{item.supp_meter}}㎡<br>
 					</p>
 				</li>
 			</ul>
@@ -139,8 +117,8 @@ export default {
   data(){
 	return {
 		//isIe : false,
-    	ieClass : 'select-box-ie',
-    	selectClass : 'select-box',
+    ieClass : 'select-box-ie',
+    selectClass : 'select-box',
 		sector: [],
 		sectorMcode : [],
 		selected : '업종',
@@ -153,7 +131,8 @@ export default {
   props:{
 	  brand : Array,
 	  updateFlag : Boolean,
-	  isIe : Boolean
+    isIe : Boolean,
+    estateList : Array
   },
   /* computed: {
 	  brand : function () {
