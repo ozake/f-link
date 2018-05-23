@@ -9,6 +9,7 @@ import SnsBest from './SnsBest.vue'
 import sCapitalBest from './sCapitalBest.vue'
 import SteadyBest from './SteadyBest.vue'
 import GrowthBest from './GrowthBest.vue'
+import SalesView from './SalesView.vue'
 //import CounterPage from 'components/CounterPage'
 
 export default [
@@ -20,7 +21,15 @@ export default [
   {
     path: '/store',
     name: 'store-page',
-    component: Store
+    component: Store,
+    children: [
+      {
+        path: ':category',
+        name: 'store-category',
+        props: true,
+        component: Store
+      }
+    ]
   },
   {
     path: '/storeView/:id',
@@ -98,6 +107,11 @@ export default [
         component: GrowthBest
       }
     ]
+  },
+  {
+    path: '/salesView/:id',
+    name: 'sales-view',
+    component: SalesView
   },
   {
     path: '*',

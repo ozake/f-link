@@ -26,23 +26,24 @@
 
       <!--브랜드-->
       <div class="select-box">
-        <select v-bind:class="[isIe ? ieClass : '', nonIeClass]">
+        <select v-bind:class="[isIe ? ieClass : '', nonIeClass]" v-model="brandSelected">
           <option>브랜드</option>
-          <option>네네피자</option>
+          <option v-for="item in brandList" :value="item.regnumber">{{item.brand}}</option>
+          <!-- <option>네네피자</option>
           <option>피자헛</option>
-          <option>미스터피자</option>
+          <option>미스터피자</option> -->
         </select>
       </div>
       <!--//브랜드-->
 
       <!--창업 자금  -->
       <div class="select-box">
-        <select v-bind:class="[isIe ? ieClass : '', nonIeClass]">
+        <select v-bind:class="[isIe ? ieClass : '', nonIeClass]" v-model="capitalSelected">
           <option>창업자금</option>
           <option>5천만원 미만</option>
           <option>5천~1억원</option>
           <option>1억~1.5억원</option>
-          <option>>1.5~2억원</option>
+          <option>1.5~2억원</option>
           <option>2~2.5억원</option>
           <option>2.5~3억</option>
           <option>3억원 이상</option>
@@ -103,6 +104,7 @@
 }
 </style>
 <script>
+import ApiModel from "../model/apiModel.js"
 export default {
   name: 'SubHeaderSelect',
   props: {
@@ -115,7 +117,11 @@ export default {
         sector: [],
        	sectorMcode : [],
 		    selected : '업종',
-		    sectorSelected : '중분류'
+        sectorSelected : '중분류',
+        apiModel : new ApiModel(this.$http),
+        brandList: [],
+        brandSelected : '브랜드',
+        capitalSelected : '창업자금'
      }
    },
    created(){
@@ -132,14 +138,14 @@ export default {
 		  }
 	  },
 	  sectorSelected : function (val) {
-		  if(val === '중분류'){
-			  val = ''
+		  if(val !== '중분류'){
+			  this.getBrandList(val)
 		  }
 	  }
   },
   methods: {
     	getSector(){
-        let url = "./dist/sectorCode.json"
+        let url = "../dist/sectorCode.json"
         if(location.hostname === "110.13.170.148" || location.hostname === "127.0.0.1"){
           url = "/src/assets/sectorCode.json"
         }
@@ -156,7 +162,17 @@ export default {
 				  this.sectorMcode = value.sectorMcode
 			  }
 		  }
-	  }
+    },
+    getBrandList(code){
+      this.apiModel.getBrandList(code).then((result)=>{
+        if(result.status === 200){
+          //console.log(result)
+          let data = result.data
+          let t = data.shift()
+          this.brandList = data
+        }
+      })
+    }
   }
 }
 
