@@ -95,7 +95,7 @@
 				<!--//정보제공-->	
 
         <!--매물사진-->
-        <img-slide-viewer :img="item.IMG_URL"></img-slide-viewer>
+        <img-slide-viewer :img="item.IMG_URL" :swiperStart="swiperStart"></img-slide-viewer>
 				<!--//매물사진-->
 
 				<!--지도영역-->
@@ -119,6 +119,7 @@
 
 </template>
 <script>
+
 import ImgSlideViewer from './component/imgSlideViewer.vue'
 import ApiModel from './model/apiModel.js'
 export default {
@@ -130,7 +131,8 @@ export default {
 		return {
 			apiModel: new ApiModel(this.$http),
 			item: '',
-			mapInstance: ''
+			mapInstance: '',
+			swiperStart: false
 		}
 	},
   created(){
@@ -169,7 +171,7 @@ export default {
       //this.mapEventListener(map,geocoder)
       this.mapInstance = map
       //this.geocorderInstance = geocoder
-			
+			this.swiperStart = true
       console.log("마운티드 종료")
       //this.searchAddrFromCoords(geocoder, map.getCenter(), this.displayCenterInfo)
 

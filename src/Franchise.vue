@@ -20,9 +20,9 @@
               </ul>
             </div>
             <transition name="fade">
-            <div v-if="memuBoardFlag" class="tab_list">
+            <div v-if="memuBoardFlag" class="tab_list" >
 					    <ul>
-						    <li v-for="category in FullCteCode"><router-link :to="{ name: 'franchise-list', params: {categoryCode: category.categoryName } }">{{category.categoryName}}</router-link></li>
+						    <li v-for="category in FullCteCode" @click="menuToggle"><router-link :to="{ name: 'franchise-list', params: {categoryCode: category.categoryName } }">{{category.categoryName}}</router-link></li>
 					    </ul>
             </div>
             </transition>
@@ -32,7 +32,7 @@
   			<!-- //서브메뉴-->
 
         <!-- 프랜차이즈리스트-->
-			  <div class="fran_list">
+			  <div class="fran_list" @click="(memuBoardFlag)">
           <div class="list_wrap" v-for="(listItem, idx) in this.listItems">
             <BoxContent  v-for="(item, index) in listItem" :index="index" :item="item"></BoxContent>
           </div>
@@ -71,6 +71,7 @@
 import BigSubHeader from "./component/BigSubHeader.vue"
 import BoxContent from "./component/box-content.vue"
 import ApiModel from "./model/apiModel.js"
+import numeral from "numeral";
 export default {
   name: 'Franchise',
   components:{
@@ -222,6 +223,10 @@ export default {
             let paging = data.shift()
             console.log(paging)
             for (const value of data) {
+              let total = value.total
+              total = Number(total)
+              total = numeral(total).format('0,0')
+              value.total = total
               let img1 = value.img1
               if(value.img1 === ''){
                 img1 = "/src/assets/fc_noimg_166166.jpg"

@@ -598,6 +598,7 @@ export default {
       this.recommMarkerClean()
       this.apiModel.getOP407(this.RecommCcode,data,'100').then((result)=>{
         if(result.status === 200){
+          console.log(result)
           this.makeRecommList(result)
         }
       })

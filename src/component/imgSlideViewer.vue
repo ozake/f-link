@@ -1,17 +1,74 @@
 <template>
     <!--매물사진-->
     <div class="sphoto-container">
-            <h6>매물사진</h6>
-            <div class="slide-container">
-                <ul class="slider-wrapper">
-                    <li class="slide" v-for="url in img"><img class="img" v-bind:src="url" /></li>
-                </ul>
-            </div>
-            <p class="prev" ><img src="http://img.mk.co.kr/2018/franchise/prev.jpg" alt="앞으로"></p>
-            <p class="next" ><img src="http://img.mk.co.kr/2018/franchise/next.jpg" alt="뒤로"></p>
+        <h6>매물사진</h6>
+        <div class="swiper-container">
+            <ul class="swiper-wrapper">
+                <li class="swiper-slide" v-for="url in img"><img class="img" v-bind:src="url" /></li>
+            </ul>
+        </div>
+        <p class="prev" ><img src="http://img.mk.co.kr/2018/franchise/prev.jpg" alt="앞으로"></p>
+        <p class="next" ><img src="http://img.mk.co.kr/2018/franchise/next.jpg" alt="뒤로"></p>
     </div>
     <!--//매물사진-->
 </template>
+<script>
+//require('swiper/dist/css/swiper.min.css')
+import 'swiper/dist/css/swiper.css'
+import Swiper from "swiper/dist/js/swiper";
+export default {
+  name: 'ImgSlideViewer',
+  components : {
+  },
+  props : {
+      img: Array,
+      swiperStart: Boolean
+  },
+  data(){
+    return {
+        swiper : ''
+    }
+  },
+  watch : {
+      swiperStart: function(val){
+          if(val){
+              this.setSwiper()
+          }
+      }
+  },
+  created() {
+
+  },
+  mounted() {
+      this.$nextTick(function () {
+          console.log('이미지컴포넌트 마운트 끝')
+        // this.setSwiper()
+        /* setTimeout(()=>{
+            this.setSwiper()
+        },200) */
+        
+      })
+  },
+  methods: {
+      setSwiper(){
+          console.log('스와이퍼 실행')
+          let swiper = new Swiper('.swiper-container', {
+            slidesPerView: 2,
+            spaceBetween: 0,
+            navigation: {
+                nextEl: '.next',
+                prevEl: '.prev',
+            }
+        })
+        this.swiper = swiper
+      }
+   
+  }
+
+
+
+}
+</script>
 <style>
 .img {
     height: 214px;
@@ -20,25 +77,23 @@
     width: 100%;
     height: 214px;
 }
-.slide{
-    text-align: center;
-    width: 50%;
-    /* display: inline; */
-    float: left;
-    height: 100%;
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    -webkit-box-pack: center;
-    -ms-flex-pack: center;
-    -webkit-justify-content: center;
-    justify-content: center;
-    -webkit-box-align: center;
-    -ms-flex-align: center;
-    -webkit-align-items: center;
-    align-items: center;
-}
+.swiper-slide {
+      float: left;
+      /* width: 50%; */
+      /* Center slide text vertically */
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
+      -webkit-justify-content: center;
+      justify-content: center;
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+    }
 .sphoto-container {
     width: 1058px;
     height: 250px;
@@ -68,34 +123,3 @@
     top: 120px;
 }
 </style>
-<style>
-
-</style>
-
-<script>
-export default {
-  name: 'ImgSlideViewer',
-  components : {
-  },
-  props : {
-      img: Array
-  },
-  data(){
-    return {
-        slider : ''
-    }
-  },
-  created() {
-      
-
-  },
-  mounted() {
-  },
-  methods: {
-   
-  }
-
-
-
-}
-</script>
