@@ -218,7 +218,7 @@ export default {
         if(result.status === 200){
             let data = []
             data = result.data
-            console.log(data)
+
             let paging = data.shift()
             console.log(paging)
             for (const value of data) {

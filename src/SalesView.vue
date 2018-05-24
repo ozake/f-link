@@ -14,7 +14,7 @@
 				
 				<!--건물타이틀-->
 				<h3>
-					{{item.BUILD_NAME}} <span>매물등록일 : {{item.FIRST_REG_DATE}}</span>
+					{{item.BUILD_NAME +' '+item.BUILD_KIND}} <span>매물등록일 : {{item.FIRST_REG_DATE}}</span>
 					<p class="monthly">
 						<span class="icon">월세</span>
 						<span class="mtop">보증금 / 월세</span>
@@ -87,24 +87,24 @@
 					<p class="tit"><img src="http://img.mk.co.kr/2018/franchise/icon_office.jpg" alt="개포석영공인중개사사무소">{{item.SANGHO_NAME}}</p>
 					<dl>
 						<dt>대표</dt>
-					    <dd>{{item.CHARGE_NAME}}</dd>				
+					    <dd>{{item.PRESENT_NAME}}</dd>				
 						<dt>전화</dt>
-						<dd>{{item.CHARGE_PHONE}}<br>{{item.CHARGE_MOBILE}}</dd>				
+						<dd>{{item.TEL_NO}}<br>{{item.CHARGE_MOBILE}}</dd>				
 					</dl>
 				</div>
 				<!--//정보제공-->	
 
         <!--매물사진-->
-        <img-slide-viewer></img-slide-viewer>
+        <img-slide-viewer :img="item.IMG_URL"></img-slide-viewer>
 				<!--//매물사진-->
 
 				<!--지도영역-->
-				<div class="map">
-					<img src="http://img.mk.co.kr/2018/franchise/building_map.jpg" alt="건물지도 임시이미지">
+				<div class="map" id="map">
+					<!-- <img src="http://img.mk.co.kr/2018/franchise/building_map.jpg" alt="건물지도 임시이미지"> -->
 
 					<!--건물위치 아이콘-->
 					<div class="icon_bu" style="position:absolute;left:400px;top:200px">
-                         <img src="http://img.mk.co.kr/2018/franchise/icon_bu.png" alt="건물지도 임시이미지">
+                         <!-- <img src="http://img.mk.co.kr/2018/franchise/icon_bu.png" alt="건물지도 임시이미지"> -->
 					</div>
 					<!--//건물위치 아이콘-->
 				</div>
@@ -129,12 +129,51 @@ export default {
 	data() {
 		return {
 			apiModel: new ApiModel(this.$http),
-			item: ''
+			item: '',
+			mapInstance: ''
 		}
 	},
   created(){
 			this.$EventBus.$emit('HeaderActive', 'store')
 			this.getSalesView(this.$route.params.id)
+	},
+	mounted() {
+		this.$nextTick(function () {
+      // 모든 화면이 렌더링된 후 실행합니다.
+
+      console.log("지도 셋팅 시작")
+      let container = document.getElementById('map'); //지도를 담을 영역의 DOM 레퍼런스
+      let options = { //지도를 생성할 때 필요한 기본 옵션
+        center: new daum.maps.LatLng(37.56611900511385, 126.97774128459538), //지도의 중심좌표.
+        level: 5 //지도의 레벨(확대, 축소 정도)
+      };
+
+      let map = new daum.maps.Map(container, options); //지도 생성 및 객체 리턴
+      // 주소-좌표 변환 객체를 생성합니다
+      let geocoder = new daum.maps.services.Geocoder();
+
+      // 일반 지도와 스카이뷰로 지도 타입을 전환할 수 있는 지도타입 컨트롤을 생성합니다
+      let mapTypeControl = new daum.maps.MapTypeControl();
+
+      // 지도에 컨트롤을 추가해야 지도위에 표시됩니다
+      // daum.maps.ControlPosition은 컨트롤이 표시될 위치를 정의하는데 TOPRIGHT는 오른쪽 위를 의미합니다
+      map.addControl(mapTypeControl, daum.maps.ControlPosition.TOPRIGHT);
+
+      // 지도 확대 축소를 제어할 수 있는  줌 컨트롤을 생성합니다
+      let zoomControl = new daum.maps.ZoomControl();
+      map.addControl(zoomControl, daum.maps.ControlPosition.RIGHT);
+      console.log("지도 셋팅 완료")
+      //console.log(this.displayItem.address)
+
+      // 중심 좌표나 확대 수준이 변경됐을 때 지도 중심 좌표에 대한 주소 정보를 표시하도록 이벤트를 등록합니다
+      //this.mapEventListener(map,geocoder)
+      this.mapInstance = map
+      //this.geocorderInstance = geocoder
+			
+      console.log("마운티드 종료")
+      //this.searchAddrFromCoords(geocoder, map.getCenter(), this.displayCenterInfo)
+
+    })
 	},
 	methods: {
 		getSalesView(code){
@@ -144,10 +183,25 @@ export default {
 					data = data[0]
 					let tmpDate = data.FIRST_REG_DATE
 					data.FIRST_REG_DATE = tmpDate.substring(0,10)
+					let img = data.IMG_URL
+					img = img.split( ',' )
+					data.IMG_URL = img
 					this.item = data
+					this.setMaker(data.YPOS, data.XPOS, data)
 				}
 			})
-		}
+		},
+		setMaker(x,y,value){
+      //let tmparr = []
+			//tmparr = convertGeo([x,y])
+			let coords = new daum.maps.LatLng(x, y)
+      let marker = new daum.maps.Marker({
+          map: this.mapInstance, // 마커를 표시할 지도
+          position: coords, // 마커를 표시할 위치
+          title : value.BUILD_NAME +' '+value.BUILD_KIND, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
+			})
+			this.mapInstance.setCenter(coords)
+    },
 	}
 }
 </script>

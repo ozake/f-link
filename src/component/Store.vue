@@ -157,7 +157,8 @@ export default {
     const agent = navigator.userAgent.toLowerCase()
     if ( (navigator.appName == 'Netscape' && agent.indexOf('trident') != -1) || (agent.indexOf("msie") != -1)) {
      this.isIe = true
-   	}
+     }
+     
   },
   watch: {
     ftcCate2Cd : function (val){
