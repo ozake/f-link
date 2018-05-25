@@ -119,7 +119,7 @@
 
 </template>
 <script>
-
+import 'swiper/dist/css/swiper.css'
 import ImgSlideViewer from './component/imgSlideViewer.vue'
 import ApiModel from './model/apiModel.js'
 export default {
@@ -180,7 +180,9 @@ export default {
 	methods: {
 		getSalesView(code){
 			this.apiModel.getSalesView(code).then((result)=>{
-				if(result.status === 200){
+				if(result.status === 200)
+				{
+					console.log(result)
 					let data = result.data
 					data = data[0]
 					let tmpDate = data.FIRST_REG_DATE

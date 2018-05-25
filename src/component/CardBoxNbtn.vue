@@ -2,7 +2,7 @@
   <!--프랜차이즈 박스-->
 	<ul>
 		<router-link :to="{ name: 'franchise-view', params: {id: item.regnumber } }">
-		<li class="fr_logo"><img class="box-img" v-bind:src="item.img1" /></li>
+		<li class="fr_logo"><img class="box-img" v-bind:src="item.img2" /></li>
 		<li class="fr_tit">{{item.brand}}</li>
 		<dl>
 			<dt>분류</dt>

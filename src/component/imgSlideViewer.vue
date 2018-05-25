@@ -2,7 +2,7 @@
     <!--매물사진-->
     <div class="sphoto-container">
         <h6>매물사진</h6>
-        <div class="swiper-container">
+        <div class="swiper-container" ref="container">
             <ul class="swiper-wrapper">
                 <li class="swiper-slide" v-for="url in img"><img class="img" v-bind:src="url" /></li>
             </ul>
@@ -14,7 +14,7 @@
 </template>
 <script>
 //require('swiper/dist/css/swiper.min.css')
-import 'swiper/dist/css/swiper.css'
+
 import Swiper from "swiper/dist/js/swiper";
 export default {
   name: 'ImgSlideViewer',
@@ -52,14 +52,19 @@ export default {
   methods: {
       setSwiper(){
           console.log('스와이퍼 실행')
+          this.$refs.container.style.width = '1018px'
           let swiper = new Swiper('.swiper-container', {
             slidesPerView: 2,
             spaceBetween: 0,
+            initialSlide: 0,
+            width: 1018,
             navigation: {
                 nextEl: '.next',
                 prevEl: '.prev',
             }
         })
+        swiper.updateProgress()
+        swiper.updateProgress()
         this.swiper = swiper
       }
    
@@ -74,7 +79,7 @@ export default {
     height: 214px;
 }
 .swiper-container {
-    width: 100%;
+    width: 1018px;
     height: 214px;
 }
 .swiper-slide {
@@ -95,7 +100,7 @@ export default {
       align-items: center;
     }
 .sphoto-container {
-    width: 1058px;
+    width: 1018px;
     height: 250px;
     border: 1px solid #dcdcdc;
     background-color: #f6f6f6;
