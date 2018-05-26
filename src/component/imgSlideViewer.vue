@@ -1,80 +1,95 @@
 <template>
-    <!--매물사진-->
-    <div class="sphoto-container">
-        <h6>매물사진</h6>
-        <div class="swiper-container" ref="container">
-            <ul class="swiper-wrapper">
-                <li class="swiper-slide" v-for="url in img"><img class="img" v-bind:src="url" /></li>
-            </ul>
+    <div>
+        <!--매물사진-->
+        <div class="sphoto-container">
+            <h6>매물사진</h6>
+            <div class="swiper-container" ref="container">
+                <ul class="swiper-wrapper">
+                    <li class="swiper-slide" v-for="url in img"><img class="img" v-bind:src="url" @click="zoomToggle(url)" /></li>
+                </ul>
+            </div>
+            
+            <p class="prev" ><img src="http://img.mk.co.kr/2018/franchise/prev.jpg" alt="앞으로"></p>
+            <p class="next" ><img src="http://img.mk.co.kr/2018/franchise/next.jpg" alt="뒤로"></p>
         </div>
-        <p class="prev" ><img src="http://img.mk.co.kr/2018/franchise/prev.jpg" alt="앞으로"></p>
-        <p class="next" ><img src="http://img.mk.co.kr/2018/franchise/next.jpg" alt="뒤로"></p>
+        <!--//매물사진-->
+        <transition name="fade">
+        <!-- 검정배경-->
+            <div v-if="zoom">
+                <div class="blackBack" v-on:click="zoomToggle">
+                </div>
+                <a href="#none" class="toggleBtn" v-on:click="zoomToggle"><img src="http://img.mk.co.kr/2018/franchise/btn_close2.png" alt="닫기" class="close" ></a>
+            </div>
+        <!-- //검정배경-->
+        </transition>
+        <div v-if="zoom" class="zoomImgWrap" @click="zoomToggle">
+            <img class="zoomImg" v-bind:src="zoomUrl"/>
+
+        </div>
     </div>
-    <!--//매물사진-->
 </template>
 <script>
 //require('swiper/dist/css/swiper.min.css')
-
+import 'swiper/dist/css/swiper.min.css'
 import Swiper from "swiper/dist/js/swiper";
 export default {
   name: 'ImgSlideViewer',
   components : {
   },
   props : {
-      img: Array,
-      swiperStart: Boolean
+      img: Array
   },
   data(){
     return {
-        swiper : ''
+        swiper : '',
+        zoom : false,
+        zoomUrl : '' 
     }
   },
   watch : {
-      swiperStart: function(val){
+      img : function () {
+          this.$nextTick(function () {
+              this.setSwiper()
+          })     
+      }
+      /* swiperStart: function(val){
           if(val){
               this.setSwiper()
           }
-      }
-  },
-  created() {
-
-  },
-  mounted() {
-      this.$nextTick(function () {
-          console.log('이미지컴포넌트 마운트 끝')
-        // this.setSwiper()
-        /* setTimeout(()=>{
-            this.setSwiper()
-        },200) */
-        
-      })
+      } */
   },
   methods: {
       setSwiper(){
           console.log('스와이퍼 실행')
-          this.$refs.container.style.width = '1018px'
-          let swiper = new Swiper('.swiper-container', {
+        //   this.$refs.container.style.width = '1018px'
+        let swiper = new Swiper('.swiper-container', {
             slidesPerView: 2,
             spaceBetween: 0,
             initialSlide: 0,
-            width: 1018,
+            allowTouchMove: false,
+            // width: 1018,
             navigation: {
                 nextEl: '.next',
                 prevEl: '.prev',
             }
         })
-        swiper.updateProgress()
-        swiper.updateProgress()
+        // swiper.updateProgress()
+        // swiper.updateProgress()
         this.swiper = swiper
+      },
+      zoomToggle(url=''){
+          if(!this.zoom){
+              this.zoom = true
+              this.zoomUrl = url
+          }else{
+              this.zoom = false
+              this.zoomUrl = ''
+          }
       }
-   
   }
-
-
-
 }
 </script>
-<style>
+<style scoped>
 .img {
     height: 214px;
 }
@@ -126,5 +141,34 @@ export default {
     position: absolute;
     right: 0px;
     top: 120px;
+}
+.zoomImg {
+    display: block;
+    margin: 0 auto;
+    z-index: 10000;
+}
+.zoomImgWrap {
+    position: fixed;
+    top : 25%;
+    width: 1200px;
+    margin-left: -2%;
+    align-self: center;
+    z-index: 1000;
+}
+.blackBack {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000000;
+    opacity: 0.65;
+    z-index: 100;
+}
+.toggleBtn {
+    position: fixed;
+    top: 5%;
+    right: 5%;
+    z-index: 1000;
 }
 </style>

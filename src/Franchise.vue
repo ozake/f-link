@@ -8,15 +8,15 @@
 					    <img v-show="!memuBoardFlag" src="http://img.mk.co.kr/2018/franchise/list.png" alt="전체메뉴보기">
 					    <img v-show="memuBoardFlag" src="http://img.mk.co.kr/2018/franchise/list_close.png" alt="전체메뉴닫기">
 				    </button>
-            <div class="menuBody">
-              <ul>
-                <li v-for="category in categoryCode"><router-link :to="{ name: 'franchise-list', params: {categoryCode: category.categoryName } }">{{category.categoryName}}</router-link></li>
+            <div class="menuBody swiper-container">
+              <ul class="swiper-wrapper">
+                <li class="swiper-slide" v-for="category in FullCteCode"><router-link :to="{ name: 'franchise-list', params: {categoryCode: category.categoryName } }">{{category.categoryName}}</router-link></li>
               </ul>
             </div>
             <div class="btn_arrow" style="padding-top: 0px">
               <ul>
-                <li class="img1"><a href="#none"><img src="http://img.mk.co.kr/2018/franchise/list_prev.png" alt="앞으로"></a></li>
-                <li class="img1"><a href="#none"><img src="http://img.mk.co.kr/2018/franchise/list_next.png" alt="뒤로"></a></li>
+                <li class="img1 preBtn"><a href="#none"><img src="http://img.mk.co.kr/2018/franchise/list_prev.png" alt="앞으로"></a></li>
+                <li class="img1 nextBtn"><a href="#none"><img src="http://img.mk.co.kr/2018/franchise/list_next.png" alt="뒤로"></a></li>
               </ul>
             </div>
             <transition name="fade">
@@ -67,11 +67,32 @@
   opacity: 0;
 }
 </style>
+<style>
+#content .menuBody {
+    width: 900px;
+    overflow: hidden;
+    float: left;
+    /* display: inline; */
+}
+#content .menuBody ul {
+  width: 900px;
+}
+#content .menuBody ul li {
+    float: left;
+    text-align: center;
+    margin-right: 0;
+    padding: 0 0 0 0;
+    font-weight: 500;
+}
+</style>
+
 <script>
 import BigSubHeader from "./component/BigSubHeader.vue"
 import BoxContent from "./component/box-content.vue"
 import ApiModel from "./model/apiModel.js"
 import numeral from "numeral";
+import 'swiper/dist/css/swiper.min.css'
+import Swiper from "swiper/dist/js/swiper";
 export default {
   name: 'Franchise',
   components:{
@@ -150,7 +171,8 @@ export default {
       ],
       rItems : [],
       apiModel : new ApiModel(this.$http),
-      memuBoardFlag : false
+      memuBoardFlag : false,
+      swiper: ''
     }
   },
   props:{
@@ -168,12 +190,15 @@ export default {
       this.fetchData()
     }
   },
- /*  mounted() {
+ mounted() {
     this.$nextTick(function () {
-      this.listItems = this.makeArrayModuler(this.rItems,5)
-      console.log(this.listItems)
+      this.setSwiper()
+      this.swiper.on('slideChange', () => {
+        console.log('slide changed');
+        this.swiper.activeIndex
+      })
     })
-  }, */
+  },
   watch: {
     // 라우트가 변경되면 메소드를 다시 호출됩니다.
     '$route': 'fetchData'
@@ -250,6 +275,22 @@ export default {
       else if(!this.memuBoardFlag){
         this.memuBoardFlag = true
       }
+    },
+    setSwiper(){
+      let swiper = new Swiper('.swiper-container', {
+            slidesPerView: 8,
+            slidesPerGroup: 8,
+            spaceBetween: 0,
+            initialSlide: 0,
+            // width: 1018,
+            navigation: {
+                nextEl: '.nextBtn',
+                prevEl: '.preBtn',
+            }
+        })
+        // swiper.updateProgress()
+        // swiper.updateProgress()
+        this.swiper = swiper
     }
 
 
