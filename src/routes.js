@@ -32,7 +32,7 @@ export default [
     ]
   },
   {
-    path: '/storeView/:id',
+    path: '/storeView/:categoryCode/:storeName/:id',
     name: 'store-view',
     component: StoreView
   },
@@ -50,16 +50,16 @@ export default [
     ]
   },
   {
-    path: '/franchiseList',
-    name: 'franchise-list',
+    path: '/franchiseList/:categoryCode',
+    name: 'franchise-list-default',
     component: FranchiseList,
     children: [
       {
-        path: ':categoryCode',
-        name: 'franchise-list-category',
+        path: ':page',
+        name: 'franchise-list-page',
         props: true,
-        component: Franchise
-      }
+        component: FranchiseList
+      },
     ]
   },
   {

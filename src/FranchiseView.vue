@@ -599,7 +599,7 @@ export default {
                       this.centerCode = code
                       //console.log(code)
                       this.getStoreList(this.$route.params.id, code).then((result)=>{
-                        
+
                         let tmparr = []
                         let x = null
                         let y = null
@@ -692,7 +692,7 @@ export default {
       let rows = '3'
       this.apiModel.getEstateList(pageNo,rows,code='').then((result)=>{
         if(result.status === 200){
-          //console.log(result)
+          console.log(result)
           let data = result.data
           let paging = data.shift()
           for (const value of data) {
@@ -702,11 +702,18 @@ export default {
             }
             else {
               let tmparr = []
-            tmparr = img.split( ',', 2 )
-            img = tmparr[0]
-            }
+              tmparr = img.split( ',', 2 )
+              img = tmparr[0]
+              let str = img.replace("http://image.bizmk.kr", "")
+              let res = str.search("http://image.bizmk.kr")
+              if(res === -1){
+                str = 'http://image.bizmk.kr'+str
+              }
+              img = str
+
+					  }
             value.img_url = img
-          } 
+          }
           this.estateList = data
         }
       })

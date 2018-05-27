@@ -12,7 +12,7 @@
 				</fieldset>
 				<!-- 메인 검색 레이어-->
 				<div class="search_layer" v-show="searchAreaToggle">
-					<ul>	
+					<ul>
 						<li v-for="item in searchDisplay"><a href="#" v-on:click="selector(item.displayTxt, item.flag, item.regnumber)">{{item.displayTxt}}</a></li>
 					</ul>
 				</div>
@@ -70,7 +70,7 @@
 
 
 		<!-- 점포매물검색-->
-		<div class="st_search" v-on:click="alerm">
+		<!-- <div class="st_search" v-on:click="alerm">
 			<h4>점포 매물 검색
 				<span>
 					<input class="chk" type="checkbox" id="delete">
@@ -95,12 +95,12 @@
 					만원
 				</li>
 			</ul>
-		</div>
+		</div> -->
 		<!-- //점포매물검색-->
 
 		<!-- 매물리스트-->
-		<div class="st_list">
-			<ul>
+		<div class="st_list" v-bind:style="estateHeight">
+			<ul v-bind:style="estateHeight">
 				<li v-for="item in estateList" class="memul_list">
 					<router-link :to="{ name: 'sales-view', params: {id: item.memul_seq } }">
 						<h5>{{item.build_kind}}</h5>
@@ -147,7 +147,8 @@ export default {
 	  brand : Array,
 	  updateFlag : Boolean,
     isIe : Boolean,
-    estateList : Array
+    estateList : Array,
+    estateHeight : Object
   },
   /* computed: {
 	  brand : function () {
@@ -162,7 +163,7 @@ export default {
      this.isIe = true
    	} */
 	this.getSector()
-	
+
 	/* if(this.updateFlag){
 		this.brandList = this.brand
 	} */

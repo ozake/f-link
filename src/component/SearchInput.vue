@@ -6,12 +6,12 @@
           <fieldset class="searcharea">
             <legend>검색</legend>
             <input v-if="fActive" name="s_keyword" title="검색어 입력" type="text" placeholder="프랜차이즈명, 회사명으로 검색" v-on:input="typing" v-bind:value="searchTxt" v-on:keyup="keymonitor" ref="search">
-            <input v-if="storeActive" name="s_keyword" title="검색어 입력" type="text" placeholder="지역, 업종으로 검색" v-on:input="typing" v-bind:value="searchTxt" v-on:keyup="keymonitor" ref="search"> 
+            <input v-if="storeActive" name="s_keyword" title="검색어 입력" type="text" placeholder="지역, 업종으로 검색" v-on:input="typing" v-bind:value="searchTxt" v-on:keyup="keymonitor" ref="search">
             <button type="button" v-on:click="searchFc"><img src="http://img.mk.co.kr/2018/franchise/msearch.png" alt="검색하기"></button>
           </fieldset>
           <!-- 메인 검색 레이어-->
 						 <div class="search_layer" v-show="searchAreaToggle">
-							  <ul>	
+							  <ul>
 								 <li v-for="item in searchDisplay"><a href="#" v-on:click="selector(item.displayTxt, item.flag, item.regnumber)">{{item.displayTxt}}</a></li>
 							  </ul>
 						 </div>
@@ -125,7 +125,7 @@ export default {
 
         }
       }
-      
+
 
     },
     selector(txt, flag, regnumber){
@@ -160,7 +160,7 @@ export default {
     keymonitor(event){
       console.log(event.key)
        if(event.key == "Enter")
-       {  
+       {
          if(this.fActive){
            if(this.franchiseSelected){
            location.href = `./franchiseView/${this.franchiseSelectedCode}`
@@ -186,6 +186,7 @@ export default {
 .search_layer {
   height: 200px;
   overflow-y: auto;
+  z-index: 10000;
 }
 /* #search {
     position: relative;

@@ -110,15 +110,22 @@ export default {
       this.fetchData()
     }
   },
+  watch: {
+    $route: function () {
+      this.fetchData()
+    }
+  },
   methods:{
     fetchData(){
-      this.franchiseList(this.$route.params.categoryCode).then((result)=>{
-        this.listItems = this.makeArrayModuler(result,5)
+      this.franchiseList(this.$route.params.categoryCode, this.$route.params.page).then((result)=>{
+        //this.listItems = this.makeArrayModuler(result,5)
+        this.listItems = result
       })
       //alert(this.$route.params.categoryCode)
     },
-    async franchiseList(categoryname){
+    async franchiseList(categoryname, page){
       let data = null
+      //page = Number(page)
       if(categoryname === '' || categoryname === null || categoryname === undefined){
         console.log("error")
       }else{
@@ -133,8 +140,9 @@ export default {
             return data
           }
         }) */
-        let result = await this.apiModel.getFranchiseList(categoryname,9)
+        let result = await this.apiModel.getFranchiseList(categoryname,9,page)
         if(result.status === 200){
+            console.log(result)
             let data = []
             data = result.data
 

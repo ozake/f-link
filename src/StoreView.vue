@@ -8,8 +8,8 @@
 
 				<!--건물타이틀-->
 				<h3>
-					<p>이디야 충무로점</p>  정보
-				    <span>서울시   용산구   용산동 125번지  매경타워 1층</span>
+					<p>{{storeName}}</p>  정보
+				    <span>{{item.addr}}</span>
 				</h3>
 				<!--//건물타이틀-->
 
@@ -47,23 +47,23 @@
 					<div>
 						<dl>
 							<dt>건물명</dt>
-							<dd>매경미디어센터 </dd>
+							<dd>{{item.buldNm}}</dd>
 							<dt>주소</dt>
-							<dd>서울특별시 중구 필동1가 30</dd>
+							<dd>{{item.addr}}</dd>
 							<dt>건물유형</dt>
-							<dd>기타 제2종 근생</dd>
+							<dd>{{item.bdtypNm}}</dd>
 							<dt>연면적</dt>
-							<dd>747.3㎡ </dd>
+							<dd>{{item.grossArea}}㎡ </dd>
 							<dt>층수 </dt>
-							<dd>지하1층~지상4</dd>
+							<dd>지하{{item.undFloor}}층~지상{{item.groFloo}}</dd>
 							<dt>지하철/버스  </dt>
-							<dd>7m / 131m</dd>
+							<dd>{{item.subDist}}m / {{item.busDist}}m</dd>
 							<dt>주차대수</dt>
-							<dd>옥외 2대/옥내 5대</dd>
+							<dd>{{item.totalparknum}}대</dd>
 							<dt>승강기대수</dt>
-							<dd>3대</dd>
+							<dd>{{item.liftnum}}대</dd>
 							<dt>준공연도</dt>
-							<dd>1900년</dd>
+							<dd>{{item.useapprovaldate}}년</dd>
 						</dl>
 					</div>
 				</div>
@@ -75,30 +75,7 @@
 				<h4>건물 내 업체 현황</h4>
 					<div>
 						<dl>
-							<dt>이마트 everyday (지하1층)</dt>
-							<dd>02-2000-5450</dd>
-							<dt>이디야 필동점 (1층)</dt>
-							<dd>02-2000-5450</dd>
-							<dt>오매가매 </dt>
-							<dd>02-2000-5450</dd>
-							<dt>고도일학원 필동점</dt>
-							<dd>02-2000-5450</dd>
-							<dt>이마트 everyday (지하1층)</dt>
-							<dd>02-2000-5450</dd>
-							<dt>이디야 필동점 (1층)</dt>
-							<dd>02-2000-5450</dd>
-							<dt>오매가매 </dt>
-							<dd>02-2000-5450</dd>
-							<dt>고도일학원 필동점</dt>
-							<dd>02-2000-5450</dd>
-							<dt>이마트 everyday (지하1층)</dt>
-							<dd>02-2000-5450</dd>
-							<dt>이디야 필동점 (1층)</dt>
-							<dd>02-2000-5450</dd>
-							<dt>오매가매 </dt>
-							<dd>02-2000-5450</dd>
-							<dt>고도일학원 필동점</dt>
-							<dd>02-2000-5450</dd>
+							<dt v-for="item in buildIn">{{item.refNm}} {{item.refBnm}}</dt>
 						</dl>
 					</div>
 				</div>
@@ -156,11 +133,11 @@
 					  <tr>
 						<th rowspan="2" align="center">건물</th>
 						<td height="30" align="center">주차가능 대수</td>
-						<td height="30" align="center">20대</td>
+						<td height="30" align="center">{{item.totalparknum}}대</td>
 					  </tr>
 					  <tr>
 						<td height="30" align="center">승강기 대수</td>
-						<td height="30" align="center">2대</td>
+						<td height="30" align="center">{{item.liftnum}}대</td>
 					  </tr>
 					  <tr>
 						<th rowspan="2" align="center">배후지 영역</th>
@@ -261,16 +238,48 @@ export default {
   data () {
     return {
       apiModel: new ApiModel(this.$http),
-      item : []
+      item : '',
+      storeName : this.$route.params.storeName,
+      buildIn : []
     }
   },
   created() {
     this.$EventBus.$emit('HeaderActive', 'store')
-    this.getFranchiseView(this.$route.params.id)
+    let bdid = this.$route.params.id
+    this.getBuildingInfo(bdid)
+    this.getBuildingBasedStore(bdid)
   },
   methods: {
-    getFranchiseView(val) {
-      this.apiModel.get
+    getBuildingInfo(bdMgtSn){
+      this.apiModel.getOP408(bdMgtSn).then((result)=>{
+        if(result.status === 200){
+          let data = result.data.data.rows[0]
+          //console.log(data)
+          data.subDist = Number(data.subDist).toFixed(0)
+          data.busDist = Number(data.busDist).toFixed(0)
+          data.grossArea = Number(data.grossArea).toFixed(2)
+          let useYear = new Date(Number(data.useapprovaldate))
+          data.useapprovaldate = useYear.getFullYear()
+          this.item = data
+          this.getBasedInfo(data.baseXycrd)
+        }
+      })
+    },
+    getBasedInfo(basedCode){
+      this.apiModel.getOP409(basedCode).then((result)=>{
+        if(result.status === 200){
+          console.log(result)
+        }
+      })
+    },
+    getBuildingBasedStore(val){
+      this.apiModel.getOP412(val).then((result)=>{
+        if(result.status === 200){
+          //console.log(result)
+          let data = result.data.data.rows
+          this.buildIn = data
+        }
+      })
     }
   }
 }

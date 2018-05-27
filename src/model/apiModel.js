@@ -112,6 +112,45 @@ export default class ApiModel {
       return this.http(this.config)
     }
 
+    /**
+     * OP-408 API 조회 메소드
+     * 건물정보 조회
+     * @param {*} bdMgtSn 건물아이디
+     * @returns {Promise}
+     */
+    getOP408(bdMgtSn=''){
+      this.apiNo = '408'
+      this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
+      this.config.data = `bdMgtSn=${bdMgtSn}`
+      return this.http(this.config)
+    }
+
+    /**
+     * OP-409 API 조회 메소드
+     * 배후지정보 조회
+     * @param {*} baseXycrd 배후지기반기지국 번호
+     * @returns {Promise}
+     */
+    getOP409(baseXycrd=''){
+      this.apiNo = '409'
+      this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
+      this.config.data = `baseXycrd=${baseXycrd}`
+      return this.http(this.config)
+    }
+
+     /**
+     * OP-412 API 조회 메소드
+     * 건물내 업체리스트 조회
+     * @param {*} bdMgtSn 건물아이디
+     * @returns {Promise}
+     */
+    getOP412(bdMgtSn=''){
+      this.apiNo = '412'
+      this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
+      this.config.data = `bdMgtSn=${bdMgtSn}`
+      return this.http(this.config)
+    }
+
 
     /**
      * 카테고리별 프렌차이즈 리스트 출력
@@ -120,10 +159,10 @@ export default class ApiModel {
      * @param {*} pageNo
      * @returns {promise}
      */
-    getFranchiseList(categoryName='한식', row='10', pageNo='1'){
+    getFranchiseList(categoryName='한식', row='10', pageNo='0'){
       this.apiNo = '101'
       this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
-      this.config.data = `category2=${categoryName}&row=${row}`
+      this.config.data = `category2=${categoryName}&row=${row}&page=${pageNo}`
       return this.http(this.config)
     }
 

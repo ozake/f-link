@@ -11,7 +11,7 @@
     <!-- </transition> -->
 
     <!-- 지도영역-->
-		<div class="store_map" id="map">
+		<div class="store_map" id="map" ref="map" v-bind:style="styles">
       <!-- <AddrArea :addr="addr"></AddrArea> -->
       <!-- 건물 추천서비스-->
       <div class="building" v-on:click="recommBldOnOff">
@@ -21,7 +21,7 @@
       </div>
       <!-- //건물 추천서비스-->
     </div>
-    <AsideMap :brand="brand" :isIe="isIe" :updateFlag="updateFlag" :estateList="estateList"></AsideMap>
+    <AsideMap :brand="brand" :isIe="isIe" :updateFlag="updateFlag" :estateList="estateList" :estateHeight="estateHeight"></AsideMap>
 
 
   </div>
@@ -73,9 +73,25 @@ export default {
     AsideMap,
     RecommBld
   },
+  computed: {
+    styles: function() {
+      let height = window.innerHeight - 155
+
+      return {
+        height: height + 'px'
+      }
+    },
+    estateHeight: function() {
+      let height = window.innerHeight - 507
+      return {
+        height: height + 'px'
+      }
+    }
+  },
   mounted() {
     this.$nextTick(function () {
       // 모든 화면이 렌더링된 후 실행합니다.
+
       console.log("지도 셋팅 시작")
       let container = document.getElementById('map'); //지도를 담을 영역의 DOM 레퍼런스
       let options = { //지도를 생성할 때 필요한 기본 옵션
@@ -158,7 +174,7 @@ export default {
     if ( (navigator.appName == 'Netscape' && agent.indexOf('trident') != -1) || (agent.indexOf("msie") != -1)) {
      this.isIe = true
      }
-     
+
   },
   watch: {
     ftcCate2Cd : function (val){
@@ -257,7 +273,7 @@ export default {
                         this.centerCode = code
                         if(this.ftcCate2Cd !== ''){
                           this.getFranchiseList(code,this.ftcCate2Cd)
-                          //this.getEstateList(code)
+                          this.getEstateList(code)
                         }
                       }
                     }
@@ -528,7 +544,7 @@ export default {
                   <p>전화번호 : ${value.tel}</p>
                   <p>주소 : ${value.addr}</p>
                 </div>
-                <a href='./storeView/${value.bdMgtSn}'><button type='button'>자세히 보기</button></a>
+                <a href='./storeView/${this.ftcCate2Cd}/${refBnm}/${value.bdMgtSn}'><button type='button'>자세히 보기</button></a>
               </div>
             </div>
 					</div>
@@ -726,8 +742,14 @@ export default {
             }
             else {
               let tmparr = []
-            tmparr = img.split( ',', 2 )
-            img = tmparr[0]
+              tmparr = img.split( ',', 2 )
+              img = tmparr[0]
+              let str = img.replace("http://image.bizmk.kr", "")
+              let res = str.search("http://image.bizmk.kr")
+              if(res === -1){
+                str = 'http://image.bizmk.kr'+str
+              }
+              img = str
             }
             value.img_url = img
           }
