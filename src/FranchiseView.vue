@@ -368,6 +368,7 @@ import RightSales from "./component/RightSales.vue"
 import ApiModel from "./model/apiModel.js"
 import { convertGeo } from "./model/util.js"
 import { Queue } from './model/colections';
+import numeral from "numeral";
 export default {
   name: 'FranchiseView',
   components:{
@@ -534,6 +535,13 @@ export default {
         data = result.data
         let paging = data.shift()
         for (const value of data) {
+          value.total = this.numberFormating(value.total)
+          value.educost = this.numberFormating(value.educost)
+          value.deposit = this.numberFormating(value.deposit)
+          value.othercost = this.numberFormating(value.othercost)
+          value.interiorcost = this.numberFormating(value.interiorcost)
+          value.membership = this.numberFormating(value.membership)
+          value.sicost = this.numberFormating(value.sicost)
           let img3 = value.img3
           if(value.img3 === ''){
             img3 = "/src/assets/fc_noimg_263168.jpg"
@@ -561,6 +569,11 @@ export default {
         //console.log(data)
         return data
       }
+    },
+    numberFormating(num){
+      num = Number(num)
+      num = numeral(num).format('0,0')
+      return num
     },
     mapEventListener(map,geocoder){
       daum.maps.event.addListener(map, 'dragend', () => {
@@ -679,7 +692,7 @@ export default {
       let rows = '3'
       this.apiModel.getEstateList(pageNo,rows,code='').then((result)=>{
         if(result.status === 200){
-          console.log(result)
+          //console.log(result)
           let data = result.data
           let paging = data.shift()
           for (const value of data) {
@@ -693,7 +706,7 @@ export default {
             img = tmparr[0]
             }
             value.img_url = img
-          }
+          } 
           this.estateList = data
         }
       })

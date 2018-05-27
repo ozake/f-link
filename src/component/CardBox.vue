@@ -1,18 +1,20 @@
 <template>
   <!--프랜차이즈 박스-->
 			<ul>
-				<li class="fr_logo"><img src="http://img.mk.co.kr/2018/franchise/hollys.jpg" alt="할리스커피"></li>
-				<li class="fr_tit">할리스 커피</li>
+        <router-link :to="{ name: 'franchise-view', params: {id: item.regnumber } }">
+				<li class="fr_logo"><img v-bind:src="item.img2" /></li>
+				<li class="fr_tit">{{item.brand}}</li>
 				<dl>
 					<dt>분류</dt>
-					<dd>외식 > 피자</dd>
+					<dd>{{item.category1}} > {{item.category2}}</dd>
 					<dt>대표자</dt>
-					<dd>홍길동</dd>
+					<dd>{{item.ceo}}</dd>
 					<dt>창업 비용</dt>
-					<dd>10000만원 (20평)</dd>
+					<dd>{{item.total}}천원 ({{item.storearea}}평)</dd>
 					<dt>총 가맹점 수</dt>
-					<dd>500개</dd>
+					<dd>{{item.fcount}}개</dd>
 				</dl>
+        </router-link>
         <label :for="id" class="check_info_label"><span>추가 정보 요청</span></label>
         <input type="checkbox" :id="id" class="check_info" />
 				<!-- <a href="#"><button class="btn_info">추가 정보 요청 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </button></a> -->

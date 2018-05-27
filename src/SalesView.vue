@@ -23,8 +23,9 @@
 					<p class="area">
 						<span class="icon">면적</span>
 						<span class="mtop">계약 / 전용</span>
-						<span class="mbottom">{{item.SUPP_METER}} / {{item.USE_METER}}㎡</span>
-						<span class="change"><img src="http://img.mk.co.kr/2018/franchise/icon_area.png" alt="평형변환">평형</span>
+						<span v-show="meterToggle" class="mbottom">{{item.SUPP_METER}} / {{item.USE_METER}}㎡</span>
+						<span v-show="pyeongToggle" class="mbottom">{{item.SUPP_PYEONG}} / {{item.USE_PYEONG}}평</span>
+						<span class="change" @click="meterPyeongSwitch"><img src="http://img.mk.co.kr/2018/franchise/icon_area.png" alt="평형변환">평형</span>
 					</p>
 				</h3>
 				<!--//건물타이틀-->
@@ -130,7 +131,9 @@ export default {
 		return {
 			apiModel: new ApiModel(this.$http),
 			item: '',
-			mapInstance: ''
+			mapInstance: '',
+			pyeongToggle: false,
+			meterToggle: true
 		}
 	},
   created(){
@@ -169,7 +172,6 @@ export default {
       //this.mapEventListener(map,geocoder)
       this.mapInstance = map
       //this.geocorderInstance = geocoder
-			
       console.log("마운티드 종료")
       //this.searchAddrFromCoords(geocoder, map.getCenter(), this.displayCenterInfo)
 
@@ -178,14 +180,27 @@ export default {
 	methods: {
 		getSalesView(code){
 			this.apiModel.getSalesView(code).then((result)=>{
-				if(result.status === 200){
+				if(result.status === 200)
+				{
+					console.log(result)
 					let data = result.data
 					data = data[0]
 					let tmpDate = data.FIRST_REG_DATE
 					data.FIRST_REG_DATE = tmpDate.substring(0,10)
 					let img = data.IMG_URL
 					img = img.split( ',' )
-					data.IMG_URL = img
+					let tmparr = []
+					for (const value of img) {
+						let str = value.replace("http://image.bizmk.kr", "")
+						let res = str.search("http://image.bizmk.kr")
+						if(res === -1){
+							str = 'http://image.bizmk.kr'+str
+						}
+						tmparr.push(str)
+					}
+					data.IMG_URL = tmparr
+					data.SUPP_PYEONG = this.calPyeong(data.SUPP_METER)
+					data.USE_PYEONG = this.calPyeong(data.USE_METER)
 					this.item = data
 					this.setMaker(data.YPOS, data.XPOS, data)
 				}
@@ -202,6 +217,20 @@ export default {
 			})
 			this.mapInstance.setCenter(coords)
     },
+		calPyeong(val){
+			let meter = Number(val)
+			let pyeong = meter * 0.3025
+			return pyeong.toFixed(2)
+		},
+		meterPyeongSwitch(){
+			if(this.meterToggle){
+				this.meterToggle = false
+				this.pyeongToggle = true
+			}else if(this.pyeongToggle){
+				this.meterToggle = true
+				this.pyeongToggle = false
+			}
+		}
 	}
 }
 </script>

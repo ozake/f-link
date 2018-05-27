@@ -98,13 +98,15 @@ export default class ApiModel {
      * @returns {Promise}
      */
     getOP407(emdCd='', ftcCate2Cd = '', row='10', pageNo='1'){
-      emdCd = emdCd.substring(0,8);
+      emdCd = emdCd.substring(0,8)
+      let sggCd = emdCd.substring(0,5)
       this.apiNo = '407'
       this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
       this.config.data = {
         'pageNo':pageNo,
         'row':row,
         'emdCd':emdCd,
+        'sggCd':sggCd,
         'ftcCate2Cd':ftcCate2Cd
       }
       return this.http(this.config)
@@ -121,7 +123,7 @@ export default class ApiModel {
     getFranchiseList(categoryName='한식', row='10', pageNo='1'){
       this.apiNo = '101'
       this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
-      this.config.data = `category2=${categoryName}`
+      this.config.data = `category2=${categoryName}&row=${row}`
       return this.http(this.config)
     }
 

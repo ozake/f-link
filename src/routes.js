@@ -52,7 +52,15 @@ export default [
   {
     path: '/franchiseList',
     name: 'franchise-list',
-    component: FranchiseList
+    component: FranchiseList,
+    children: [
+      {
+        path: ':categoryCode',
+        name: 'franchise-list-category',
+        props: true,
+        component: Franchise
+      }
+    ]
   },
   {
     path: '/franchiseView/:id',

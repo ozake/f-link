@@ -504,6 +504,13 @@ export default {
     },
     setOverlay(marker, value){
       let refBnm = value.refBnm
+      let img = value.img1
+      if(img === '' || img === null || img === undefined){
+        img = 'src/assets/fc_noimg_166166.jpg'
+      } else {
+        // console.log(img)
+        img = "//file.mk.co.kr"+img.slice(12)
+      }
       //console.log(refBnm.length)
       /* if(refBnm.length > 15){
         refBnm = refBnm.slice(0,15)
@@ -515,7 +522,7 @@ export default {
 					<div class="branch_box">
 						<h4><span class="brand_name">${refBnm}</span><span class='close_btn'><a href='#none' id='img${value.bdMgtSn}'><img src="http://img.mk.co.kr/2018/franchise/btn_close1.gif" alt="닫기"></a></span></h4>
 						<div class="branch_content_wrap">
-              <img src="src/assets/fc_noimg_166166.jpg" alt="${refBnm}" class="logo">
+              <img src="${img}" alt="${refBnm}" class="logo">
               <div class="branch_right_box">
                 <div class="branch_right_text">
                   <p>전화번호 : ${value.tel}</p>
@@ -585,19 +592,20 @@ export default {
       if(!this.RecommBld){
         this.RecommBld = true
         this.RecommLayer = true
-        this.mapInstance.setDraggable(false)
+        // this.mapInstance.setDraggable(false)
         this.mapInstance.setLevel(3)
       } else{
         this.RecommBld = false
         this.RecommLayer = false
         this.recommMarkerClean()
-        this.mapInstance.setDraggable(true)
+        // this.mapInstance.setDraggable(true)
       }
     },
     getRecommBld(data){
       this.recommMarkerClean()
       this.apiModel.getOP407(this.RecommCcode,data,'100').then((result)=>{
         if(result.status === 200){
+          console.log(result)
           this.makeRecommList(result)
         }
       })
@@ -709,6 +717,9 @@ export default {
           let data = result.data
           let paging = data.shift()
           for (const value of data) {
+            // if(value.month_deposit_price === 0 && value.month_price){
+            //   continue
+            // }
             let img = value.img_url
             if(img === ''){
               img = '/src/assets/fc_noimg_263168.jpg'

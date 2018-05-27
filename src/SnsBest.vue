@@ -42,71 +42,6 @@ export default {
   },
   data(){
     return {
-      items: [
-        {
-          id:1,
-          title: "test"
-        },
-        {
-          id:2,
-          title: "test"
-        },
-        {
-          id:3,
-          title: "test"
-        },
-        {
-          id:4,
-          title: "test"
-        },
-        {
-          id:5,
-          title: "test"
-        },
-        {
-          id:6,
-          title: "test"
-        },
-        {
-          id:7,
-          title: "test"
-        },
-        {
-          id:8,
-          title: "test"
-        },
-        {
-          id:9,
-          title: "test"
-        },
-        {
-          id:10,
-          title: "test"
-        },
-        {
-          id:11,
-          title: "test"
-        },
-        {
-          id:12,
-          title: "test"
-        },
-        {
-          id:13,
-          title: "test"
-        },{
-          id:14,
-          title: "test"
-        },
-        {
-          id:15,
-          title: "test"
-        },
-        {
-          id:16,
-          title: "test"
-        }
-      ],
       listItems : '',
       title : 'SNS 조회 BEST',
       subTitle : '포털과 SNS에서 많이 언급되는 브랜드'
@@ -131,14 +66,14 @@ export default {
         let data = result.data.data
         data = data.rows
         for (const value of data) {
-          let img1 = value.img1
+          let img2 = value.img2
           //console.log(img1)
-          if(img1 === '' || img1 === null ){
-            img1 = "/src/assets/fc_noimg_253128.jpg"
+          if(img2 === '' || img2 === null ){
+            img2 = "/src/assets/fc_noimg_253128.jpg"
           }else{
-            img1 = "//file.mk.co.kr"+img1.slice(12)
+            img2 = "//file.mk.co.kr"+img2.slice(12)
           }
-          value.img1 = img1
+          value.img2 = img2
           value.regnumber = value.franchiseNo
         }
         console.log(data)

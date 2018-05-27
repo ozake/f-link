@@ -7,24 +7,8 @@
         <CardBoxNbtn v-for="(item, index) in listItems" :index="index" :item="item"></CardBoxNbtn>
 			</div>
 			<!--//프랜차이즈 현황 리스트-->
-
       <!--페이징-->
-      <!--
-      <div class="paging">
-        <a class="pre" href="#"></a>
-        <a class="on" href="#"><strong>1</strong></a>
-        <a href="#">2</a>
-        <a href="#">3</a>
-        <a href="#">4</a>
-        <a href="#">5</a>
-        <a href="#">6</a>
-        <a href="#">7</a>
-        <a href="#">8</a>
-        <a href="#">9</a>
-        <a href="#">10</a>
-        <a class="next" href="#"></a>
-      </div>
-      -->
+      <Pagination :totalCount="totalCount" :currentPage="currentPage" :pageingRange="pageingRange" :pageRows="pageRows" :routeName="routeName"></Pagination>
       <!--//페이징-->
   </div>
 
@@ -34,105 +18,66 @@
 <script>
 import SubHeaderTitle from './component/SubHeaderTitle.vue'
 import CardBoxNbtn from './component/CardBoxNbtn.vue'
-import ApiModel from './model/apiModel';
+import Pagination from './component/Pagination.vue'
+import ApiModel from './model/apiModel'
 export default {
   name: 'steady-best',
   components:{
     SubHeaderTitle,
-    CardBoxNbtn
+    CardBoxNbtn,
+    Pagination
   },
   data(){
     return {
-      items: [
-        {
-          id:1,
-          title: "test"
-        },
-        {
-          id:2,
-          title: "test"
-        },
-        {
-          id:3,
-          title: "test"
-        },
-        {
-          id:4,
-          title: "test"
-        },
-        {
-          id:5,
-          title: "test"
-        },
-        {
-          id:6,
-          title: "test"
-        },
-        {
-          id:7,
-          title: "test"
-        },
-        {
-          id:8,
-          title: "test"
-        },
-        {
-          id:9,
-          title: "test"
-        },
-        {
-          id:10,
-          title: "test"
-        },
-        {
-          id:11,
-          title: "test"
-        },
-        {
-          id:12,
-          title: "test"
-        },
-        {
-          id:13,
-          title: "test"
-        },{
-          id:14,
-          title: "test"
-        },
-        {
-          id:15,
-          title: "test"
-        },
-        {
-          id:16,
-          title: "test"
-        }
-      ],
       listItems : '',
       title : '스테디셀러 브랜드',
       subTitle : '10년 이상 가맹사업 지속한 브랜드',
-      apiModel : new ApiModel(this.$http)
+      apiModel : new ApiModel(this.$http),
+      totalCount : 0,
+      currentPage : 1,
+      pageingRange : 10,
+      pageRows : 16,
+      routeName : 'steady-list'
+    }
+  },
+  watch: {
+    // 라우트가 변경되면 메소드를 다시 호출됩니다.
+    $route: function () {
+      this.currentPage = this.$route.params.page
+      this.$nextTick(function(){
+        this.getSteadyBest(this.currentPage)
+      })
     }
   },
   created(){
     this.$EventBus.$emit('HeaderActive', 'theme')
-    this.apiModel.getSteadyBest('0').then((result)=>{
-      if(result.status === 200){
-        console.log(result)
-        let data = result.data
-        let paging = data.shift()
-        for (const value of data) {
-          let img1 = value.img1
-          if(value.img1 === ''){
-            img1 = "http://img.mk.co.kr/2018/franchise/pizza.jpg"
-          }else{
-            img1 = "//file.mk.co.kr"+img1.slice(12)
+    if(this.$route.params.page){
+      this.currentPage = Number(this.$route.params.page)
+    }
+    this.getSteadyBest(this.currentPage)
+  },
+  methods: {
+    getSteadyBest(page) {
+      this.apiModel.getSteadyBest(page).then((result)=>{
+        if(result.status === 200){
+          console.log(result)
+          let data = result.data
+          let paging = data.shift()
+          this.totalCount = Number(paging.totalCount)
+          this.currentPage = Number(paging.pageNo)
+          for (const value of data) {
+            let img2 = value.img2
+            if(img2 === ''){
+              img2 = "/src/assets/fc_noimg_253128.jpg"
+            }else{
+              img2 = "//file.mk.co.kr"+img2.slice(12)
+            }
+            value.img2 = img2
           }
-          value.img1 = img1
+          this.listItems = data
         }
-        this.listItems = data
-      }
-    })
+      })
+    }
   }
 }
 </script>
