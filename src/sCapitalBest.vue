@@ -9,6 +9,7 @@
 			<!--//프랜차이즈 현황 리스트-->
 
       <!--페이징-->
+            <!--
       <div class="paging">
         <a class="pre" href="#"></a>
         <a class="on" href="#"><strong>1</strong></a>
@@ -23,6 +24,7 @@
         <a href="#">10</a>
         <a class="next" href="#"></a>
       </div>
+      -->
       <!--//페이징-->
   </div>
 
@@ -41,71 +43,6 @@ export default {
   },
   data(){
     return {
-      items: [
-        {
-          id:1,
-          title: "test"
-        },
-        {
-          id:2,
-          title: "test"
-        },
-        {
-          id:3,
-          title: "test"
-        },
-        {
-          id:4,
-          title: "test"
-        },
-        {
-          id:5,
-          title: "test"
-        },
-        {
-          id:6,
-          title: "test"
-        },
-        {
-          id:7,
-          title: "test"
-        },
-        {
-          id:8,
-          title: "test"
-        },
-        {
-          id:9,
-          title: "test"
-        },
-        {
-          id:10,
-          title: "test"
-        },
-        {
-          id:11,
-          title: "test"
-        },
-        {
-          id:12,
-          title: "test"
-        },
-        {
-          id:13,
-          title: "test"
-        },{
-          id:14,
-          title: "test"
-        },
-        {
-          id:15,
-          title: "test"
-        },
-        {
-          id:16,
-          title: "test"
-        }
-      ],
       listItems : '',
       title : '소자본 창업 BEST',
       subTitle : '창업 자금 1억원 미만 (점포 임대 비용 제외)',
@@ -117,7 +54,9 @@ export default {
     this.apiModel.getScapitalBest('0').then((result)=>{
       if(result.status === 200){
         let data = result.data
+        console.log(result)
         let paging = data.shift()
+        console.log(paging)
         for (const value of data) {
           let img1 = value.img1
           if(value.img1 === ''){
@@ -128,7 +67,7 @@ export default {
           value.img1 = img1
         }
         this.listItems = data
-        console.log(data)
+        
       }
     })
   }

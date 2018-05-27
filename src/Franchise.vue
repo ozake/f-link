@@ -216,8 +216,11 @@ export default {
         }) */
         let result = await this.apiModel.getFranchiseList(categoryname)
         if(result.status === 200){
-            let data = result.data
+            let data = []
+            data = result.data
+            console.log(data)
             let paging = data.shift()
+            console.log(paging)
             for (const value of data) {
               let img1 = value.img1
               if(value.img1 === ''){

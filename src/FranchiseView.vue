@@ -191,50 +191,52 @@
             <span>지역선택</span>
 
             <!--대분류-->
-            <div class="selectbox">
-              <div><a href="#" class="box_tit">서울시</a></div>
-              <ul class="box_list" style="display:none">
-                <li><a href="#">서울시</a></li>
-                <li><a href="#">서울시</a></li>
-                <li><a href="#">서울시</a></li>
-              </ul>
+            <div class="select-box">
+              <select v-bind:class="[this.isIe ? ieClass : '', nonIeClass]" >
+                <option>서울</option>
+              </select>
             </div>
             <!--//대분류-->
 
             <!--중분류-->
-            <div class="selectbox">
-              <div><a href="#" class="box_tit">중구</a></div>
-              <ul class="box_list" style="display:none">
-                <li><a href="#">중구</a></li>
-                <li><a href="#">중구</a></li>
-                <li><a href="#">중구</a></li>
-              </ul>
+            <div class="select-box">
+              <select v-bind:class="[this.isIe ? ieClass : '', nonIeClass]" v-model="selected">
+                <option>시/군/구</option>
+                <option :value="{code:110, name:'종로구'}">종로구</option>
+				    		<option :value="{code:140, name:'중구'}">중구</option>
+				    		<option :value="{code:170, name:'용산구'}">용산구</option>
+				    		<option :value="{code:200, name:'성동구'}">성동구</option>
+				    		<option :value="{code:215, name:'광진구'}">광진구</option>
+				    		<option :value="{code:230, name:'동대문구'}">동대문구</option>
+				    		<option :value="{code:260, name:'중랑구'}">중랑구</option>
+				    		<option :value="{code:290, name:'성북구'}">성북구</option>
+				    		<option :value="{code:305, name:'강북구'}">강북구</option>
+				    		<option :value="{code:320, name:'도봉구'}">도봉구</option>
+				    		<option :value="{code:350, name:'노원구'}">노원구</option>
+				    		<option :value="{code:380, name:'은평구'}">은평구</option>
+				    		<option :value="{code:410, name:'서대문구'}">서대문구</option>
+				    		<option :value="{code:440, name:'마포구'}">마포구</option>
+				    		<option :value="{code:470, name:'양천구'}">양천구</option>
+				    		<option :value="{code:500, name:'강서구'}">강서구</option>
+				    		<option :value="{code:530, name:'구로구'}">구로구</option>
+				    		<option :value="{code:545, name:'금천구'}">금천구</option>
+				    		<option :value="{code:560, name:'영등포'}">영등포구</option>
+				    		<option :value="{code:590, name:'동작구'}">동작구</option>
+				    		<option :value="{code:620, name:'관악구'}">관악구</option>
+				    		<option :value="{code:650, name:'서초구'}">서초구</option>
+				    		<option :value="{code:680, name:'강남구'}">강남구</option>
+				    		<option :value="{code:710, name:'송파구'}">송파구</option>
+				    		<option :value="{code:740, name:'강동구'}">강동구</option>
+              </select>
             </div>
             <!--//중분류-->
 
-            <!--브랜드-->
-            <div class="selectbox">
-              <div><a href="#" class="box_tit">세종대로</a></div>
-              <ul class="box_list" style="display:none">
-                <li><a href="#">세종대로</a></li>
-                <li><a href="#">세종대로</a></li>
-                <li><a href="#">세종대로</a></li>
-              </ul>
-            </div>
-            <!--//브랜드-->
-
             <!--창업 자금  -->
-            <div class="selectbox">
-              <div><a href="#" class="box_tit">세종지점</a></div>
-              <ul class="box_list" style="display:none">
-                <li><a href="#">세종지점</a></li>
-                <li><a href="#">세종지점</a></li>
-                <li><a href="#">세종지점</a></li>
-                <li><a href="#">세종지점</a></li>
-                <li><a href="#">세종지점</a></li>
-                <li><a href="#">세종지점</a></li>
-                <li><a href="#">세종지점</a></li>
-              </ul>
+            <div class="select-box">
+              <select v-bind:class="[this.isIe ? ieClass : '', nonIeClass]" v-model="selectedStore">
+                <option>지점</option>
+                <option v-for="(store,idx) in storeList" :value="store.position">{{store.refBnm}}</option>
+              </select>
             </div>
             <!--//창업 자금  -->
 
@@ -315,7 +317,50 @@
   </div>
 </template>
 <style scoped>
+  .select-box {
+    width: 157px;
+    height: 40px;
+    float: left;
+    margin-right: 30px;
+    font-size: 16px;
+    font-weight: 300;
+    color: #555;
+    padding: 0 0 0 0;
+    overflow: hidden;
+    background: #fff url(http://img.mk.co.kr/2018/franchise/btn_select.jpg) no-repeat 100%;
+  }
+  .select-box:last-child {
+      margin-right: 0;
+  }
 
+  .box_title {
+    width: 157px;
+    height: 40px;
+    background: transparent;
+    display: block;
+    line-height: 37px;
+    padding-left: 12px;
+    /* margin-top: -6px; */
+    border: none;
+    text-transform: none;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  }
+  .box_title_ie {
+    width: 175px;
+    height: 40px;
+    background: transparent;
+    display: block;
+    line-height: 37px;
+    padding-left: 12px;
+    /* margin-top: -6px; */
+    border: none;
+    text-transform: none;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  }
 </style>
 <script>
 import SubHeaderSelect from "./component/SubHeaderSelect.vue"
@@ -331,6 +376,8 @@ export default {
   },
   data(){
     return {
+      ieClass : 'box_title_ie',
+      nonIeClass : 'box_title',
       isIe:false,
       displayItem : {},
       yearData : [],
@@ -340,7 +387,9 @@ export default {
       mapInstance : '',
       geocorderInstance : '',
       queue : new Queue(),
-      estateList : []
+      estateList : [],
+      selected : '시/군/구',
+      selectedStore: '지점'
     }
   },
   computed: {
@@ -394,7 +443,21 @@ export default {
   },
   watch: {
     // 라우트가 변경되면 메소드를 다시 호출됩니다.
-    '$route': 'fetchData'
+    '$route': 'fetchData',
+    selected: function(val){
+      console.log(val)
+      let code = '11'+val.code
+      this.getStoreList(this.$route.params.id, code).then((result)=>{
+                        this.storeList = result.rows
+                        this.makeMakers(result.rows)
+                      })
+      this.addressTogeocode(val.name)
+    },
+    selectedStore: function (val){
+      console.log(val)
+      let coords = new daum.maps.LatLng(val[1], val[0])
+      this.setMapCenter(coords)
+    }
   },
   mounted() {
     this.$nextTick(function () {
@@ -523,8 +586,21 @@ export default {
                       this.centerCode = code
                       //console.log(code)
                       this.getStoreList(this.$route.params.id, code).then((result)=>{
-                        this.storeList = result.rows
+                        
+                        let tmparr = []
+                        let x = null
+                        let y = null
+                        for (const value of result.rows) {
+                          x = Number(value.xAxis)
+                          y = Number(value.yAxis)
+                          let position = []
+                          position = convertGeo([x,y])
+                          value.position = position
+                          tmparr.push(value)
+                        }
+                        this.storeList = tmparr
                         this.makeMakers(result.rows)
+
                       })
                     }
                     //this.setAddr(addrText+"/ 법정동코드: "+code)

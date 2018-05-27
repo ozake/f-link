@@ -12,7 +12,7 @@
 
     <!-- 지도영역-->
 		<div class="store_map" id="map">
-      <AddrArea :addr="addr"></AddrArea>
+      <!-- <AddrArea :addr="addr"></AddrArea> -->
       <!-- 건물 추천서비스-->
       <div class="building" v-on:click="recommBldOnOff">
         <p>건물 추천서비스</p>
@@ -134,6 +134,17 @@ export default {
 
       this.$EventBus.$on('recommLayer', (val)=>{
         this.RecommLayer = val
+      })
+
+      //검색시 브랜드 검색 호출
+      this.$EventBus.$on('searchBrand', (val)=>{
+        console.log('브랜드검색')
+        //console.log(val)
+        //this.franchiseNo = val
+        //this.getBrandList(this.centerCode, val)
+        let tmparr = []
+        tmparr.push(val)
+        this.setFranchiseNo(tmparr)
       })
 
       this.$EventBus.$on('recommOnOff', this.recommBldOnOff)
@@ -329,10 +340,13 @@ export default {
       polyline.setMap(this.mapInstance)
     },
     getBrandList(code,franchiseNo){
+      console.log(franchiseNo)
+      //let tmparr = []
+
       let rows = '1000'
       this.makersClean()
       let idx = 1
-      for (const value of this.franchiseNo) {
+      for (const value of franchiseNo) {
         this.apiModel.getOP405(code, value, '1000', '1').then((result)=>{
           if(result.status === 200){
             this.makeMakers(result)
@@ -500,7 +514,7 @@ export default {
 					<div class="branch_box">
 						<h4><span class="brand_name">${refBnm}</span><span class='close_btn'><a href='#none' id='img${value.bdMgtSn}'><img src="http://img.mk.co.kr/2018/franchise/btn_close1.gif" alt="닫기"></a></span></h4>
 						<div class="branch_content_wrap">
-              <img src="http://img.mk.co.kr/2018/franchise/pizza2.jpg" alt="${refBnm}" class="logo">
+              <img src="src/assets/fc_noimg_166166.jpg" alt="${refBnm}" class="logo">
               <div class="branch_right_box">
                 <div class="branch_right_text">
                   <p>전화번호 : ${value.tel}</p>
@@ -709,6 +723,17 @@ export default {
         }
       })
 
+    },
+    keymonitor(event){
+      console.log(event.key)
+       if(event.key == "Enter")
+       {
+         if(this.franchiseSelected){
+           location.href = `./franchiseView/${this.franchiseSelectedCode}`
+         }
+         //console.log("enter key was pressed!");
+         return false
+       }
     }
 
   }

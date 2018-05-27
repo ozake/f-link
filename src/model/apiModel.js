@@ -29,12 +29,14 @@ export default class ApiModel {
      * @returns {promise}
      */
     getOP402(franchiseNo='20080100047', row='10', pageNo='1',centerCode=''){
+      let sggCd = centerCode.substring(0,5)
       this.apiNo = '402';
       this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
       this.config.data = {
         'pageNo':pageNo,
         'row':row,
-        'emdCd':centerCode,
+        //'emdCd':centerCode,
+        'sggCd': sggCd,
         'franchiseNo':franchiseNo
       }
       return this.http(this.config)
@@ -213,7 +215,7 @@ export default class ApiModel {
     }
 
     /**
-     * 검색시 업종을 검색하는 메소드
+     * 검색시 프랜차이즈 검색하는 메소드
      * @param {String} txt
      * @returns {promise}
      */
@@ -223,6 +225,44 @@ export default class ApiModel {
       this.config.data = `searchTxt=${txt}`
       return this.http(this.config)
     }
+
+    /**
+     * 검색시 지역을 검색하는 메소드
+     * @param {String} txt
+     * @returns {promise}
+     */
+    getAddrSearch(txt){
+      this.apiNo = '1003'
+      this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
+      this.config.data = `searchTxt=${txt}`
+      return this.http(this.config)
+    }
+
+
+    /**
+     * 카테고리 코드로 브랜드 조회 메소드
+     * @param {String} code
+     * @returns {promise}
+     */
+    getBrandList(code){
+      this.config.url = `${this.baseURI}/brand/ajaxBrand.php`;
+      this.config.data = `PR=${code}`
+      return this.http(this.config)
+    }
+
+    /**
+     * 매물 상세 보기 조회 메소드
+     * @param {*} code
+     * @returns {promise}
+     */
+    getSalesView(code){
+      this.apiNo = '108'
+      this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
+      this.config.data = `code=${code}`
+      return this.http(this.config)
+    }
+
+
 
 
 }

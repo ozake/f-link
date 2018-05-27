@@ -9,6 +9,7 @@
 			<!--//프랜차이즈 현황 리스트-->
 
       <!--페이징-->
+      <!--
       <div class="paging">
         <a class="pre" href="#"></a>
         <a class="on" href="#"><strong>1</strong></a>
@@ -23,6 +24,7 @@
         <a href="#">10</a>
         <a class="next" href="#"></a>
       </div>
+      -->
       <!--//페이징-->
   </div>
 
