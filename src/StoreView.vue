@@ -252,13 +252,26 @@
 
 </template>
 <script>
+import ApiModel from './model/apiModel.js'
 export default {
   name: 'StoreView',
   components:{
 
   },
+  data () {
+    return {
+      apiModel: new ApiModel(this.$http),
+      item : []
+    }
+  },
   created() {
     this.$EventBus.$emit('HeaderActive', 'store')
+    this.getFranchiseView(this.$route.params.id)
+  },
+  methods: {
+    getFranchiseView(val) {
+      this.apiModel.get
+    }
   }
 }
 </script>
