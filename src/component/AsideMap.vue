@@ -103,12 +103,12 @@
 			<ul>
 				<li v-for="item in estateList" class="memul_list">
 					<router-link :to="{ name: 'sales-view', params: {id: item.memul_seq } }">
-					<h5>{{item.build_kind}}</h5>
-					<img v-bind:src="item.img_url" />
-					<p class="monthly"><span class="icon">월</span>보 {{item.pre_price}} / 월{{item.month_price}}</p>
-					<!-- <p class="premium "><span class="icon">권</span>1억5000만원</p> -->
-					<p class="text">{{item.corrp_flr}}층  {{item.supp_meter}}㎡<br>
-					</p>
+						<h5>{{item.build_kind}}</h5>
+						<img v-bind:src="item.img_url" />
+						<p class="monthly"><span class="icon">월</span>보 {{item.pre_price}} / 월{{item.month_price}}</p>
+						<!-- <p class="premium "><span class="icon">권</span>1억5000만원</p> -->
+						<p class="text">{{item.corrp_flr}}층  {{item.supp_meter}}㎡<br>
+						</p>
 					</router-link>
 				</li>
 			</ul>

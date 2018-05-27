@@ -558,7 +558,7 @@ export default {
       let result = await this.apiModel.getOP402(frnchiseCode, '100', '1', centerCode)
       if(result.status === 200){
         let data = result.data.data
-        console.log(data)
+        //console.log(data)
         return data
       }
     },
