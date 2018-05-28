@@ -240,7 +240,7 @@ export default {
             return data
           }
         }) */
-        let result = await this.apiModel.getFranchiseList(categoryname)
+        let result = await this.apiModel.getFranchiseList(categoryname, 15, 0)
         if(result.status === 200){
             let data = []
             data = result.data

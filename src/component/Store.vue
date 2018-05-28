@@ -75,14 +75,14 @@ export default {
   },
   computed: {
     styles: function() {
-      let height = window.innerHeight - 155
+      let height = window.innerHeight - 143
 
       return {
         height: height + 'px'
       }
     },
     estateHeight: function() {
-      let height = window.innerHeight - 507
+      let height = window.innerHeight - 495
       return {
         height: height + 'px'
       }

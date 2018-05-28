@@ -138,6 +138,21 @@ export default class ApiModel {
       return this.http(this.config)
     }
 
+    /**
+     * OP-410 API 조회 메소드
+     * 업종별 배후지정보 조회
+     * @param {*} baseXycrd 배후지기반기지국 번호
+     * @param {*} ftcCate2Cd  업종 번호
+     * @param {*} bdMgtSn 건물아이디
+     * @returns {Promise}
+     */
+    getOP410(baseXycrd='', ftcCate2Cd='', bdMgtSn=''){
+      this.apiNo = '410'
+      this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
+      this.config.data = `baseXycrd=${baseXycrd}&ftcCate2Cd=${ftcCate2Cd}&bdMgtSn=${bdMgtSn}`
+      return this.http(this.config)
+    }
+
      /**
      * OP-412 API 조회 메소드
      * 건물내 업체리스트 조회
