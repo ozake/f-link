@@ -20,6 +20,7 @@ import SubHeaderTitle from './component/SubHeaderTitle.vue'
 import CardBoxNbtn from './component/CardBoxNbtn.vue'
 import Pagination from './component/Pagination.vue'
 import ApiModel from './model/apiModel';
+import numeral from "numeral"
 export default {
   name: 'scapital-best',
   components:{
@@ -67,6 +68,11 @@ export default {
           this.currentPage = Number(paging.pageNo)
           console.log(paging)
           for (const value of data) {
+            let total = value.total
+              total = total.slice(0,-1)
+              total = Number(total)
+              total = numeral(total).format('0,0')
+            value.total = total
             let img2 = value.img2
             if(img2 === ''){
               img2 = "/src/assets/fc_noimg_253128.jpg"

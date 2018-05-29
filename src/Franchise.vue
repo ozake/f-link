@@ -249,6 +249,7 @@ export default {
             console.log(paging)
             for (const value of data) {
               let total = value.total
+              total = total.slice(0,-1)
               total = Number(total)
               total = numeral(total).format('0,0')
               value.total = total

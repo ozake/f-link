@@ -34,6 +34,7 @@
 <script>
 import SubHeaderTitle from './component/SubHeaderTitle.vue'
 import CardBoxNbtn from './component/CardBoxNbtn.vue'
+import numeral from "numeral"
 export default {
   name: 'SnsBest',
   components:{
@@ -65,7 +66,13 @@ export default {
       if(result.status === 200){
         let data = result.data.data
         data = data.rows
+        data = this.FilterArr(data)
         for (const value of data) {
+          let total = value.total
+              total = total.slice(0,-1)
+              total = Number(total)
+              total = numeral(total).format('0,0')
+            value.total = total
           let img2 = value.img2
           //console.log(img1)
           if(img2 === '' || img2 === null ){
@@ -76,11 +83,33 @@ export default {
           value.img2 = img2
           value.regnumber = value.franchiseNo
         }
-        console.log(data)
+        //console.log(data)
         this.listItems = data
       }
 
     })
+  },
+  methods : {
+    nullFilter(item) {
+      //console.log(item.brand)
+      if(!item.brand){
+        
+      }else{
+        return item
+      }
+    },
+    FilterArr(arr) {
+      let tmpArr = []
+      for (const val of arr) {
+        let res = ''
+        res = this.nullFilter(val)
+        if(res){
+          tmpArr.push(res)
+        }
+        
+      }
+      return tmpArr
+    }
   }
 }
 </script>

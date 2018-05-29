@@ -32,6 +32,21 @@ export default class DataPaser {
     return iterable;
   }
 
+  /**
+   * 배후지 좌표 파싱 메소드
+   * 파싱하여 좌표를 컨버팅하여 배열로 리턴한다
+   * @return {Array}
+   */
+  landGeocodeArr(){
+    let dataGeo = JSON.parse(this.data.geomJson)
+    let coordinates = []
+    let tmpGeo = dataGeo.coordinates[0]
+    for(const value of tmpGeo){
+        coordinates.push(this.convertGeo(value))
+    }
+    return coordinates
+  }
+
 
   /**
    * hinterlandCentercode - 배후지 중심좌표 파싱 메소드
@@ -45,6 +60,19 @@ export default class DataPaser {
     }
     return iterable;
   }
+
+  /**
+   * landCentercode - 배후지 중심좌표 파싱 메소드
+   * @return {Map}  중심좌표값을 담은 배열을 리턴한다.
+   */
+  landCentercode(){
+    let dataGeo = JSON.parse(this.data.baseXyJson)
+    let coordinates = dataGeo.coordinates
+    coordinates = this.convertGeo(coordinates)
+    return coordinates
+  }
+
+
 
 
   /**

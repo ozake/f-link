@@ -100,4 +100,7 @@ export default {
 .on {
     font-weight: bold
 }
+.paging a {
+    margin: 0 1px;
+}
 </style>

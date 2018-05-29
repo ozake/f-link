@@ -16,7 +16,7 @@
 				</dl>
         </router-link>
         <label :for="id" class="check_info_label"><span>추가 정보 요청</span></label>
-        <input type="checkbox" :id="id" class="check_info" />
+        <input type="checkbox" :id="id" class="check_info" v-model="checked" :value="item.regnumber" />
 				<!-- <a href="#"><button class="btn_info">추가 정보 요청 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </button></a> -->
 			</ul>
 			<!--//프랜차이즈 박스-->
@@ -51,7 +51,17 @@ export default {
   props: ['item', 'index'],
   data(){
     return {
-      id: null
+      id: null,
+      checked: false
+    }
+  },
+  watch : {
+    checked: function (val) {
+      if(val){
+        //console.log(this.item.regnumber)
+        this.$emit('input', this.item.regnumber)
+      }
+      
     }
   },
   mounted () {

@@ -84,8 +84,8 @@
 				<!--정보제공-->	
 				<div class="s_office">
 					<h6>정보제공</h6>
-					<img src="http://img.mk.co.kr/2018/franchise/office.png" alt="개포석영공인중개사사무소">
-					<p class="tit"><img src="http://img.mk.co.kr/2018/franchise/icon_office.jpg" alt="개포석영공인중개사사무소">{{item.SANGHO_NAME}}</p>
+					<img :src="item.PROFILE_IMAGE" />
+					<p class="tit"><img src="http://img.mk.co.kr/2018/franchise/icon_office.jpg" :alt="item.SANGHO_NAME">{{item.SANGHO_NAME}}</p>
 					<dl>
 						<dt>대표</dt>
 					    <dd>{{item.PRESENT_NAME}}</dd>				
@@ -188,17 +188,29 @@ export default {
 					let tmpDate = data.FIRST_REG_DATE
 					data.FIRST_REG_DATE = tmpDate.substring(0,10)
 					let img = data.IMG_URL
-					img = img.split( ',' )
 					let tmparr = []
-					for (const value of img) {
-						let str = value.replace("http://image.bizmk.kr", "")
-						let res = str.search("http://image.bizmk.kr")
-						if(res === -1){
-							str = 'http://image.bizmk.kr'+str
-						}
+					//console.log(data.IMG_URL)
+					if(img === ''){
+								img = "/src/assets/fc_noimg_166166.jpg"
+								tmparr.push(img)
+								data.IMG_URL = tmparr
+          }else{
+						img = img.split( ',' )		
+						for (const value of img) {
+							let str = value.replace("http://image.bizmk.kr", "")
+							let res = str.search("http://image.bizmk.kr")
+							if(res === -1){
+								str = 'http://image.bizmk.kr'+str
+							}
 						tmparr.push(str)
 					}
 					data.IMG_URL = tmparr
+					}
+					let pimg = data.PROFILE_IMAGE
+					if(pimg === ''){
+						pimg = pimg = "/src/assets/fc_noimg_253128.jpg"
+						data.PROFILE_IMAGE = pimg
+					}
 					data.SUPP_PYEONG = this.calPyeong(data.SUPP_METER)
 					data.USE_PYEONG = this.calPyeong(data.USE_METER)
 					this.item = data

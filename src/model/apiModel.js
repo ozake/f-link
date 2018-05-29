@@ -166,6 +166,24 @@ export default class ApiModel {
       return this.http(this.config)
     }
 
+     /**
+     * OP-412 API 조회 메소드
+     * 건물내 업체리스트 조회
+     * @param {String} bdMgtSn 건물아이디
+     * @param {String} baseXycrd 건물아이디
+     * @returns {Promise}
+     */
+    getOP413(bdMgtSn='',baseXycrd=''){
+      this.apiNo = '413'
+      this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
+      //this.config.data = `bdMgtSn=${bdMgtSn}&baseXycrd=${baseXycrd}`
+      this.config.data = {
+        'bdMgtSn' : bdMgtSn,
+        'baseXycrd' : baseXycrd
+      }
+      return this.http(this.config)
+    }
+
 
     /**
      * 카테고리별 프렌차이즈 리스트 출력

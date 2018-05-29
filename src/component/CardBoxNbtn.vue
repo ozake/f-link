@@ -8,7 +8,7 @@
 			<dt>분류</dt>
 			<dd>{{item.category1}} > {{item.category2}}</dd>
 			<dt>창업비용</dt>
-			<dd>{{item.total}}천원</dd>
+			<dd>{{item.total}}만원</dd>
 			<dt>기준평형</dt>
 			<dd>{{item.storearea}}평</dd>
 		</dl>

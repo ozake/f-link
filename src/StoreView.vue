@@ -14,8 +14,8 @@
 				<!--//건물타이틀-->
 
 				<!--지도영역-->
-				<div class="map">
-					<img src="http://img.mk.co.kr/2018/franchise/building_map.jpg" alt="건물지도 임시이미지">
+				<div class="map" id="map">
+					<!-- <img src="http://img.mk.co.kr/2018/franchise/building_map.jpg" alt="건물지도 임시이미지"> -->
 
 					<!--건물위치 아이콘-->
 					<div class="icon_bu" style="position:absolute;left:400px;top:200px">
@@ -240,6 +240,7 @@
 import ChartRader from './component/ChartRader.vue';
 import ChartLine from './component/ChartLine.vue';
 import ApiModel from './model/apiModel.js'
+import DataPaser from "./model/dataPaser.js"
 export default {
   name: 'StoreView',
   components:{
@@ -252,6 +253,8 @@ export default {
       item : '',
       storeName : this.$route.params.storeName,
 			buildIn : [],
+			mapInstance : '',
+      		geocorderInstance : '',
 			raderChartLabels : ['안전성', '유동성', '수익성', '접근성', '성장성'],
 			raderChartDatasets : [],
 			raderChartOption : {
@@ -284,7 +287,7 @@ export default {
 						display: true,
 						scaleLabel: {
 							display: true,
-							labelString: '유동인구'
+							labelString: '유동인구(명)'
 						}
 					}]
 				}
@@ -293,7 +296,7 @@ export default {
 			ageText: ''
     }
 	},
-	computed: {
+	/* computed: {
 		ageIndex : {
 			get : function () {
 				return ''
@@ -330,12 +333,47 @@ export default {
 			return true
 			}
 		}
-	},
+	}, */
   created() {
     this.$EventBus.$emit('HeaderActive', 'store')
     let bdid = this.$route.params.id
     this.getBuildingInfo(bdid)
     this.getBuildingBasedStore(bdid)
+	},
+	mounted() {
+    	this.$nextTick(function () {
+      	// 모든 화면이 렌더링된 후 실행합니다.
+			console.log("지도 셋팅 시작")
+			let container = document.getElementById('map'); //지도를 담을 영역의 DOM 레퍼런스
+			let options = { //지도를 생성할 때 필요한 기본 옵션
+				center: new daum.maps.LatLng(37.56611900511385, 126.97774128459538), //지도의 중심좌표.
+				level: 3 //지도의 레벨(확대, 축소 정도)
+			};
+
+			let map = new daum.maps.Map(container, options); //지도 생성 및 객체 리턴
+			// 주소-좌표 변환 객체를 생성합니다
+			let geocoder = new daum.maps.services.Geocoder();
+
+			// 일반 지도와 스카이뷰로 지도 타입을 전환할 수 있는 지도타입 컨트롤을 생성합니다
+			let mapTypeControl = new daum.maps.MapTypeControl();
+
+			// 지도에 컨트롤을 추가해야 지도위에 표시됩니다
+			// daum.maps.ControlPosition은 컨트롤이 표시될 위치를 정의하는데 TOPRIGHT는 오른쪽 위를 의미합니다
+			map.addControl(mapTypeControl, daum.maps.ControlPosition.TOPRIGHT);
+
+			// 지도 확대 축소를 제어할 수 있는  줌 컨트롤을 생성합니다
+			let zoomControl = new daum.maps.ZoomControl();
+			map.addControl(zoomControl, daum.maps.ControlPosition.RIGHT);
+			console.log("지도 셋팅 완료")
+			//console.log(this.displayItem.address)
+
+			// 중심 좌표나 확대 수준이 변경됐을 때 지도 중심 좌표에 대한 주소 정보를 표시하도록 이벤트를 등록합니다
+			//this.mapEventListener(map,geocoder)
+			this.mapInstance = map
+			this.geocorderInstance = geocoder
+
+			console.log("마운티드 종료")
+		})
 	},
   methods: {
     getBuildingInfo(bdMgtSn){
@@ -350,7 +388,8 @@ export default {
           data.useapprovaldate = useYear.getFullYear()
           this.item = data
           this.getBasedInfo(data.baseXycrd)
-					this.getBasedCategory(data.baseXycrd, this.$route.categoryName ,data.bdMgtSn)
+		  this.getBasedCategory(data.baseXycrd, this.$route.categoryName ,data.bdMgtSn)
+		  this.getBasedMaster(data.bdMgtSn, data.baseXycrd)
         }
       })
     },
@@ -490,7 +529,137 @@ export default {
 				age = age+10
 			}
 			return tmpArr
-		}
+		},
+		mapEventListener(map,geocoder){
+      daum.maps.event.addListener(map, 'dragend', () => {
+          this.searchAddrFromCoords(geocoder, map.getCenter(), this.displayCenterInfo)
+      })
+    },
+    searchAddrFromCoords(geocoder,coords,callback){
+      geocoder.coord2RegionCode(coords.getLng(), coords.getLat(), callback)
+    },
+    displayCenterInfo(result, status) {
+      let addrText = '';
+        if (status === daum.maps.services.Status.OK) {
+
+            for(let i = 0; i < result.length; i++) {
+                // 법정동의 region_type 값은 'B' 이므로
+                if (result[i].region_type === 'B') {
+                    addrText = result[i].address_name
+                    let code = result[i].code
+                    code = code.substring(0,8)
+                    if(this.centerCode !== code){
+                      this.centerCode = code
+                      //console.log(code)
+                      this.getStoreList(this.$route.params.id, code).then((result)=>{
+
+                        let tmparr = []
+                        let x = null
+                        let y = null
+                        for (const value of result.rows) {
+                          x = Number(value.xAxis)
+                          y = Number(value.yAxis)
+                          let position = []
+                          position = convertGeo([x,y])
+                          value.position = position
+                          tmparr.push(value)
+                        }
+                        this.storeList = tmparr
+                        this.makeMakers(result.rows)
+
+                      })
+                    }
+                    //this.setAddr(addrText+"/ 법정동코드: "+code)
+
+                    break;
+                }
+            }
+        }
+    },
+    makeMakers(rows){
+      let x = null
+      let y = null
+      this.makersClean()
+      for (const value of rows) {
+        //console.log(value)
+        x = Number(value.xAxis)
+        y = Number(value.yAxis)
+        let marker = null
+        marker = this.setMaker(x,y,value)
+        this.queue.setQueue(marker)
+      }
+
+    },
+    setMaker(x,y,value){
+      let tmparr = []
+      tmparr = convertGeo([x,y])
+      let marker = new daum.maps.Marker({
+          map: this.mapInstance, // 마커를 표시할 지도
+          position: new daum.maps.LatLng(tmparr[1], tmparr[0]), // 마커를 표시할 위치
+          title : value.refBnm, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
+      })
+      return marker
+    },
+    makersClean(){
+      let tmp = undefined
+      let length = this.queue.getQueueLength()
+      if(length !== 0){
+        for(let i=0; i<length; i++){
+          tmp = this.queue.getQueue()
+          if(typeof tmp === 'undefined'){
+            break;
+          }
+          tmp.setMap(null)
+        }
+      }
+
+    },
+	getBasedMaster(buildid, basedId){
+		this.apiModel.getOP413(buildid,basedId).then((result)=>{
+			if(result.status === 200){
+				console.log('배후지마스터')
+				
+				let data = result.data.data.rows[0]
+				/* let geomJson = data.geomJson
+				geomJson = JSON.parse(geomJson)
+				console.log(geomJson) */
+				let parser = new DataPaser(data)
+				let geoArr = parser.landGeocodeArr()
+				let centerArr = parser.landCentercode()
+				this.setPolygon(geoArr)
+				this.setCenterMap(centerArr[1],centerArr[0])
+			}
+		})
+	},
+	/**
+     * setPolygon - 배후지영역을 지도에 다각형으로 그린다
+     *
+     * @param  {Array} data 배후지좌표 배열을 파람으로 전달
+     * @return {void}
+     */
+    setPolygon(data){
+      let pathArr = []
+      for(let value of data){
+        pathArr.push(new daum.maps.LatLng(value[1],value[0]))
+      }
+
+      let polygon = new daum.maps.Polygon({
+        map: this.mapInstance,
+        path: pathArr,
+        strokeWeight: 2,
+        strokeColor: '#FF00FF',
+        strokeOpacity: 0.8,
+        strokeStyle: 'dashed',
+        fillColor: '#00EEEE',
+        fillOpacity: 0.6
+      })
+
+      polygon.setMap(this.mapInstance)
+
+	},
+	setCenterMap(x,y){
+      this.mapInstance.setCenter(new daum.maps.LatLng(x, y))
+    }
   }
 }
 </script>
