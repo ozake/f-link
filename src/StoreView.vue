@@ -18,25 +18,25 @@
 					<!-- <img src="http://img.mk.co.kr/2018/franchise/building_map.jpg" alt="건물지도 임시이미지"> -->
 
 					<!--건물위치 아이콘-->
-					<div class="icon_bu" style="position:absolute;left:400px;top:200px">
+					<!-- <div class="icon_bu" style="position:absolute;left:400px;top:200px">
                          <img src="http://img.mk.co.kr/2018/franchise/icon_bu.png" alt="건물지도 임시이미지">
-					</div>
+					</div> -->
 					<!--//건물위치 아이콘-->
 
 					<!--배후지 설명-->
-					<div class="areainfo" style="position:absolute;left:550px;top:220px">
+					<!-- <div class="areainfo" style="position:absolute;left:550px;top:220px">
 					    <b>배후지 영역이란?</b>
 						해당 건물 기준  인구수, 이동거리,이동방향을 고려해<br> 창업에 영향을 미치는 상권영역
-					</div>
+					</div> -->
 					<!--//배후지 설명-->
 
 
 					<!--유동인구 유입경로-->
-					<ul>
+					<!-- <ul>
 						<li class="leftinfo">유동인구<br> 유입경로</li>
 						<li class="rightinfo">이 영역에서 유동인구가 가장 높게 유입되는 방향은 ‘남서’측이며, 도보한계치는 최대 596m까지 입니다.
                                              <span>※ 도보한계치란? 도보로 이동했을 때, 빌딩을 이용하는데 불편함을 느끼지 않는 한계 거리를 의미합니다 </span></li>
-					</ul>
+					</ul> -->
 				</div>
 				<!--//지도영역-->
 
@@ -150,11 +150,11 @@
 					  <tr>
 						<th rowspan="2" align="center">배후지 영역</th>
 						<td height="30" align="center">지하철역 수</td>
-						<td height="30" align="center">동묘앞역 2번출구</td>
+						<td height="30" align="center">{{ basedInfo.subCnt}}개</td>
 					  </tr>
 					  <tr>
 						<td height="30" align="center">버스정류장 수</td>
-						<td height="30" align="center">2개</td>
+						<td height="30" align="center">{{basedInfo.busCnt}}개</td>
 					  </tr>
 					</table>
 					<!--//접근성-->
@@ -293,7 +293,8 @@ export default {
 				}
 			},
 			basedInfo: {},
-			ageText: ''
+      ageText: '',
+      catStore: []
     }
 	},
 	/* computed: {
@@ -388,8 +389,9 @@ export default {
           data.useapprovaldate = useYear.getFullYear()
           this.item = data
           this.getBasedInfo(data.baseXycrd)
-		  this.getBasedCategory(data.baseXycrd, this.$route.categoryName ,data.bdMgtSn)
-		  this.getBasedMaster(data.bdMgtSn, data.baseXycrd)
+		      this.getBasedCategory(data.baseXycrd, this.$route.params.categoryCode ,data.bdMgtSn)
+		      this.getBasedMaster(data.bdMgtSn, data.baseXycrd)
+          this.getStoreListbyCte(data.baseXycrd, this.$route.params.categoryCode)
         }
       })
     },
@@ -399,7 +401,7 @@ export default {
 					console.log(result)
 					let data = result.data.data.rows[0]
 					data.fpoplSex = this.makeNumberArray(data.fpoplSex, 2)
-					data.fpoplAge = this.makeBasedAgeArr(data.fpoplAge, 2)
+					data.fpoplAge = this.makeBasedAgeArr(data.fpoplAge, 0)
 					data.fpoplSun = JSON.parse(data.fpoplSun)
 					data.fpoplMon = JSON.parse(data.fpoplMon)
 					data.fpoplTue = JSON.parse(data.fpoplTue)
@@ -464,9 +466,19 @@ export default {
     getBuildingBasedStore(val){
       this.apiModel.getOP412(val).then((result)=>{
         if(result.status === 200){
-          console.log(result)
+          //console.log(result)
           let data = result.data.data.rows
-          this.buildIn = data
+          let tmpArr = []
+          for (const value of data) {
+            let tel = value.tel
+            tel = this.phoneFomatter(tel)
+            if(tel.slice(1,2) === '0'){
+              tel = tel.slice(1)
+            }
+            value.tel = tel
+            tmpArr.push(value)
+          }
+          this.buildIn = tmpArr
         }
       })
     },
@@ -475,16 +487,16 @@ export default {
 				if(result.status === 200){
 					console.log(result)
 					let data = result.data.data.rows[0]
-					let stbiz = Number(data.stbiz)
-					let liqdt = Number(data.liqdt)
-					let prftb = Number(data.prftb)
-					let aces = Number(data.aces)
-					let groth = Number(data.groth)
-					let stbizAvg = Number(data.stbizAvg)
-					let liqdtAvg = Number(data.liqdtAvg)
-					let prftbAvg = Number(data.prftbAvg)
-					let acesAvg = Number(data.acesAvg)
-					let grothAvg = Number(data.grothAvg)
+					let stbiz = this.reverseData(Number(data.stbiz))
+					let liqdt = this.reverseData(Number(data.liqdt))
+					let prftb = this.reverseData(Number(data.prftb))
+					let aces = this.reverseData(Number(data.aces))
+					let groth = this.reverseData(Number(data.groth))
+					let stbizAvg = this.reverseData(Number(data.stbizAvg))
+					let liqdtAvg = this.reverseData(Number(data.liqdtAvg))
+					let prftbAvg = this.reverseData(Number(data.prftbAvg))
+					let acesAvg = this.reverseData(Number(data.acesAvg))
+					let grothAvg = this.reverseData(Number(data.grothAvg))
 					this.raderChartDatasets = [{
 						label: '건물 평가지표',
 						backgroundColor: 'rgba(200, 0, 27, 0.25)',
@@ -504,9 +516,55 @@ export default {
 					}]
 				}
 			})
-		},
+    },
+    reverseData(num){
+      switch (num) {
+        case 10:
+          num = 1;
+          break;
+        case 9:
+          num = 2;
+          break;
+        case 8:
+          num = 3;
+          break;
+        case 7:
+          num = 4;
+          break;
+         case 6:
+          num = 5;
+          break;
+        case 5:
+          num = 6;
+          break;
+        case 4:
+          num = 7;
+          break;
+        case 3:
+          num = 8;
+          break;
+        case 2:
+          num = 9;
+          break;
+        case 1:
+          num = 10;
+          break;
+        default:
+          break;
+      }
+      return num
+    },
+    getStoreListbyCte(basedCode, categoryCode){
+      this.apiModel.getOP411(basedCode, categoryCode).then((result)=>{
+        if(result.status === 200){
+          console.log('411')
+          console.log(result.data.data.rows)
+          //this.catStore = result.data.rows
+        }
+      })
+    },
 		/**
-		 * 배열내의 스트링을 숫자형 변환 및 
+		 * 배열내의 스트링을 숫자형 변환 및
 		 * 소수점 자리 지정하여 반올림해서 배열로 반환하는 메소드
 		 * @param {Array} arr 데이터 배열
 		 * @param {Number} digit 자릿수 지정
@@ -514,7 +572,7 @@ export default {
 		 */
 		makeNumberArray(data, digit=0){
 			let tmpArr = []
-			data = JSON.parse(data)     
+			data = JSON.parse(data)
 			for (const value of data) {
 				tmpArr.push(Number(value).toFixed(digit))
 			}
@@ -523,7 +581,7 @@ export default {
 		makeBasedAgeArr(data, digit=0){
 			let tmpArr = []
 			data = JSON.parse(data)
-			let age = 10     
+			let age = 10
 			for (const value of data) {
 				tmpArr.push({ ageTxt: age+'대', rate: Number(value).toFixed(digit) })
 				age = age+10
@@ -551,7 +609,7 @@ export default {
                     if(this.centerCode !== code){
                       this.centerCode = code
                       //console.log(code)
-                      this.getStoreList(this.$route.params.id, code).then((result)=>{
+                      /* this.getStoreList(this.$route.params.id, code).then((result)=>{
 
                         let tmparr = []
                         let x = null
@@ -567,7 +625,7 @@ export default {
                         this.storeList = tmparr
                         this.makeMakers(result.rows)
 
-                      })
+                      }) */
                     }
                     //this.setAddr(addrText+"/ 법정동코드: "+code)
 
@@ -618,7 +676,7 @@ export default {
 		this.apiModel.getOP413(buildid,basedId).then((result)=>{
 			if(result.status === 200){
 				console.log('배후지마스터')
-				
+
 				let data = result.data.data.rows[0]
 				/* let geomJson = data.geomJson
 				geomJson = JSON.parse(geomJson)
@@ -659,7 +717,36 @@ export default {
 	},
 	setCenterMap(x,y){
       this.mapInstance.setCenter(new daum.maps.LatLng(x, y))
+    },
+    phoneFomatter(num, type) {
+      let formatNum = "";
+
+      if (num.length == 11) {
+        if (type == 0) {
+          formatNum = num.replace(/(\d{3})(\d{4})(\d{4})/, "$1-****-$3");
+        } else {
+          formatNum = num.replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3");
+        }
+      } else if (num.length == 8) {
+        formatNum = num.replace(/(\d{4})(\d{4})/, "$1-$2");
+      } else {
+        if (num.indexOf("02") == 0) {
+          if (type == 0) {
+            formatNum = num.replace(/(\d{2})(\d{4})(\d{4})/, "$1-****-$3");
+          } else {
+            formatNum = num.replace(/(\d{2})(\d{4})(\d{4})/, "$1-$2-$3");
+          }
+        } else {
+          if (type == 0) {
+            formatNum = num.replace(/(\d{3})(\d{3})(\d{4})/, "$1-***-$3");
+          } else {
+            formatNum = num.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3");
+          }
+        }
+      }
+      return formatNum;
     }
+
   }
 }
 </script>

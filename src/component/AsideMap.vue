@@ -7,15 +7,18 @@
 			<form name="search" id="search" v-on:submit.prevent="keymonitor">
 				<fieldset>
 					<legend>검색</legend>
-					<input name="s_keyword" title="검색어 입력" type="text" placeholder="프랜차이즈명, 회사명으로 검색" v-on:input="typing" v-bind:value="searchTxt" v-on:keyup="keymonitor" ref="search">
+					<input name="s_keyword" title="검색어 입력" type="text" placeholder="지역명으로 검색" v-on:input="typing" v-bind:value="searchTxt" @keyup.enter="searchResMove" @keyup.down="keydown" ref="search">
 					<a href="#"><img alt="검색하기" src="http://img.mk.co.kr/2018/franchise/search_w.png" class="sbtn"></a>
 				</fieldset>
 				<!-- 메인 검색 레이어-->
-				<div class="search_layer" v-show="searchAreaToggle">
+        <select multiple class="search_layer" v-show="searchAreaToggle" ref="suggestDom" v-model="suggestSlect" @keyup.enter="selector">
+          <option v-for="(item,index) in searchDisplay" :value="{code:item.regnumber, txt:item.displayTxt, flag:item.flag}" >{{item.displayTxt}}</option>
+        </select>
+			<!-- 	<div class="search_layer" v-show="searchAreaToggle">
 					<ul>
 						<li v-for="item in searchDisplay"><a href="#" v-on:click="selector(item.displayTxt, item.flag, item.regnumber)">{{item.displayTxt}}</a></li>
 					</ul>
-				</div>
+				</div> -->
 				<!--// 메인 검색 레이어-->
 			</form>
 		</div>
@@ -42,8 +45,8 @@
 				</div>
 
 				<div class="search_ch">
-					<input class="chk" type="checkbox" id="allselect">
-					<label for="allselect">전체선택</label>
+					<!-- <input class="chk" type="checkbox" id="allselect">
+					<label for="allselect">전체선택</label> -->
 
 					<input class="chk" type="checkbox" id="nofranchise" v-model="nonFranchise">
 					<label for="nofranchise">프랜차이즈 아닌 매장도 표시</label>
@@ -126,8 +129,8 @@ export default {
   data(){
 	return {
 		//isIe : false,
-    	ieClass : 'select-box-ie',
-    	selectClass : 'select-box',
+    ieClass : 'select-box-ie',
+    selectClass : 'select-box',
 		sector: [],
 		sectorMcode : [],
 		selected : '업종',
@@ -139,8 +142,11 @@ export default {
 		searchDisplay: [],
 		searchAreaToggle: false,
 		apiModel: new ApiModel(this.$http),
-		franchiseSelectedCode : '',
-		franchiseSelected : false
+		addrCodeSelected: false,
+    addrCode: '',
+    addrCodeTxt: '',
+    suggestSlect: [],
+    flag: ''
      }
   },
   props:{
@@ -198,54 +204,65 @@ export default {
 	  },
 	  brand : function (val) {
 		//console.log(this.updateFlag)
-		if(this.updateFlag){
-			this.brandCk = []
-			this.brandList = this.brand
-		}
+      if(this.updateFlag){
+        this.brandCk = []
+        this.brandList = this.brand
+      }
 	  },
 	  nonFranchise : function (val) {
 		  this.$EventBus.$emit('nonFranchise', val)
 	  },
-	  searchTxt: function(val) {
-		this.$nextTick(function () {
-			this.searchFc(val)
-		})
-	  }
+	  suggestSlect: function (val) {
+      let data = val[0]
+      this.flag = data.flag
+      if(data.flag === 'addr'){
+        this.searchTxt = data.txt
+        this.addrCodeTxt = data.txt
+        this.addrCode = data.code
+      }
+    }
   },
   methods: {
 	alerm() {
 		alert('준비중입니다.')
 	},
-	typing(e) {
-    	this.searchTxt = e.target.value
-    },
+	typing(e){
+      this.searchTxt = e.target.value
+      this.searchFc(e.target.value)
+  },
 	searchFc(val){
-      if(val === ''){
-        this.searchTxt = ''
-        this.searchAreaToggle = false
-        return
-      }
-      this.searchAreaToggle = true
-        this.apiModel.getFranchiseSearch(val).then((result)=>{
-		//console.log(result)
-		if(result.status === 200){
-			let data = result.data
-			let tmpArr = []
-			let tmp = ''
-			for (const value of data) {
-			tmp = { regnumber: value.regnumber, displayTxt: value.brand+' '+value.company, flag:'franchise' }
-			tmpArr.push(tmp)
-			}
-			this.searchDisplay = tmpArr
-		}
-		})
-
-    },
+    if(val === ''){
+      this.searchTxt = ''
+      this.searchAreaToggle = false
+      return
+    }
+    this.searchAreaToggle = true
+    this.addrCodeSelected = false
+    let addr = val
+    this.apiModel.getAddrSearch(addr).then((result)=>{
+        if(result.status === 200){
+          let data = result.data
+          let tmpArr = []
+          let tmp = ''
+          for (const value of data) {
+            let areaTxt = value.area2
+            if(value.area3){
+              areaTxt = areaTxt +  '(' +value.area3 + ')'
+            }
+            tmp = { regnumber: value.code, displayTxt: areaTxt, flag:'addr' }
+            tmpArr.push(tmp)
+          }
+          this.searchDisplay = tmpArr
+        }
+      })
+  },
 	getSector(){
 		  let url = "http://f-link.co.kr/dist/sectorCode.json"
-		  if(location.hostname === "110.13.170.148" || location.hostname === "127.0.0.1"){
+		  if(location.hostname === "110.13.170.148"){
 			  url = "http://110.13.170.148:8080/src/assets/sectorCode.json"
-		  }
+		  }else if(location.hostname === "127.0.0.1"){
+        url = "http://127.0.0.1:8080/src/assets/sectorCode.json"
+      }
 		  this.$http.get(url).then((result)=>{
 			  if(result.status === 200){
 				  let data = result.data
@@ -261,7 +278,7 @@ export default {
 			  }
 		  }
 	},
-	keymonitor(event){
+	/* keymonitor(event){
       console.log(event.key)
        if(event.key == "Enter")
        {
@@ -274,26 +291,27 @@ export default {
          //console.log("enter key was pressed!");
          return false
        }
-	},
-	selector(txt, flag, regnumber){
-      if(flag === 'sector'){
-        this.sectorSelected = true
-        this.searchTxt = txt
-        this.sectorSelectedTxt = txt
+	}, */
+	selector(){
+      let flag = this.flag
+      if(flag === 'addr'){
+        this.addrCodeSelected = true
+        this.searchAreaToggle = false
         this.$refs.search.focus()
         this.searchDisplay = ''
       }
-      else if(flag === 'franchise'){
-        console.log("프렌차이즈 선택")
-        this.franchiseSelected = true
-        this.searchDisplay = ''
-        this.searchAreaToggle = false
-        this.franchiseSelectedTxt = txt
-		this.searchTxt = txt
-		this.franchiseSelectedCode = regnumber
-		this.$refs.search.focus()
-      }
-    }
+    },
+    keydown(){
+      this.$refs.suggestDom.focus()
+    },
+    searchResMove(){
+          if(this.addrCodeSelected){
+            this.$EventBus.$emit('addrSearch', this.addrCodeTxt)
+          }
+          else{
+            alert('지역을 선택해주세요.')
+          }
+    },
   }
 
 }

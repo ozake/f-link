@@ -45,7 +45,8 @@ export default {
     return {
       listItems : '',
       title : 'SNS 조회 BEST',
-      subTitle : '포털과 SNS에서 많이 언급되는 브랜드'
+      subTitle : '포털과 SNS에서 많이 언급되는 브랜드',
+      categoryCode : this.$route.params.categoryCode
     }
   },
   created(){
@@ -58,7 +59,7 @@ export default {
       data: {
         'pageNo':'1',
         'row':'16',
-        'ftcCate2Cd':'0101'
+        'ftcCate2Cd':`${this.categoryCode}`
       }
     }
     this.$http(config)
@@ -93,7 +94,7 @@ export default {
     nullFilter(item) {
       //console.log(item.brand)
       if(!item.brand){
-        
+
       }else{
         return item
       }
@@ -106,7 +107,7 @@ export default {
         if(res){
           tmpArr.push(res)
         }
-        
+
       }
       return tmpArr
     }

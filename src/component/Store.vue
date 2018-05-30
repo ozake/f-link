@@ -10,6 +10,17 @@
       <recomm-bld v-if="RecommBld" :RecommBld="RecommBld" :RecommLayer="RecommLayer" :data="RecommList" :categoryName="RecommCname"></recomm-bld>
     <!-- </transition> -->
 
+    <!-- 지도검색 안내팝업 -->
+    <transition name="slide-fade">
+      <div class="info_pop" v-if="infoPop" style="top:10px;">
+        지역을 입력하세요. <br>
+          예시) 강남구, 서초동
+        <a href="#none" @click="infoPop = false"><img alt="닫기" src="http://img.mk.co.kr/2018/franchise/btn_close1.gif"></a>
+      </div>
+    </transition>
+		<!-- //지도검색 안내팝업 -->
+
+
     <!-- 지도영역-->
 		<div class="store_map" id="map" ref="map" v-bind:style="styles">
       <!-- <AddrArea :addr="addr"></AddrArea> -->
@@ -62,8 +73,8 @@ export default {
       RecommQueue : new Queue(),
       RecommMarkers : new Queue(),
       RecommList : [],
-      estateList : []
-
+      estateList : [],
+      infoPop : false
     }
   },
   props:{
@@ -153,7 +164,7 @@ export default {
       })
 
       //검색시 브랜드 검색 호출
-      this.$EventBus.$on('searchBrand', (val)=>{
+      /* this.$EventBus.$on('searchBrand', (val)=>{
         console.log('브랜드검색')
         //console.log(val)
         //this.franchiseNo = val
@@ -161,18 +172,21 @@ export default {
         let tmparr = []
         tmparr.push(val)
         this.setFranchiseNo(tmparr)
-      })
+      }) */
 
       this.$EventBus.$on('recommOnOff', this.recommBldOnOff)
 
       if(this.$route.params.categoryCode && this.$route.params.addr){
-        //alert('파람 있다.')
         this.addressTogeocode(this.$route.params.addr).then(()=>{
           this.ftcCate2Cd = this.$route.params.categoryCode
         })
-        
-        
       }
+
+      this.$EventBus.$on('addrSearch', (val)=>{
+        this.addressTogeocode(val)
+      })
+
+      this.infoPopAuto(2000)
       //this.setPolyline()
     })
 
@@ -183,9 +197,6 @@ export default {
     if ( (navigator.appName == 'Netscape' && agent.indexOf('trident') != -1) || (agent.indexOf("msie") != -1)) {
      this.isIe = true
      }
-     
-     
-
   },
   watch: {
     ftcCate2Cd : function (val){
@@ -807,6 +818,12 @@ export default {
         this.mapInstance.setCenter(coords);
       }
     },
+    infoPopAuto(time) {
+      if(!this.infoPop){
+        setTimeout(()=>{ this.infoPop = true }, time)
+        setTimeout(()=>{ this.infoPop = false }, time+6000)
+      }
+    }
 
   }
 
@@ -914,5 +931,19 @@ export default {
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
+}
+.slide-fade-enter-active {
+  transition: all .3s ease;
+}
+.slide-fade-leave-active {
+  transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+.slide-fade-enter, .slide-fade-leave-to
+/* .slide-fade-leave-active below version 2.1.8 */ {
+  transform: translateX(10px);
+  opacity: 0;
+}
+.info_pop {
+  top : 15px;
 }
 </style>

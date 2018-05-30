@@ -73,7 +73,7 @@ export default [
     component: ThemeBest
   },
   {
-    path: '/snsBest',
+    path: '/snsBest/:categoryCode',
     name: 'sns-best',
     component: SnsBest
   },
