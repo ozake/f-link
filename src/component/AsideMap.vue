@@ -242,9 +242,9 @@ export default {
 
     },
 	getSector(){
-		  let url = "./dist/sectorCode.json"
+		  let url = "http://f-link.co.kr/dist/sectorCode.json"
 		  if(location.hostname === "110.13.170.148" || location.hostname === "127.0.0.1"){
-			  url = "./src/assets/sectorCode.json"
+			  url = "http://110.13.170.148:8080/src/assets/sectorCode.json"
 		  }
 		  this.$http.get(url).then((result)=>{
 			  if(result.status === 200){

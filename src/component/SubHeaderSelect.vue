@@ -7,8 +7,8 @@
     <div class="select">
 
       <!--대분류-->
-      <div class="select-box">
-        <select v-bind:class="[this.isIe ? ieClass : '', nonIeClass]" v-model="selected">
+      <div class="select-box" style="margin-right:65px;">
+        <select v-bind:class="[this.isIe ? ieClass : '', nonIeClass]" v-model="selected" >
           <option>업종</option>
           <option v-for="item in sector" :value="item.code">{{item.categoryName}}</option>
         </select>
@@ -16,43 +16,40 @@
       <!--//대분류-->
 
       <!--중분류-->
-      <div class="select-box">
-        <select v-bind:class="[isIe ? ieClass : '', nonIeClass]" v-model="sectorSelected">
+      <div class="select-box" style="margin-right:65px">
+        <select v-bind:class="[isIe ? ieClass : '', nonIeClass]" v-model="sectorSelected" >
           <option>중분류</option>
-          <option v-for="item in sectorMcode" :value="item.code">{{item.categoryName}}</option>
+          <option v-for="item in sectorMcode" :value="item.categoryName">{{item.categoryName}}</option>
         </select>
       </div>
       <!--//중분류-->
 
       <!--브랜드-->
-      <div class="select-box">
+      <!-- <div class="select-box">
         <select v-bind:class="[isIe ? ieClass : '', nonIeClass]" v-model="brandSelected">
           <option>브랜드</option>
           <option v-for="item in brandList" :value="item.regnumber">{{item.brand}}</option>
-          <!-- <option>네네피자</option>
-          <option>피자헛</option>
-          <option>미스터피자</option> -->
         </select>
-      </div>
+      </div> -->
       <!--//브랜드-->
 
       <!--창업 자금  -->
       <div class="select-box">
         <select v-bind:class="[isIe ? ieClass : '', nonIeClass]" v-model="capitalSelected">
           <option>창업자금</option>
-          <option>5천만원 미만</option>
-          <option>5천~1억원</option>
-          <option>1억~1.5억원</option>
-          <option>1.5~2억원</option>
-          <option>2~2.5억원</option>
-          <option>2.5~3억</option>
-          <option>3억원 이상</option>
+          <option :value="{min:0, max:50000}">5천만원 미만</option>
+          <option :value="{min:0, max:100000}">1억원미만</option>
+          <option :value="{min:100000, max:150000}">1억~1.5억원</option>
+          <option :value="{min:150000, max:200000}">1.5~2억원</option>
+          <option :value="{min:200000, max:250000}">2~2.5억원</option>
+          <option :value="{min:250000, max:300000}">2.5~3억</option>
+          <option :value="{min:300000, max:9999999}">3억원 이상</option>
         </select>
       </div>
       <!--//창업 자금  -->
     </div>
       <!--//분류별검색-->
-    <p class="sectxt">※ 매장 임대료 포함</p>
+    <p class="sectxt">※ 매장 임대료 제외</p>
 
   </div>
   <!-- //메인이미지 영역-->
@@ -103,6 +100,15 @@
   -moz-appearance: none;
 }
 </style>
+<style>
+/* .select-box {
+  margin-right: 60px !important;
+}
+.select-box::last-of-type {
+  margin-right: 0px !important;
+} */
+</style>
+
 <script>
 import ApiModel from "../model/apiModel.js"
 export default {
@@ -120,7 +126,7 @@ export default {
         sectorSelected : '중분류',
         apiModel : new ApiModel(this.$http),
         brandList: [],
-        brandSelected : '브랜드',
+        // brandSelected : '브랜드',
         capitalSelected : '창업자금'
      }
    },
@@ -133,15 +139,22 @@ export default {
   },
   watch: {
     selected : function (val){
-		  if(val !== '외식'){
+		  if(val !== '업종'){
 			this.getSectorM(val)
 		  }
-	  },
-	  sectorSelected : function (val) {
+    },
+    capitalSelected: function (val){
+      if(val !== '창업자금'){
+			  if(this.selected !== '업종' && this.sectorSelected !== '중분류'){
+          location.href = `http://110.13.170.148:8080/franchiseList/${this.sectorSelected}/1?min=${this.capitalSelected.min}&max=${this.capitalSelected.max}`
+        }
+		  }
+    }
+	  /* sectorSelected : function (val) {
 		  if(val !== '중분류'){
 			  this.getBrandList(val)
 		  }
-	  }
+	  } */
   },
   methods: {
     	getSector(){

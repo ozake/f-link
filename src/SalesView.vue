@@ -7,8 +7,8 @@
 			<div class="building_view">
 
 				<!--매물정보-->
-				<h2>
-					<p>매물정보</p> 서울시 용산구 용산동  
+				<h2 style="height:22px">
+					<p>매물정보</p> 
 				</h2>
 				<!--//매물정보-->
 				
@@ -148,7 +148,7 @@ export default {
       let container = document.getElementById('map'); //지도를 담을 영역의 DOM 레퍼런스
       let options = { //지도를 생성할 때 필요한 기본 옵션
         center: new daum.maps.LatLng(37.56611900511385, 126.97774128459538), //지도의 중심좌표.
-        level: 5 //지도의 레벨(확대, 축소 정도)
+        level: 2 //지도의 레벨(확대, 축소 정도)
       };
 
       let map = new daum.maps.Map(container, options); //지도 생성 및 객체 리턴
@@ -164,7 +164,8 @@ export default {
 
       // 지도 확대 축소를 제어할 수 있는  줌 컨트롤을 생성합니다
       let zoomControl = new daum.maps.ZoomControl();
-      map.addControl(zoomControl, daum.maps.ControlPosition.RIGHT);
+			map.addControl(zoomControl, daum.maps.ControlPosition.RIGHT);
+			map.setMaxLevel(6);
       console.log("지도 셋팅 완료")
       //console.log(this.displayItem.address)
 

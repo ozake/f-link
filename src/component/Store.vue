@@ -164,6 +164,15 @@ export default {
       })
 
       this.$EventBus.$on('recommOnOff', this.recommBldOnOff)
+
+      if(this.$route.params.categoryCode && this.$route.params.addr){
+        //alert('파람 있다.')
+        this.addressTogeocode(this.$route.params.addr).then(()=>{
+          this.ftcCate2Cd = this.$route.params.categoryCode
+        })
+        
+        
+      }
       //this.setPolyline()
     })
 
@@ -174,6 +183,8 @@ export default {
     if ( (navigator.appName == 'Netscape' && agent.indexOf('trident') != -1) || (agent.indexOf("msie") != -1)) {
      this.isIe = true
      }
+     
+     
 
   },
   watch: {
@@ -768,7 +779,34 @@ export default {
          //console.log("enter key was pressed!");
          return false
        }
-    }
+    },
+    async addressTogeocode(address) {
+      let geocoder = new daum.maps.services.Geocoder();
+      //let coords = ''
+      console.log("address:" + address);
+      //console.log(this.geocorderInstance)
+      // 주소로 좌표를 검색합니다
+      //this.geocorderInstance.addressSearch('서울특별시 강남구 테헤란로 405 BGF리테일', function (result, status){
+      geocoder.addressSearch(address, (result, status) => {
+        // 정상적으로 검색이 완료됐으면
+        if (status === daum.maps.services.Status.OK) {
+          let coords = new daum.maps.LatLng(result[0].y, result[0].x);
+          //map.setCenter(coords);
+          this.setMapCenter(coords);
+          this.searchAddrFromCoords(
+            geocoder,
+            this.mapInstance.getCenter(),
+            this.displayCenterInfo
+          );
+        }
+      })
+    },
+    setMapCenter(coords) {
+      // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+      if (this.mapInstance !== "") {
+        this.mapInstance.setCenter(coords);
+      }
+    },
 
   }
 

@@ -6,7 +6,7 @@
       <li>
         <p>T 02-2000-5450</p>
         <p>광고 및 제휴 문의 : sonking12@mkinternet.com </p>
-        <p class="last"><a href="#">개인정보 처리방침</a></p>
+        <p class="last"><a href="http://www.f-link.co.kr/index.php?TM=M&MM=3&BM=3">개인정보 처리방침</a></p>
           <br>
         <p class="last">Copyright(c) mkbiz. Corp. All Rights Reserved. </p>
       </li>

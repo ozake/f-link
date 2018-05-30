@@ -494,6 +494,11 @@ export default {
       this.mapEventListener(map, geocoder);
       this.mapInstance = map;
       this.geocorderInstance = geocoder;
+      this.searchAddrFromCoords(
+          geocoder,
+          map.getCenter(),
+          this.displayCenterInfo
+      );
 
       console.log("마운티드 종료");
       //this.searchAddrFromCoords(geocoder, map.getCenter(), this.displayCenterInfo)
@@ -617,6 +622,9 @@ export default {
                   let tel = value.tel
                   tel = tel.slice(1)
                   tel = this.phoneFomatter(tel)
+                  if(tel.slice(1,2) === '0'){
+                    tel = tel.slice(1)
+                  }
                   value.tel = tel
                   value.firstDate = date;
                   let position = [];

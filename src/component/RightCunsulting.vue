@@ -164,7 +164,11 @@ export default {
 		},
 		cunsulting(){
 			let checked = this.checked
-			if(checked.length === 0){
+			if(!sessionStorage.getItem('ID')){
+				alert('로그인 후 사용가능합니다.')
+				location.href="http://www.f-link.co.kr/index.php?TM=M&MM=1"
+			}else{
+				if(checked.length === 0){
 				alert('브랜드를 선택해주세요')
 			}else {
 				let form = this.$refs.form
@@ -183,6 +187,8 @@ export default {
 					this.$EventBus.$emit('submitOnOff')
 				}
 			}
+			}
+			
 			
 			//if(form.)
 			//this.$EventBus.$emit('submitOnOff')

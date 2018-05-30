@@ -192,10 +192,10 @@ export default class ApiModel {
      * @param {*} pageNo
      * @returns {promise}
      */
-    getFranchiseList(categoryName='한식', row='10', pageNo='0'){
+    getFranchiseList(categoryName='한식', row='10', pageNo='0', min='', max=''){
       this.apiNo = '101'
       this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
-      this.config.data = `category2=${categoryName}&row=${row}&page=${pageNo}`
+      this.config.data = `category2=${categoryName}&row=${row}&page=${pageNo}&minprice=${min}&maxprice=${max}`
       return this.http(this.config)
     }
 

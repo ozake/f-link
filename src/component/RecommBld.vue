@@ -10,6 +10,7 @@
         <transition name="fade">
             <div class="bu_search" v-show="!RecommLayer" v-on:click="reSearch">
                 <p>다른업종으로<br>다시검색</p>
+                <span v-on:click.stop="recommOff"><a href="#none">건물추천 서비스 끝내기 X</a></span>
             </div>
         </transition>
         <!-- //다른업종 검색 -->
@@ -23,6 +24,9 @@ export default {
   methods: {
       reSearch(){
           this.$EventBus.$emit('recommLayer', true)
+      },
+      recommOff(){
+          this.$EventBus.$emit('recommOnOff')
       }
   },
   props: {

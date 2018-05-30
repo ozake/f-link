@@ -1,9 +1,9 @@
 <template>
  <!--페이징-->
       <div class="paging">
-        <router-link v-if="showPrev" class="pre" :to="{ name: routeName, params: {page: prevNum } }"></router-link>
-        <router-link v-for="(nums,index) in displayPageNums" :to="{ name: routeName, params: {page: nums } }" v-bind:class="{ on: ( nums === currentPage ) }" >{{nums}}</router-link>
-        <router-link v-if="showNext" class="next" :to="{ name: routeName, params: {page: nextNum } }"></router-link>
+        <router-link v-if="showPrev" class="pre" :to="{ name: routeName, params: {page: prevNum }, query: $route.query }"></router-link>
+        <router-link v-for="(nums,index) in displayPageNums" :to="{ name: routeName, params: {page: nums }, query: $route.query }" v-bind:class="{ on: ( nums === currentPage ) }" >{{nums}}</router-link>
+        <router-link v-if="showNext" class="next" :to="{ name: routeName, params: {page: nextNum }, query: $route.query }"></router-link>
       </div>
       <!--//페이징-->
 </template>

@@ -5,12 +5,16 @@
         <form name="search" id="search" v-on:submit.prevent="keymonitor">
           <fieldset class="searcharea">
             <legend>검색</legend>
+            <!-- <v-autocomplete :items="items" v-model="item" :get-label="getLabel" :component-item='template' @update-items="updateItems">
+            </v-autocomplete> -->
             <input v-if="fActive" name="s_keyword" title="검색어 입력" type="text" placeholder="프랜차이즈명, 회사명으로 검색" v-on:input="typing" v-bind:value="searchTxt" v-on:keyup="keymonitor" ref="search">
             <input v-if="storeActive" name="s_keyword" title="검색어 입력" type="text" placeholder="지역, 업종으로 검색" v-on:input="typing" v-bind:value="searchTxt" v-on:keyup="keymonitor" ref="search">
-            <button type="button" v-on:click="searchFc"><img src="http://img.mk.co.kr/2018/franchise/msearch.png" alt="검색하기"></button>
+            <button type="button" v-on:click="searchResMove"><img src="http://img.mk.co.kr/2018/franchise/msearch.png" alt="검색하기"></button>
           </fieldset>
           <!-- 메인 검색 레이어-->
 						 <div class="search_layer" v-show="searchAreaToggle">
+               <!-- <v-autocomplete :items="items" v-model="item" :get-label="getLabel" :component-item='template' @update-items="updateItems">
+               </v-autocomplete> -->
 							  <ul>
 								 <li v-for="item in searchDisplay"><a href="#" v-on:click="selector(item.displayTxt, item.flag, item.regnumber)">{{item.displayTxt}}</a></li>
 							  </ul>
@@ -23,6 +27,8 @@
     </div>
 </template>
 <script>
+// import 'v-autocomplete/dist/v-autocomplete.css'
+// import ItemTemplate from './Item.vue'
 import ApiModel from "../model/apiModel.js"
 export default {
   name: 'SearchInput',
@@ -40,6 +46,7 @@ export default {
       apiModel: new ApiModel(this.$http),
       searchDisplay: [],
       sectorSelectedTxt: '',
+      sectorCode: '',
       sectorSelected: false,
       franchiseSelectedTxt: '',
       franchiseSelectedCode: '',
@@ -47,20 +54,43 @@ export default {
       searchAreaToggle: false,
       addrCodeSelected: false,
       addrCode: '',
-      addrCodeTxt: ''
+      addrCodeTxt: '',
+      // item: {id: 9, name: 'Lion', description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit.'},
+      // items: [],
+      // template: ItemTemplate
     }
   },
   watch: {
-    searchTxt: function(val) {
+    /* searchTxt: function(val) {
       this.$nextTick(function () {
         this.searchFc(val)
       })
-    },
+    }, */
 
   },
   methods: {
+    getLabel (item) {
+      return item.name
+    },
+    updateItems (text) {
+      this.apiModel.getFranchiseSearch(text).then((result)=>{
+                //console.log(result)
+                if(result.status === 200){
+                  let data = result.data
+                  let tmpArr = []
+                  let tmp = ''
+                  for (const value of data) {
+                    //tmp = { regnumber: value.regnumber, displayTxt: value.brand+' '+value.company, flag:'franchise' }
+                    tmp =value.brand
+                    tmpArr.push(tmp)
+                  }
+                  this.items = tmpArr
+                }
+              })
+    },
     typing(e) {
-    	this.searchTxt = e.target.value
+      this.searchTxt = e.target.value
+      this.searchFc(e.target.value)
     },
     searchFc(val){
       if(val === ''){
@@ -88,28 +118,35 @@ export default {
         let searchArr = []
         val = val.replace(/\s\s/g, " ")
         searchArr = val.split( ' ', 2 )
-        /* if(searchArr.length === 1){
-          this.sectorSelected = false
+        console.log(searchArr)
+        if(searchArr.length === 1){
+          this.addrCodeSelected = false
           let addr = searchArr[0]
           this.apiModel.getAddrSearch(addr).then((result)=>{
-              console.log(addr)
+              // console.log(addr)
               if(result.status === 200){
                 let data = result.data
+                console.log(data)
                 let tmpArr = []
                 let tmp = ''
                 for (const value of data) {
-                  tmp = { regnumber: value.codelaw, displayTxt: value.lawadress, flag:'addr' }
+                  let areaTxt = value.area2
+                  if(value.area3){
+                    areaTxt = areaTxt +  '(' +value.area3 + ')'
+                  }
+                  tmp = { regnumber: value.code, displayTxt: areaTxt, flag:'addr' }
                   tmpArr.push(tmp)
                 }
                 this.searchDisplay = tmpArr
               }
             })
 
-        } */
-        if(searchArr.length === 1){
+        }
+        if(searchArr.length === 2){
           this.sectorSelected = false
-          let sector = searchArr[0]
-          this.apiModel.getSectorSearch(sector).then((result)=>{
+          let sector = searchArr[1]
+          if(sector){
+            this.apiModel.getSectorSearch(sector).then((result)=>{
               //console.log(result)
               if(result.status === 200){
                 let data = result.data
@@ -122,6 +159,8 @@ export default {
                 this.searchDisplay = tmpArr
               }
             })
+          }
+          
 
         }
       }
@@ -131,10 +170,12 @@ export default {
     selector(txt, flag, regnumber){
       if(flag === 'sector'){
         this.sectorSelected = true
-        this.searchTxt = txt
         this.sectorSelectedTxt = txt
+        this.sectorCode = regnumber
+        this.searchTxt = this.addrCodeTxt + ' ' + this.sectorSelectedTxt
         this.$refs.search.focus()
         this.searchDisplay = ''
+        this.searchAreaToggle = false
       }
       else if(flag === 'franchise'){
         console.log("프렌차이즈 선택")
@@ -153,32 +194,37 @@ export default {
         this.searchDisplay = ''
         this.searchAreaToggle = false
         this.addrCode = regnumber
-        this.searchTxt = this.sectorSelectedTxt + ' ' + this.addrCodeTxt
+        this.searchTxt = txt
         this.$refs.search.focus()
       }
     },
     keymonitor(event){
-      console.log(event.key)
+      //console.log(event.key)
        if(event.key == "Enter")
        {
-         if(this.fActive){
-           if(this.franchiseSelected){
-           location.href = `./franchiseView/${this.franchiseSelectedCode}`
-           }
-         }
-         else if(this.storeActive){
-           if(this.sectorSelected && this.addrCodeSelected){
-           //location.href = `./franchiseView/${this.franchiseSelectedCode}`
-           alert('제대로 검색')
-          }
-          else{
-            alert('반드시 지역 + 업종으로 검색해주세요')
-          }
-         }
+         this.searchResMove()
          //console.log("enter key was pressed!");
          return false
        }
     },
+    searchResMove(){
+      if(this.fActive){
+           if(this.franchiseSelected){
+           location.href = `./franchiseView/${this.franchiseSelectedCode}`
+           }else{
+             alert('브랜드 또는 회사명을 입력해주세요')
+           }
+         }
+         else if(this.storeActive){
+           if(this.sectorSelected && this.addrCodeSelected){
+           location.href = `./store/${this.sectorCode}/${this.addrCodeTxt}`
+           //alert('제대로 검색')
+          }
+          else{
+            alert('지역 + 업종으로 검색해주세요')
+          }
+         }
+    }
   }
 }
 </script>

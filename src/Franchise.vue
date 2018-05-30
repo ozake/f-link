@@ -36,8 +36,10 @@
           <div class="list_wrap" v-for="(listItem, idx) in this.listItems">
             <BoxContent  v-for="(item, index) in listItem" :index="index" :item="item"></BoxContent>
           </div>
+          <button class="btn_build"><router-link :to="{ name: 'franchise-list-default', params: {categoryCode: categoryName } }">{{categoryName}} 전체보기 →</router-link></button>
         </div>
 
+        
 
 
       </div>
@@ -90,7 +92,7 @@
 import BigSubHeader from "./component/BigSubHeader.vue"
 import BoxContent from "./component/box-content.vue"
 import ApiModel from "./model/apiModel.js"
-import numeral from "numeral";
+import numeral from "numeral"
 import 'swiper/dist/css/swiper.min.css'
 import Swiper from "swiper/dist/js/swiper";
 export default {
@@ -172,7 +174,8 @@ export default {
       rItems : [],
       apiModel : new ApiModel(this.$http),
       memuBoardFlag : false,
-      swiper: ''
+      swiper: '',
+      categoryName: '한식'
     }
   },
   props:{
@@ -187,6 +190,7 @@ export default {
         this.listItems = this.makeArrayModuler(result,5)
       })
     }else{
+      this.categoryName = this.$route.params.categoryCode
       this.fetchData()
     }
   },
@@ -219,6 +223,7 @@ export default {
       return resArr;
     },
     fetchData(){
+      this.categoryName = this.$route.params.categoryCode
       this.franchiseList(this.$route.params.categoryCode).then((result)=>{
         this.listItems = this.makeArrayModuler(result,5)
       })

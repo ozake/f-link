@@ -27,32 +27,18 @@
 					<dt>대표자</dt>
 					<dd>{{item.ceo}}</dd>
 					<dt>창업 비용</dt>
-					<dd>{{item.total}}천원 ({{item.storearea}}평)</dd>
+					<dd>{{item.total}}만원 ({{item.storearea}}평)</dd>
 					<dt>총 가맹점 수</dt>
 					<dd>{{item.fcount}}개</dd>
 				</dl>
         </router-link>
         <label :for="index" class="check_info_label"><span>추가 정보 요청</span></label>
-        <input type="checkbox" :id="index" class="check_info" v-model="checked" :value="{regnumber: item.regnumber, brand: item.brand}" />
+        <input type="checkbox" :id="index" class="check_info" v-model="checked" :value="{regnumber: item.regnumber, brand: item.brand}"/>
 				<!-- <a href="#"><button class="btn_info">추가 정보 요청 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </button></a> -->
 			</ul>
 			<!--//프랜차이즈 박스-->
-
+        <Pagination :totalCount="totalCount" :currentPage="currentPage" :pageingRange="pageingRange" :pageRows="pageRows" :routeName="routeName"></Pagination>
         <!--페이징-->
-				<div class="paging">
-					<a class="pre" href="#"></a>
-					<a class="on" href="#"><strong>1</strong></a>
-					<a href="#">2</a>
-					<a href="#">3</a>
-					<a href="#">4</a>
-					<a href="#">5</a>
-					<a href="#">6</a>
-					<a href="#">7</a>
-					<a href="#">8</a>
-					<a href="#">9</a>
-					<a href="#">10</a>
-					<a class="next" href="#"></a>
-				</div>
       </div>
 
       <RightCunsulting :checked="checked" :submitBrandCk="submitBrandCk" :categorycode1="categorycode1" :categorycode2="categorycode2"></RightCunsulting>
@@ -93,11 +79,22 @@
     background-color: #000000;
     opacity: 0.65;
 }
+input:checked + label {
+    font-size: 15px;
+    width: 212px;
+    height: 33px;
+    background-color: #4db007 !important;
+    color: #fff;
+    margin: 10px 0 0 20px;
+    background: url(http://img.mk.co.kr/2018/franchise/chech_on.jpg) no-repeat 144px 10px;
+    cursor: pointer;
+}
 </style>
 <script>
 import SubHeaderSelect from "./component/SubHeaderSelect.vue"
 import CardBox from "./component/CardBox.vue"
 import RightCunsulting from "./component/RightCunsulting.vue"
+import Pagination from './component/Pagination.vue'
 import ApiModel from "./model/apiModel.js"
 import numeral from "numeral";
 export default {
@@ -105,7 +102,8 @@ export default {
   components:{
     SubHeaderSelect,
     CardBox,
-    RightCunsulting
+    RightCunsulting,
+    Pagination
   },
   data(){
     return {
@@ -154,8 +152,12 @@ export default {
       submitLayer: false,
       submitBrandCk: '',
       categorycode1: '',
-      categorycode2: ''
-
+      categorycode2: '',
+      totalCount : 0,
+      currentPage : 1,
+      pageingRange : 10,
+      pageRows : 9,
+      routeName : 'franchise-list-page'
     }
   },
   props:{
@@ -195,19 +197,27 @@ export default {
   },
   methods:{
     fetchData(){
-      this.franchiseList(this.$route.params.categoryCode, this.$route.params.page).then((result)=>{
-        //this.listItems = this.makeArrayModuler(result,5)
-        this.listItems = result
-      })
+      if(this.$route.query.min, this.$route.query.max){
+        console.log('여기!?')
+        this.franchiseList(this.$route.params.categoryCode, this.$route.params.page, this.$route.query.min, this.$route.query.max).then((result)=>{
+          //this.listItems = this.makeArrayModuler(result,5)
+          this.listItems = result
+        })
+      }else{
+        this.franchiseList(this.$route.params.categoryCode, this.$route.params.page).then((result)=>{
+          //this.listItems = this.makeArrayModuler(result,5)
+          this.listItems = result
+        })
+      }
       //alert(this.$route.params.categoryCode)
     },
-    async franchiseList(categoryname, page){
+    async franchiseList(categoryname, page, min='', max=''){
       let data = null
       //page = Number(page)
       if(categoryname === '' || categoryname === null || categoryname === undefined){
         console.log("error")
       }else{
-        console.log(categoryname)
+        console.log(min+' '+max)
         //let model = new ApiModel(this.$http)
         /* model.getFranchiseList(categoryname).then((result)=>{
           //console.log(result)
@@ -218,20 +228,21 @@ export default {
             return data
           }
         }) */
-        let result = await this.apiModel.getFranchiseList(categoryname,9,page)
+        let result = await this.apiModel.getFranchiseList(categoryname,this.pageRows,page,min,max)
         if(result.status === 200){
             console.log(result)
             let data = []
             data = result.data
-
             let paging = data.shift()
-            console.log(paging)
+            this.totalCount = Number(paging.totalCount)
+            this.currentPage = Number(paging.pageNo)
             let tmpdata = data
             tmpdata = tmpdata[0]
             this.categorycode1 = tmpdata.code1
             this.categorycode2 = tmpdata.code2
             for (const value of data) {
               let total = value.total
+              total = total.slice(0,-1)
               total = Number(total)
               total = numeral(total).format('0,0')
               value.total = total
