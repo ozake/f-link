@@ -7,7 +7,7 @@
     <div class="select">
 
       <!--대분류-->
-      <div class="select-box" style="margin-right:65px;">
+      <div class="select-box">
         <select v-bind:class="[this.isIe ? ieClass : '', nonIeClass]" v-model="selected" >
           <option>업종</option>
           <option v-for="item in sector" :value="item.code">{{item.categoryName}}</option>
@@ -16,7 +16,7 @@
       <!--//대분류-->
 
       <!--중분류-->
-      <div class="select-box" style="margin-right:65px">
+      <div class="select-box">
         <select v-bind:class="[isIe ? ieClass : '', nonIeClass]" v-model="sectorSelected" >
           <option>중분류</option>
           <option v-for="item in sectorMcode" :value="item.categoryName">{{item.categoryName}}</option>
@@ -56,7 +56,7 @@
 </template>
 <style scoped>
 .select-box {
-  width: 157px;
+  width: 192px;
   height: 40px;
   float: left;
   margin-right: 30px;
@@ -67,12 +67,9 @@
   overflow: hidden;
   background: #fff url(http://img.mk.co.kr/2018/franchise/btn_select.jpg) no-repeat 100%;
 }
-.select-box:last-child {
-    margin-right: 0;
-}
 
 .box_title {
-  width: 157px;
+  width: 192px;
   height: 40px;
   background: transparent;
   display: block;
@@ -86,7 +83,7 @@
   -moz-appearance: none;
 }
 .box_title_ie {
-  width: 175px;
+  width: 210px;
   height: 40px;
   background: transparent;
   display: block;
@@ -127,8 +124,14 @@ export default {
         apiModel : new ApiModel(this.$http),
         brandList: [],
         // brandSelected : '브랜드',
-        capitalSelected : '창업자금'
+        capitalSelected : '창업자금',
+        isIe: false
      }
+   },
+   props : {
+      categorycode1: String,
+      category2: String,
+      capital: Object,
    },
    created(){
      const agent = navigator.userAgent.toLowerCase();
@@ -144,11 +147,27 @@ export default {
 		  }
     },
     capitalSelected: function (val){
+      console.log(location.hostname)
       if(val !== '창업자금'){
 			  if(this.selected !== '업종' && this.sectorSelected !== '중분류'){
-          location.href = `http://110.13.170.148:8080/franchiseList/${this.sectorSelected}/1?min=${this.capitalSelected.min}&max=${this.capitalSelected.max}`
+          if(location.hostname === "www.f-link.co.kr"){
+          location.href = `http://www.f-link.co.kr/franchiseList/${this.sectorSelected}/1?min=${this.capitalSelected.min}&max=${this.capitalSelected.max}`
+          }else if(location.hostname === "f-link.co.kr") {
+            location.href = `http://f-link.co.kr/franchiseList/${this.sectorSelected}/1?min=${this.capitalSelected.min}&max=${this.capitalSelected.max}`
+          }else if(location.hostname === "110.13.170.148"){
+            location.href = `http://110.13.170.148:8080/franchiseList/${this.sectorSelected}/1?min=${this.capitalSelected.min}&max=${this.capitalSelected.max}`
+          }
         }
 		  }
+    },
+    categorycode1: function(val){
+      this.selected = val
+    },
+    category2: function(val){
+      this.sectorSelected = val
+    },
+    capital: function(val){
+      this.capitalSelected = val
     }
 	  /* sectorSelected : function (val) {
 		  if(val !== '중분류'){
@@ -159,7 +178,11 @@ export default {
   methods: {
     	getSector(){
         let url = "../dist/sectorCode.json"
-        if(location.hostname === "110.13.170.148" || location.hostname === "127.0.0.1"){
+        if(location.hostname === "www.f-link.co.kr"){
+          url = "http://www.f-link.co.kr/dist/sectorCode.json"
+        }else if(location.hostname === "www.f-link.co.kr"){
+          url = "http://f-link.co.kr/dist/sectorCode.json"
+        }else if(location.hostname === "110.13.170.148" || location.hostname === "127.0.0.1"){
           url = "/src/assets/sectorCode.json"
         }
         this.$http.get(url).then((result)=>{

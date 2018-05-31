@@ -8,11 +8,11 @@
 				<fieldset>
 					<legend>검색</legend>
 					<input name="s_keyword" title="검색어 입력" type="text" placeholder="지역명으로 검색" v-on:input="typing" v-bind:value="searchTxt" @keyup.enter="searchResMove" @keyup.down="keydown" ref="search">
-					<a href="#"><img alt="검색하기" src="http://img.mk.co.kr/2018/franchise/search_w.png" class="sbtn"></a>
+					<a href="#none" @click="searchResMove"><img alt="검색하기" src="http://img.mk.co.kr/2018/franchise/search_w.png" class="sbtn"></a>
 				</fieldset>
 				<!-- 메인 검색 레이어-->
-        <select multiple class="search_layer" v-show="searchAreaToggle" ref="suggestDom" v-model="suggestSlect" @keyup.enter="selector">
-          <option v-for="(item,index) in searchDisplay" :value="{code:item.regnumber, txt:item.displayTxt, flag:item.flag}" >{{item.displayTxt}}</option>
+        <select multiple class="search_layer" v-show="searchAreaToggle" ref="suggestDom" v-model="suggestSlect" @keyup.enter="selector" @click="selector">
+          <option v-for="(item,index) in searchDisplay" :value="{code:item.regnumber, txt:item.displayTxt, flag:item.flag}" @click="selector">{{item.displayTxt}}</option>
         </select>
 			<!-- 	<div class="search_layer" v-show="searchAreaToggle">
 					<ul>
@@ -146,7 +146,8 @@ export default {
     addrCode: '',
     addrCodeTxt: '',
     suggestSlect: [],
-    flag: ''
+		flag: '',
+		to: ''
      }
   },
   props:{
@@ -227,8 +228,12 @@ export default {
 		alert('준비중입니다.')
 	},
 	typing(e){
+		clearTimeout(this.to);
+        this.to = setTimeout(()=>{
+          //console.log(e.target.value);
+          this.searchFc(e.target.value)
+        }, 400);
       this.searchTxt = e.target.value
-      this.searchFc(e.target.value)
   },
 	searchFc(val){
     if(val === ''){
@@ -257,7 +262,7 @@ export default {
       })
   },
 	getSector(){
-		  let url = "http://f-link.co.kr/dist/sectorCode.json"
+		  let url = "./dist/sectorCode.json"
 		  if(location.hostname === "110.13.170.148"){
 			  url = "http://110.13.170.148:8080/src/assets/sectorCode.json"
 		  }else if(location.hostname === "127.0.0.1"){

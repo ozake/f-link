@@ -380,7 +380,8 @@ export default {
     getBuildingInfo(bdMgtSn){
       this.apiModel.getOP408(bdMgtSn).then((result)=>{
         if(result.status === 200){
-          let data = result.data.data.rows[0]
+					let data = result.data.data.rows[0]
+					console.log('건물정보')
           console.log(data)
           data.subDist = Number(data.subDist).toFixed(0)
           data.busDist = Number(data.busDist).toFixed(0)
@@ -470,11 +471,12 @@ export default {
           let data = result.data.data.rows
           let tmpArr = []
           for (const value of data) {
-            let tel = value.tel
+						let tel = value.tel
+						tel = tel.slice(2)
             tel = this.phoneFomatter(tel)
-            if(tel.slice(1,2) === '0'){
+            /* if(tel.slice(1,2) === '0'){
               tel = tel.slice(1)
-            }
+            } */
             value.tel = tel
             tmpArr.push(value)
           }
@@ -649,11 +651,21 @@ export default {
 
     },
     setMaker(x,y,value){
+			let icon = new daum.maps.MarkerImage(
+                'http://img.mk.co.kr/2018/franchise/icon_loca02.png',
+                new daum.maps.Size(20, 30),
+                {
+                  offset: new daum.maps.Point(15, 30),
+                  alt: value.buldNm,
+                  shape: "rect",
+                  coords: "0,0,20,30"
+                })
       let tmparr = []
       tmparr = convertGeo([x,y])
       let marker = new daum.maps.Marker({
           map: this.mapInstance, // 마커를 표시할 지도
-          position: new daum.maps.LatLng(tmparr[1], tmparr[0]), // 마커를 표시할 위치
+					position: new daum.maps.LatLng(tmparr[1], tmparr[0]), // 마커를 표시할 위치
+					image: icon,
           title : value.refBnm, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
       })
       return marker

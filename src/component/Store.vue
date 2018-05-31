@@ -7,7 +7,7 @@
     </transition>
 
     <!-- <transition name="fade"> -->
-      <recomm-bld v-if="RecommBld" :RecommBld="RecommBld" :RecommLayer="RecommLayer" :data="RecommList" :categoryName="RecommCname"></recomm-bld>
+      <recomm-bld v-if="RecommBld" :RecommBld="RecommBld" :RecommLayer="RecommLayer" :data="RecommList" :categoryName="RecommCname" :RecommCategory="RecommCategory"></recomm-bld>
     <!-- </transition> -->
 
     <!-- 지도검색 안내팝업 -->

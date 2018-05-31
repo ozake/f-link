@@ -9,7 +9,7 @@
                 <li v-for="item in checked"><a href="#none" v-on:click="submitBrand(item.regnumber)">{{item.brand}}</a></li>
             </ul>
         </div>
-    <SubHeaderSelect :isIe="isIe"></SubHeaderSelect>
+    <SubHeaderSelect :isIe="isIe" :categorycode1="categorycode1" :category2="category2" :capital="capital"></SubHeaderSelect>
     <!--프랜차이즈 현황 리스트-->
 		<div class="frlist">
 			<div class="frlistbox">
@@ -41,7 +41,7 @@
         <!--페이징-->
       </div>
 
-      <RightCunsulting :checked="checked" :submitBrandCk="submitBrandCk" :categorycode1="categorycode1" :categorycode2="categorycode2"></RightCunsulting>
+      <RightCunsulting :checked="checked" :submitBrandCk="submitBrandCk" :categorycode1="categorycode1"></RightCunsulting>
     </div>
     <!--//프랜차이즈 현황 리스트-->
   </div>
@@ -152,12 +152,13 @@ export default {
       submitLayer: false,
       submitBrandCk: '',
       categorycode1: '',
-      categorycode2: '',
+      category2: '',
       totalCount : 0,
       currentPage : 1,
       pageingRange : 10,
       pageRows : 9,
-      routeName : 'franchise-list-page'
+      routeName : 'franchise-list-page',
+      capital : {}
     }
   },
   props:{
@@ -179,7 +180,7 @@ export default {
         let data = result.data
         data = data[0]
         this.categorycode1 = data.code1
-        this.categorycode2 = data.code2
+        this.category2 = data.code2
         //this.listItems = this.makeArrayModuler(result,5)
         //this.listItems = result
       })
@@ -198,7 +199,8 @@ export default {
   methods:{
     fetchData(){
       if(this.$route.query.min, this.$route.query.max){
-        console.log('여기!?')
+        this.capital = {min:this.$route.query.min, max:this.$route.query.max}
+        //console.log('여기!?')
         this.franchiseList(this.$route.params.categoryCode, this.$route.params.page, this.$route.query.min, this.$route.query.max).then((result)=>{
           //this.listItems = this.makeArrayModuler(result,5)
           this.listItems = result
@@ -239,7 +241,7 @@ export default {
             let tmpdata = data
             tmpdata = tmpdata[0]
             this.categorycode1 = tmpdata.code1
-            this.categorycode2 = tmpdata.code2
+            this.category2 = tmpdata.category2
             for (const value of data) {
               let total = value.total
               total = total.slice(0,-1)

@@ -1,6 +1,6 @@
 <template>
   <div id="content">
-    <SubHeaderSelect :isIe="isIe"></SubHeaderSelect>
+    <SubHeaderSelect ></SubHeaderSelect>
     <!--프랜차이즈 현황 뷰-->
     <div class="frlist">
 

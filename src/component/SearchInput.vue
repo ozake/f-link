@@ -8,12 +8,12 @@
             <!-- <v-autocomplete :items="items" v-model="item" :get-label="getLabel" :component-item='template' @update-items="updateItems">
             </v-autocomplete> -->
             <input v-if="fActive" name="s_keyword" title="검색어 입력" type="text" placeholder="프랜차이즈명, 회사명으로 검색" v-on:input="typing" v-bind:value="searchTxt" @keyup.enter="searchResMove" @keyup.down="keydown" ref="search">
-            <input v-if="storeActive" name="s_keyword" title="검색어 입력" type="text" placeholder="지역, 업종으로 검색" v-on:input="typing" v-bind:value="searchTxt" @keyup.enter="searchResMove" @keyup.down="keydown"  ref="search">
+            <input v-if="storeActive" name="s_keyword" title="검색어 입력" type="text" placeholder="지역, 업종으로 검색" v-on:input="typing" v-bind:value="searchTxt" @keyup.enter="searchResMove" @keyup.down="keydown"  ref="search" id="search">
             <button type="button" v-on:click="searchResMove"><img src="http://img.mk.co.kr/2018/franchise/msearch.png" alt="검색하기"></button>
           </fieldset>
           <!-- 메인 검색 레이어-->
-              <select multiple class="search_layer" v-show="searchAreaToggle" ref="suggestDom" v-model="suggestSlect" @keyup.enter="selector">
-                  <option v-for="(item,index) in searchDisplay" :value="{code:item.regnumber, txt:item.displayTxt, flag:item.flag}" >{{item.displayTxt}}</option>
+              <select multiple class="search_layer" v-show="searchAreaToggle" ref="suggestDom" v-model="suggestSlect" @keyup.enter="selector" @click="selector">
+                  <option v-for="(item,index) in searchDisplay" :value="{code:item.regnumber, txt:item.displayTxt, flag:item.flag}" @click="selector">{{item.displayTxt}}</option>
               </select>
 						 <!-- <div class="search_layer" v-show="searchAreaToggle"> -->
                <!-- <v-autocomplete :items="items" v-model="item" :get-label="getLabel" :component-item='template' @update-items="updateItems">
@@ -41,7 +41,11 @@ export default {
     storeActive: Boolean
   },
   created(){
-
+    //let searchinput = this.$refs.search
+    const agent = navigator.userAgent.toLowerCase();
+     if ( (navigator.appName == 'Netscape' && agent.indexOf('trident') != -1) || (agent.indexOf("msie") != -1)) {
+      this.isIe = true
+    }
   },
   data(){
     return {
@@ -60,7 +64,9 @@ export default {
       addrCode: '',
       addrCodeTxt: '',
       suggestSlect: [],
-      flag: ''
+      flag: '',
+      isIe: false,
+      to: ''
       // item: {id: 9, name: 'Lion', description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit.'},
       // items: [],
       // template: ItemTemplate
@@ -95,6 +101,25 @@ export default {
 
     }
   },
+  mounted() {
+    this.$nextTick(function () { 
+      /* if(this.isIe){
+        let searchinput = document.getElementById('search')
+      searchinput.addEventListener('keyup', (e)=>{
+        setTimeout(()=>{ this.searchTxt = e.target.value
+        this.searchFc(e.target.value) }, 200)
+        
+      })
+      }else{
+        let searchinput = document.getElementById('search')
+        searchinput.addEventListener('keyup', (e)=>{
+        this.searchTxt = e.target.value
+        this.searchFc(e.target.value)
+      })
+      } */
+      
+    })
+  },
   methods: {
     getLabel (item) {
       return item.name
@@ -116,9 +141,14 @@ export default {
               })
     },
     typing(e){
-      console.log(e.key)
+      //console.log(e.target.value)
+      clearTimeout(this.to);
+        this.to = setTimeout(()=>{
+          //console.log(e.target.value);
+          this.searchFc(e.target.value)
+        }, 400);
       this.searchTxt = e.target.value
-      this.searchFc(e.target.value)
+      //this.searchFc(e.target.value)
     },
     searchFc(val){
       if(val === ''){
@@ -143,8 +173,10 @@ export default {
               })
       }
       else if(this.storeActive){
+
         let searchArr = []
-        val = val.replace(/\s\s/g, " ")
+        
+        //val = val.replace(/\s\s/g, " ")
         searchArr = val.split( ' ', 2 )
         console.log(searchArr)
         if(searchArr.length === 1){
@@ -197,6 +229,7 @@ export default {
     },
     selector(){
       let flag = this.flag
+      console.log(flag)
       if(flag === 'sector'){
         this.sectorSelected = true
         this.searchAreaToggle = false
@@ -231,8 +264,10 @@ export default {
       }
     },
     keymonitor(event){
-      //console.log(event.key)
-       if(event.key == "Enter")
+      this.searchTxt = event.target.value
+      //console.log(event.target.value)
+      this.searchFc(event.target.value)
+       /* if(event.key == "Enter")
        {
          this.searchResMove()
          //console.log("enter key was pressed!");
@@ -240,7 +275,7 @@ export default {
        }
        if(event.key == "ArrowDown"){
          //this.$refs.suggestDom.focus()
-       }
+       } */
     },
     searchResMove(){
       if(this.fActive){
@@ -263,6 +298,22 @@ export default {
     keydown(){
       this.$refs.suggestDom.focus()
     }
+    /* var to; //시간 지연 변수
+          getCouponData(me) {
+          if(me.value != '') {
+              document.getElementById('coupon_frame').style.display = 'none';
+
+              var customers_tel1 = document.getElementById('customers_tel1').value;
+              var customers_tel2 = document.getElementById('customers_tel2').value;
+              var customers_tel3 = document.getElementById('customers_tel3').value;
+
+              clearTimeout(to);
+              to = setTimeout(function(){
+                  getSearchData(customers_tel1 + '-' + customers_tel2 + '-' + customers_tel3);
+              }, 400);
+
+          }
+      } */
   }
 }
 </script>
