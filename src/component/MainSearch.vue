@@ -13,7 +13,8 @@
     </div>
 </template>
 <script>
-import SearchInput from './SearchInput.vue'
+// import SearchInput from './SearchInput.vue'
+import SearchInput from './SearchInputNew.vue'
 export default {
   name: 'MainSearch',
   components: { SearchInput },

@@ -7,13 +7,13 @@
             <legend>검색</legend>
             <!-- <v-autocomplete :items="items" v-model="item" :get-label="getLabel" :component-item='template' @update-items="updateItems">
             </v-autocomplete> -->
-            <input v-if="fActive" name="s_keyword" title="검색어 입력" type="text" placeholder="프랜차이즈명, 회사명으로 검색" v-on:input="typing" v-bind:value="searchTxt" @keyup.enter="searchResMove" @keyup.down="keydown" ref="search">
-            <input v-if="storeActive" name="s_keyword" title="검색어 입력" type="text" placeholder="지역, 업종으로 검색" v-on:input="typing" v-bind:value="searchTxt" @keyup.enter="searchResMove" @keyup.down="keydown"  ref="search" id="search">
+            <input v-if="fActive" name="s_keyword" title="검색어 입력" type="text" placeholder="프랜차이즈명, 회사명으로 검색" v-on:input="typing" v-bind:value="searchTxt" @keyup.enter="searchResMove" @keyup.down="keydown" ref="searchinput" autocomplete="off">
+            <input v-if="storeActive" name="s_keyword" title="검색어 입력" type="text" placeholder="지역, 업종으로 검색" v-bind:value="searchTxt" v-on:input="typing" @keyup.enter="searchResMove" @keyup.down="keydown"  ref="searchinput" autocomplete="off">
             <button type="button" v-on:click="searchResMove"><img src="http://img.mk.co.kr/2018/franchise/msearch.png" alt="검색하기"></button>
           </fieldset>
           <!-- 메인 검색 레이어-->
-              <select multiple class="search_layer" v-show="searchAreaToggle" ref="suggestDom" v-model="suggestSlect" @keyup.enter="selector" @click="selector">
-                  <option v-for="(item,index) in searchDisplay" :value="{code:item.regnumber, txt:item.displayTxt, flag:item.flag}" @click="selector">{{item.displayTxt}}</option>
+              <select multiple class="search_layer" v-show="searchAreaToggle" ref="suggestDom" @keyup.enter="selector" @click="selector">
+                  <option v-for="(item,index) in searchDisplay" :value="{code:item.regnumber, txt:item.displayTxt, flag:item.flag}" @click="selector(item)">{{item.displayTxt}}</option>
               </select>
 						 <!-- <div class="search_layer" v-show="searchAreaToggle"> -->
                <!-- <v-autocomplete :items="items" v-model="item" :get-label="getLabel" :component-item='template' @update-items="updateItems">
@@ -141,16 +141,20 @@ export default {
               })
     },
     typing(e){
-      //console.log(e.target.value)
-      clearTimeout(this.to);
+      if(!this.sectorSelected && !this.addrCodeSelected){
+        clearTimeout(this.to);
         this.to = setTimeout(()=>{
           //console.log(e.target.value);
+          this.searchTxt = e.target.value
           this.searchFc(e.target.value)
+
         }, 400);
-      this.searchTxt = e.target.value
+      }
       //this.searchFc(e.target.value)
     },
     searchFc(val){
+      
+      console.log('검색'+val)
       if(val === ''){
         this.searchTxt = ''
         this.searchAreaToggle = false
@@ -227,39 +231,43 @@ export default {
 
 
     },
-    selector(){
-      let flag = this.flag
-      console.log(flag)
+    selector(item){
+      console.log(item)
+      console.log("훌랄라"+item.regnumber)
+      console.log("훌랄라"+item.displayTxt)
+      console.log("훌랄라"+item.flag)
+      let flag = item.flag
+      //console.log(flag)
       if(flag === 'sector'){
         this.sectorSelected = true
         this.searchAreaToggle = false
-        this.$refs.search.focus()
+        this.$refs.searchinput.focus()
         this.searchDisplay = ''
-        /* this.sectorSelectedTxt = txt
-        this.sectorCode = regnumber
-        this.searchTxt = this.addrCodeTxt + ' ' + this.sectorSelectedTxt
-          */
+        this.sectorSelectedTxt = item.displayTxt
+        this.sectorCode = item.regnumber
+        this.searchTxt = this.addrCodeTxt + ' ' + item.displayTxt
+        console.log(this.sectorSelected)
       }
       else if(flag === 'franchise'){
-        console.log("프렌차이즈 선택")
+        //console.log(item.txt)
         this.franchiseSelected = true
         this.searchAreaToggle = false
-        this.$refs.search.focus()
+        this.$refs.searchinput.focus()
         this.searchDisplay = ''
-        /*
-        this.franchiseSelectedTxt = txt
-        this.franchiseSelectedCode = regnumber
-        this.searchTxt = this.franchiseSelectedTxt */
+        this.franchiseSelectedTxt = item.displayTxt
+        this.franchiseSelectedCode = item.regnumber
+        this.searchTxt = item.displayTxt
 
       }
       else if(flag === 'addr'){
         this.addrCodeSelected = true
         this.searchAreaToggle = false
-        this.$refs.search.focus()
+        this.$refs.searchinput.focus()
         this.searchDisplay = ''
-        /* this.addrCodeTxt = txt
-        this.addrCode = regnumber
-        this.searchTxt = txt */
+        this.addrCodeTxt = item.displayTxt
+        this.addrCode = item.regnumber
+        //this.searchTxt = item.displayTxt
+        console.log(this.addrCodeSelected)
 
       }
     },
@@ -278,20 +286,22 @@ export default {
        } */
     },
     searchResMove(){
+      
       if(this.fActive){
-           if(this.franchiseSelected){
+           if(this.franchiseSelectedCode){
            location.href = `./franchiseView/${this.franchiseSelectedCode}`
            }else{
              alert('브랜드 또는 회사명을 입력해주세요')
            }
          }
          else if(this.storeActive){
-           if(this.sectorSelected && this.addrCodeSelected){
+           if((this.sectorSelected && this.addrCodeSelected)){
            location.href = `./store/${this.sectorCode}/${this.addrCodeTxt}`
            //alert('제대로 검색')
           }
           else{
             alert('지역 + 업종으로 검색해주세요')
+            this.$refs.search.focus()
           }
          }
     },
