@@ -24,7 +24,7 @@
   					<li class="th_tit">SNS 조회 BEST</li>
   					<li class="th_txt">포털과 SNS에서 <br>많이 언급되는 브랜드</li>
             <!--분류별검색 추가 수정 0503-->
-					<div class="select">
+					<div class="select" style="left:120px">
 
 						<!--대분류-->
 						<div class="select-box">
@@ -46,7 +46,7 @@
 					</div>
 					<!--//분류별검색 추가 수정 0503-->
 
-  					<router-link v-if="snsFlag" :to="{ name: 'sns-best', params: {categoryCode: sectorSelected } }" class="th_btn1 line-height">테마보기</router-link>
+  					<router-link v-show="snsFlag" :to="{ name: 'sns-best', params: {categoryCode: sectorSelected } }" class="th_btn1 line-height" ref="snsTheme">테마보기</router-link>
   				</ul>
 			</div>
 
@@ -84,7 +84,11 @@ export default {
     },
 	  sectorSelected : function (val) {
 		  if(val !== '중분류'){
-			  this.snsFlag = true
+        this.$nextTick(()=>{
+          let t = this.$refs.snsTheme
+        t.$el.click()
+        })
+        
 		  }
 	  }
   },

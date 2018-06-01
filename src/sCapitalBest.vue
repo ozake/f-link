@@ -55,7 +55,7 @@ export default {
     if(this.$route.params.page){
       this.currentPage = Number(this.$route.params.page)
     }
-    this.getScapitalBest(this.currentPage)
+    this.getScapitalBest(this.currentPage-1)
   },
   methods: {
     getScapitalBest(page) {

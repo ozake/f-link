@@ -7,18 +7,18 @@
 			<form name="search" id="search" v-on:submit.prevent="keymonitor">
 				<fieldset>
 					<legend>검색</legend>
-					<input name="s_keyword" title="검색어 입력" type="text" placeholder="지역명으로 검색" v-on:input="typing" v-bind:value="searchTxt" @keyup.enter="searchResMove" @keyup.down="keydown" ref="search">
+					<input name="s_keyword" title="검색어 입력" type="text" placeholder="지역명으로 검색" @input="keyword" v-bind:value="searchTxt" @keydown.up="keyUp" @keydown.down="keyDown" 
+            @keyup.enter="keyEnter" @blur="blur" @focus="focus" ref="search" autocomplete="off">
 					<a href="#none" @click="searchResMove"><img alt="검색하기" src="http://img.mk.co.kr/2018/franchise/search_w.png" class="sbtn"></a>
 				</fieldset>
 				<!-- 메인 검색 레이어-->
-        <select multiple class="search_layer" v-show="searchAreaToggle" ref="suggestDom" v-model="suggestSlect" @keyup.enter="selector" @click="selector">
-          <option v-for="(item,index) in searchDisplay" :value="{code:item.regnumber, txt:item.displayTxt, flag:item.flag}" @click="selector">{{item.displayTxt}}</option>
-        </select>
-			<!-- 	<div class="search_layer" v-show="searchAreaToggle">
-					<ul>
-						<li v-for="item in searchDisplay"><a href="#" v-on:click="selector(item.displayTxt, item.flag, item.regnumber)">{{item.displayTxt}}</a></li>
+				<div class="search_layer" v-show="searchAreaToggle">
+					<ul @keydown.up="keyUp" @keydown.down="keyDown">	
+							<li v-for="(item, index) in searchDisplay" 
+							class="autocomplete-item"
+								:class="{'autocomplete-item-active': index === cursor}" @click="onClickItem(item)"><a href="#none" >{{item.txt}}</a></li>
 					</ul>
-				</div> -->
+        </div>
 				<!--// 메인 검색 레이어-->
 			</form>
 		</div>

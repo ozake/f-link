@@ -31,6 +31,21 @@
         </div>
         <!--//프랜차이즈 기본정보-->
 
+        <!--//프랜차이즈 기본정보-->
+
+					<!--브랜드 소개-->
+					<div class="frinfo1" v-if="brandMemo">
+						<h5>브랜드 소개</h5>
+
+						<p class="br_txt">
+              {{displayItem.memo}}
+            </p>					
+					</div>
+				
+						
+				<!--//브랜드 소개-->
+
+
 
         <!--가맹 창업 조건-->
         <div class="frinfo1">
@@ -391,7 +406,8 @@ export default {
       queue: new Queue(),
       estateList: [],
       selected: "시/군/구",
-      selectedStore: "지점"
+      selectedStore: "지점",
+      brandMemo: false
     };
   },
   computed: {
@@ -416,6 +432,10 @@ export default {
       let data2 = result[1];
       let tmpArray = [];
       console.log(data1[0]);
+      console.log(data1[0].memo)
+      if(data1[0].memo){
+        this.brandMemo = true
+      }
       this.displayItem = data1[0];
       for (let v of data2) {
         let totalStore = Number(v.fcount) + Number(v.rcount);

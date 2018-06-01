@@ -36,7 +36,7 @@
           <div class="list_wrap" v-for="(listItem, idx) in this.listItems">
             <BoxContent  v-for="(item, index) in listItem" :index="index" :item="item"></BoxContent>
           </div>
-          <button class="btn_build"><router-link :to="{ name: 'franchise-list-default', params: {categoryCode: categoryName } }">{{categoryName}} 전체보기 →</router-link></button>
+          <router-link tag="button" class="btn_build" :to="{ name: 'franchise-list-default', params: {categoryCode: categoryName, page: 1 } }">{{categoryName}} 전체보기 →</router-link>
         </div>
 
         

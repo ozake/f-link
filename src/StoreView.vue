@@ -32,11 +32,11 @@
 
 
 					<!--유동인구 유입경로-->
-					<!-- <ul>
+					<ul style="z-index:1000">
 						<li class="leftinfo">유동인구<br> 유입경로</li>
-						<li class="rightinfo">이 영역에서 유동인구가 가장 높게 유입되는 방향은 ‘남서’측이며, 도보한계치는 최대 596m까지 입니다.
+						<li class="rightinfo">이 영역에서 유동인구가 가장 높게 유입되는 방향은 ‘{{basedMaster.direction}}’측이며, 도보한계치는 최대 {{basedMaster.distM}}m까지 입니다.
                                              <span>※ 도보한계치란? 도보로 이동했을 때, 빌딩을 이용하는데 불편함을 느끼지 않는 한계 거리를 의미합니다 </span></li>
-					</ul> -->
+					</ul>
 				</div>
 				<!--//지도영역-->
 
@@ -241,6 +241,7 @@ import ChartRader from './component/ChartRader.vue';
 import ChartLine from './component/ChartLine.vue';
 import ApiModel from './model/apiModel.js'
 import DataPaser from "./model/dataPaser.js"
+import { convertGeo } from "./model/util.js"
 export default {
   name: 'StoreView',
   components:{
@@ -253,6 +254,7 @@ export default {
       item : '',
       storeName : this.$route.params.storeName,
 			buildIn : [],
+			basedMaster : {},
 			mapInstance : '',
       		geocorderInstance : '',
 			raderChartLabels : ['안전성', '유동성', '수익성', '접근성', '성장성'],
@@ -387,12 +389,17 @@ export default {
           data.busDist = Number(data.busDist).toFixed(0)
           data.grossArea = Number(data.grossArea).toFixed(2)
           let useYear = new Date(Number(data.useapprovaldate))
-          data.useapprovaldate = useYear.getFullYear()
+					data.useapprovaldate = useYear.getFullYear()
+					let xAxis = data.xAxis
+					let yAxis = data.yAxis
+					this.setMaker(xAxis,yAxis,data.storeName)
+
           this.item = data
           this.getBasedInfo(data.baseXycrd)
 		      this.getBasedCategory(data.baseXycrd, this.$route.params.categoryCode ,data.bdMgtSn)
 		      this.getBasedMaster(data.bdMgtSn, data.baseXycrd)
-          this.getStoreListbyCte(data.baseXycrd, this.$route.params.categoryCode)
+					this.getStoreListbyCte(data.baseXycrd, this.$route.params.categoryCode)
+					
         }
       })
     },
@@ -656,7 +663,7 @@ export default {
                 new daum.maps.Size(20, 30),
                 {
                   offset: new daum.maps.Point(15, 30),
-                  alt: value.buldNm,
+                  alt: value,
                   shape: "rect",
                   coords: "0,0,20,30"
                 })
@@ -666,7 +673,7 @@ export default {
           map: this.mapInstance, // 마커를 표시할 지도
 					position: new daum.maps.LatLng(tmparr[1], tmparr[0]), // 마커를 표시할 위치
 					image: icon,
-          title : value.refBnm, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
+          title : value, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
       })
       return marker
     },
@@ -690,9 +697,13 @@ export default {
 				console.log('배후지마스터')
 
 				let data = result.data.data.rows[0]
+				console.log(data)
+				let direction = data.direction
+				data.direction = this.changeDirectionName(direction)
 				/* let geomJson = data.geomJson
 				geomJson = JSON.parse(geomJson)
 				console.log(geomJson) */
+				this.basedMaster = data
 				let parser = new DataPaser(data)
 				let geoArr = parser.landGeocodeArr()
 				let centerArr = parser.landCentercode()
@@ -757,7 +768,28 @@ export default {
         }
       }
       return formatNum;
-    }
+		},
+		changeDirectionName(data){
+			let res = ''
+			switch (data) {
+				case "E":
+					res = "동쪽"
+					break;
+				case "W":
+					res = "서쪽"
+					break;
+				case "S":
+					res = "남쪽"
+					break;
+				case "N":
+					res = "동쪽"
+					break;
+			
+				default:
+					break;
+			}
+			return res
+		}
 
   }
 }

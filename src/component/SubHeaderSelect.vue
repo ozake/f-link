@@ -50,7 +50,7 @@
     </div>
       <!--//분류별검색-->
     <p class="sectxt">※ 매장 임대료 제외</p>
-
+    <router-link style="display:none" ref="link" :to="{ name: 'franchise-list-mnpage', params: {categoryCode: sectorSelected, min: capitalSelected.min, max:capitalSelected.max, page: 1 } }"></router-link>
   </div>
   <!-- //메인이미지 영역-->
 </template>
@@ -147,18 +147,22 @@ export default {
 		  }
     },
     capitalSelected: function (val){
-      console.log(location.hostname)
-      if(val !== '창업자금'){
+      this.$nextTick(()=>{
+        if(val !== '창업자금'){
 			  if(this.selected !== '업종' && this.sectorSelected !== '중분류'){
-          if(location.hostname === "www.f-link.co.kr"){
+          let url = this.$refs.link
+          url.$el.click()
+          /* if(location.hostname === "www.f-link.co.kr"){
           location.href = `http://www.f-link.co.kr/franchiseList/${this.sectorSelected}/1?min=${this.capitalSelected.min}&max=${this.capitalSelected.max}`
           }else if(location.hostname === "f-link.co.kr") {
             location.href = `http://f-link.co.kr/franchiseList/${this.sectorSelected}/1?min=${this.capitalSelected.min}&max=${this.capitalSelected.max}`
           }else if(location.hostname === "110.13.170.148"){
             location.href = `http://110.13.170.148:8080/franchiseList/${this.sectorSelected}/1?min=${this.capitalSelected.min}&max=${this.capitalSelected.max}`
-          }
+          } */
         }
 		  }
+      })
+      
     },
     categorycode1: function(val){
       this.selected = val

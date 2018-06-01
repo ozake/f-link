@@ -79,8 +79,19 @@
     background-color: #000000;
     opacity: 0.65;
 }
-input:checked + label {
-    font-size: 15px;
+</style>
+<style>
+.frlistbox ul:nth-of-type(1) input[type="checkbox"]:checked~label,
+.frlistbox ul:nth-of-type(2) input[type="checkbox"]:checked~label,
+.frlistbox ul:nth-of-type(3) input[type="checkbox"]:checked~label,
+.frlistbox ul:nth-of-type(4) input[type="checkbox"]:checked~label,
+.frlistbox ul:nth-of-type(5) input[type="checkbox"]:checked~label,
+.frlistbox ul:nth-of-type(6) input[type="checkbox"]:checked~label,
+.frlistbox ul:nth-of-type(7) input[type="checkbox"]:checked~label,
+.frlistbox ul:nth-of-type(8) input[type="checkbox"]:checked~label,
+.frlistbox ul:nth-of-type(9) input[type="checkbox"]:checked~label
+{
+	  font-size: 15px;
     width: 212px;
     height: 33px;
     background-color: #4db007 !important;
@@ -90,6 +101,7 @@ input:checked + label {
     cursor: pointer;
 }
 </style>
+
 <script>
 import SubHeaderSelect from "./component/SubHeaderSelect.vue"
 import CardBox from "./component/CardBox.vue"
@@ -198,15 +210,17 @@ export default {
   },
   methods:{
     fetchData(){
-      if(this.$route.query.min, this.$route.query.max){
-        this.capital = {min:this.$route.query.min, max:this.$route.query.max}
+      let page = this.$route.params.page - 1
+      if(this.$route.params.min, this.$route.params.max){
+        this.capital = {min:this.$route.params.min, max:this.$route.params.max}
         //console.log('여기!?')
-        this.franchiseList(this.$route.params.categoryCode, this.$route.params.page, this.$route.query.min, this.$route.query.max).then((result)=>{
+        
+        this.franchiseList(this.$route.params.categoryCode, page, this.$route.params.min, this.$route.params.max).then((result)=>{
           //this.listItems = this.makeArrayModuler(result,5)
           this.listItems = result
         })
       }else{
-        this.franchiseList(this.$route.params.categoryCode, this.$route.params.page).then((result)=>{
+        this.franchiseList(this.$route.params.categoryCode, page).then((result)=>{
           //this.listItems = this.makeArrayModuler(result,5)
           this.listItems = result
         })

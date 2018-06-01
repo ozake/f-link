@@ -1,6 +1,7 @@
 import Store from './component/Store.vue'
 import StoreView from './StoreView.vue'
 import Main from './Main.vue'
+import Main2 from './Main.1.vue'
 import Franchise from './Franchise.vue'
 import FranchiseList from './FranchiseList.vue'
 import FranchiseView from './FranchiseView.vue'
@@ -17,6 +18,11 @@ export default [
     path: '/',
     name: 'home-page',
     component: Main
+  },
+  {
+    path: '/stest',
+    name: 'home-page',
+    component: Main2
   },
   {
     path: '/store',
@@ -58,7 +64,13 @@ export default [
         path: ':page',
         name: 'franchise-list-page',
         props: true,
-        component: FranchiseList
+        component: FranchiseList,
+      },
+      {
+        path: '/:min/:max/:page',
+        name: 'franchise-list-mnpage',
+        props: true,
+        component: FranchiseList,
       },
     ]
   },

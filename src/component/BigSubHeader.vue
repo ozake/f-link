@@ -7,7 +7,7 @@
   <!-- //메인이미지 영역-->
 </template>
 <script>
-import SearchInput from './SearchInput.vue'
+import SearchInput from './SearchInputNew.vue'
 export default {
   name: 'BigSubHeader',
   components: { SearchInput },

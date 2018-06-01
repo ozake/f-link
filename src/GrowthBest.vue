@@ -57,7 +57,7 @@ export default {
     if(this.$route.params.page){
       this.currentPage = Number(this.$route.params.page)
     }
-    this.getGrowthBest(this.currentPage)
+    this.getGrowthBest(this.currentPage-1)
   },
   methods : {
     getGrowthBest(page){

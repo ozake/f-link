@@ -55,7 +55,7 @@ export default {
     if(this.$route.params.page){
       this.currentPage = Number(this.$route.params.page)
     }
-    this.getSteadyBest(this.currentPage)
+    this.getSteadyBest(this.currentPage-1)
   },
   methods: {
     getSteadyBest(page) {
