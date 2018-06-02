@@ -1,9 +1,9 @@
 <template>
  <!--페이징-->
       <div class="paging">
-        <router-link v-if="showPrev" class="pre" :to="{ name: routeName, params: {page: prevNum }, query: $route.query }"></router-link>
-        <router-link v-for="(nums,index) in displayPageNums" :to="{ name: routeName, params: {page: nums }, query: $route.query }" v-bind:class="{ on: ( nums === currentPage ) }" >{{nums}}</router-link>
-        <router-link v-if="showNext" class="next" :to="{ name: routeName, params: {page: nextNum }, query: $route.query }"></router-link>
+        <router-link v-if="showPrev" class="pre" :to="{ name: routeName, params: {page: prevNum, extendedParams }, query: $route.query }"></router-link>
+        <router-link v-for="(nums,index) in displayPageNums" :to="{ name: routeName, params: {page: nums, extendedParams } }" v-bind:class="{ on: ( nums === currentPage ) }" >{{nums}}</router-link>
+        <router-link v-if="showNext" class="next" :to="{ name: routeName, params: {page: nextNum,  extendedParams }, query: $route.query }"></router-link>
       </div>
       <!--//페이징-->
 </template>
@@ -24,7 +24,9 @@ export default {
           showPrev : false,
           showNext : true,
           prevNum : 1,
-          nextNum : 1
+          nextNum : 1,
+          extendedParams : {},
+          extendedParamFlag : false
       }
   },
   created() {
@@ -40,6 +42,10 @@ export default {
   },
   methods: {
     fetchData(){
+        if(this.min && this.max){
+            this.extendedParamFlag = true
+            this.extendedParams = { minprice:this.min, maxprice:this.max }
+        }
         let totalCount = this.totalCount
         if(this.routeName === 'growth-list' || this.routeName === 'scapital-list' || this.routeName === 'steady-list'){
             totalCount = totalCount - 16

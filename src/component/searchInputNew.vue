@@ -87,6 +87,8 @@ export default {
                     }
                     
                 }else if(searchArr.length === 2){
+                    this.searchAreaToggle = true
+                    this.searchDisplay = ''
                     if(this.sectorSelectedFlag){
                         if(this.sectorSelected.txt !== searchArr[1]){
                             this.sectorSelectedFlag = false
@@ -109,10 +111,10 @@ export default {
             this.searchTxt = e.target.value
         },400)
     },
-    inputChange(e){
+    /* inputChange(e){
         console.log(e.target.value)
         this.$emit('change', this.searchText)
-    },
+    }, */
     searchFc(data){
         if(data !== ''){
             this.apiModel.getFranchiseSearch(data).then((result)=>{
@@ -212,7 +214,8 @@ export default {
         
         if(this.fActive){
           this.searchTxt = item.txt
-          location.href = `./franchiseView/${item.no}`
+          //location.href = `./franchiseView/${item.no}`
+          this.$router.push({ name: 'franchise-view', params: {id:item.no } })
         }
         else if(this.storeActive){
             if(item.flag === 'addr'){
@@ -251,7 +254,8 @@ export default {
 
         }else if(this.storeActive){
             if(this.sectorSelectedFlag && this.addrSelectedFlag){
-                location.href = `./store/${this.sectorSelected.no}/${this.addrSelected.txt}`
+                //location.href = `./store/${this.sectorSelected.no}/${this.addrSelected.txt}`
+                this.$router.push({ name: 'store-search', params: {categoryCode: this.sectorSelected.no, addr: this.addrSelected.txt } })
             }else{
                 alert('지역 + 업종을 서제스트에서 선택해주세요.')
             }

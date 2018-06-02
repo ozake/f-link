@@ -56,22 +56,25 @@ export default [
     ]
   },
   {
-    path: '/franchiseList/:categoryCode',
+    path: '/franchiseList',
     name: 'franchise-list-default',
     component: FranchiseList,
     children: [
       {
-        path: ':page',
+        path: ':categoryCode/:page',
         name: 'franchise-list-page',
         props: true,
         component: FranchiseList,
+        children: [
+          {
+            path: ':minprice/:maxprice',
+            name: 'franchise-list-mnpage',
+            props: true,
+            component: FranchiseList,
+          }
+        ]
       },
-      {
-        path: '/:min/:max/:page',
-        name: 'franchise-list-mnpage',
-        props: true,
-        component: FranchiseList,
-      },
+      
     ]
   },
   {

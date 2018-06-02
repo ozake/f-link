@@ -37,8 +37,8 @@
       <div class="select-box">
         <select v-bind:class="[isIe ? ieClass : '', nonIeClass]" v-model="capitalSelected">
           <option>창업자금</option>
-          <option :value="{min:0, max:50000}">5천만원 미만</option>
-          <option :value="{min:0, max:100000}">1억원미만</option>
+          <option :value="{min:1, max:50000}">5천만원 미만</option>
+          <option :value="{min:1, max:100000}">1억원미만</option>
           <option :value="{min:100000, max:150000}">1억~1.5억원</option>
           <option :value="{min:150000, max:200000}">1.5~2억원</option>
           <option :value="{min:200000, max:250000}">2~2.5억원</option>
@@ -50,7 +50,7 @@
     </div>
       <!--//분류별검색-->
     <p class="sectxt">※ 매장 임대료 제외</p>
-    <router-link style="display:none" ref="link" :to="{ name: 'franchise-list-mnpage', params: {categoryCode: sectorSelected, min: capitalSelected.min, max:capitalSelected.max, page: 1 } }"></router-link>
+    
   </div>
   <!-- //메인이미지 영역-->
 </template>
@@ -150,8 +150,9 @@ export default {
       this.$nextTick(()=>{
         if(val !== '창업자금'){
 			  if(this.selected !== '업종' && this.sectorSelected !== '중분류'){
-          let url = this.$refs.link
-          url.$el.click()
+          /* let url = this.$refs.link
+          url.$el.click() */
+          this.$router.push({ name: 'franchise-list-mnpage', params: {categoryCode: this.sectorSelected, page: 1, minprice: this.capitalSelected.min, maxprice:this.capitalSelected.max }  })
           /* if(location.hostname === "www.f-link.co.kr"){
           location.href = `http://www.f-link.co.kr/franchiseList/${this.sectorSelected}/1?min=${this.capitalSelected.min}&max=${this.capitalSelected.max}`
           }else if(location.hostname === "f-link.co.kr") {
@@ -171,6 +172,7 @@ export default {
       this.sectorSelected = val
     },
     capital: function(val){
+      console.log("캐피탈")
       this.capitalSelected = val
     }
 	  /* sectorSelected : function (val) {

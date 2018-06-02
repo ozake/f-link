@@ -17,27 +17,27 @@
         <!-- <CardBox  v-for="(item, index) in listItems" :index="index" :item="item" v-model="checked"></CardBox> -->
 
         <!--프랜차이즈 박스-->
-			<ul  v-for="(item, index) in listItems">
-        <router-link :to="{ name: 'franchise-view', params: {id: item.regnumber } }">
-				<li class="fr_logo"><img v-bind:src="item.img2" /></li>
-				<li class="fr_tit">{{item.brand}}</li>
-				<dl>
-					<dt>분류</dt>
-					<dd>{{item.category1}} > {{item.category2}}</dd>
-					<dt>대표자</dt>
-					<dd>{{item.ceo}}</dd>
-					<dt>창업 비용</dt>
-					<dd>{{item.total}}만원 ({{item.storearea}}평)</dd>
-					<dt>총 가맹점 수</dt>
-					<dd>{{item.fcount}}개</dd>
-				</dl>
-        </router-link>
-        <label :for="index" class="check_info_label"><span>추가 정보 요청</span></label>
-        <input type="checkbox" :id="index" class="check_info" v-model="checked" :value="{regnumber: item.regnumber, brand: item.brand}"/>
-				<!-- <a href="#"><button class="btn_info">추가 정보 요청 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </button></a> -->
-			</ul>
-			<!--//프랜차이즈 박스-->
-        <Pagination :totalCount="totalCount" :currentPage="currentPage" :pageingRange="pageingRange" :pageRows="pageRows" :routeName="routeName"></Pagination>
+        <ul  v-for="(item, index) in listItems">
+          <router-link :to="{ name: 'franchise-view', params: {id: item.regnumber } }">
+          <li class="fr_logo"><img v-bind:src="item.img2" /></li>
+          <li class="fr_tit">{{item.brand}}</li>
+          <dl>
+            <dt>분류</dt>
+            <dd>{{item.category1}} > {{item.category2}}</dd>
+            <dt>대표자</dt>
+            <dd>{{item.ceo}}</dd>
+            <dt>창업 비용</dt>
+            <dd>{{item.total}}만원 ({{item.storearea}}평)</dd>
+            <dt>총 가맹점 수</dt>
+            <dd>{{item.fcount}}개</dd>
+          </dl>
+          </router-link>
+          <input type="checkbox" :id="index" class="check_info" v-model="checked" :value="{regnumber: item.regnumber, brand: item.brand}"/>
+          <label :for="index" class="check_info_label">추가 정보 요청</label>     
+          <!-- <a href="#"><button class="btn_info">추가 정보 요청 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </button></a> -->
+        </ul>
+        <!--//프랜차이즈 박스-->
+        <Pagination :totalCount="totalCount" :currentPage="currentPage" :pageingRange="pageingRange" :pageRows="pageRows" :routeName="routeName" :min="minprice" :max="maxprice"></Pagination>
         <!--페이징-->
       </div>
 
@@ -62,46 +62,26 @@
   text-align: center;
   line-height: 33px;
   box-sizing:border-box;
-}
-.check_info_label > span {
-  margin-right: 5px;
-  font-size: 15px;
   padding-right: 18.5px;
-  background: url(http://img.mk.co.kr/2018/franchise/chech_off.jpg) no-repeat right center/12px;
+  background: url(http://img.mk.co.kr/2018/franchise/chech_off.jpg) no-repeat 144px 10px;
 }
 .blackBack {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 100000 !important;
-    background-color: #000000;
-    opacity: 0.65;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 100000 !important;
+  background-color: #000000;
+  opacity: 0.65;
 }
-</style>
-<style>
-.frlistbox ul:nth-of-type(1) input[type="checkbox"]:checked~label,
-.frlistbox ul:nth-of-type(2) input[type="checkbox"]:checked~label,
-.frlistbox ul:nth-of-type(3) input[type="checkbox"]:checked~label,
-.frlistbox ul:nth-of-type(4) input[type="checkbox"]:checked~label,
-.frlistbox ul:nth-of-type(5) input[type="checkbox"]:checked~label,
-.frlistbox ul:nth-of-type(6) input[type="checkbox"]:checked~label,
-.frlistbox ul:nth-of-type(7) input[type="checkbox"]:checked~label,
-.frlistbox ul:nth-of-type(8) input[type="checkbox"]:checked~label,
-.frlistbox ul:nth-of-type(9) input[type="checkbox"]:checked~label
+.frlistbox input:checked~label
 {
-	  font-size: 15px;
-    width: 212px;
-    height: 33px;
     background-color: #4db007 !important;
     color: #fff;
-    margin: 10px 0 0 20px;
     background: url(http://img.mk.co.kr/2018/franchise/chech_on.jpg) no-repeat 144px 10px;
-    cursor: pointer;
 }
 </style>
-
 <script>
 import SubHeaderSelect from "./component/SubHeaderSelect.vue"
 import CardBox from "./component/CardBox.vue"
@@ -170,7 +150,9 @@ export default {
       pageingRange : 10,
       pageRows : 9,
       routeName : 'franchise-list-page',
-      capital : {}
+      capital : {},
+      minprice : 0,
+      maxprice : 0
     }
   },
   props:{
@@ -180,6 +162,11 @@ export default {
     this.$EventBus.$on('submitOnOff', ()=>{
       this.submitOnOff()
     })
+    if(this.$route.params.page){
+      this.currentPage = Number(this.$route.params.page)
+      //console.log(Number(this.$route.params.page))
+    }
+    
     //this.listItems = this.makeArrayModuler(this.items,5)
     const agent = navigator.userAgent.toLowerCase()
     if ( (navigator.appName == 'Netscape' && agent.indexOf('trident') != -1) || (agent.indexOf("msie") != -1)) {
@@ -188,6 +175,7 @@ export default {
     console.log("카테고리:"+this.$route.params.categoryCode)
     if(this.$route.params.categoryCode === undefined){
       this.franchiseList('한식').then((result)=>{
+        console.log('카테고리가 있는데 여기 탐!?')
         console.log(result)
         let data = result.data
         data = data[0]
@@ -202,6 +190,7 @@ export default {
   },
   watch: {
     $route: function () {
+      this.currentPage = Number(this.$route.params.page)
       this.fetchData()
     },
     checked: function (val) {
@@ -210,12 +199,17 @@ export default {
   },
   methods:{
     fetchData(){
-      let page = this.$route.params.page - 1
-      if(this.$route.params.min, this.$route.params.max){
-        this.capital = {min:this.$route.params.min, max:this.$route.params.max}
-        //console.log('여기!?')
+      let page = this.currentPage
+      page = page -1
+      console.log("page:"+page)
+      if(this.$route.params.minprice && this.$route.params.maxprice){
+        this.minprice = this.$route.params.minprice
+        this.maxprice = this.$route.params.maxprice
+        this.routeName = 'franchise-list-mnpage'
+        //this.capital = {min:this.$route.params.minprice, max:this.$route.params.maxprice}
+        console.log('여기!?')
         
-        this.franchiseList(this.$route.params.categoryCode, page, this.$route.params.min, this.$route.params.max).then((result)=>{
+        this.franchiseList(this.$route.params.categoryCode, page, this.$route.params.minprice, this.$route.params.maxprice).then((result)=>{
           //this.listItems = this.makeArrayModuler(result,5)
           this.listItems = result
         })
@@ -246,12 +240,13 @@ export default {
         }) */
         let result = await this.apiModel.getFranchiseList(categoryname,this.pageRows,page,min,max)
         if(result.status === 200){
-            console.log(result)
+            //console.log(result)
             let data = []
             data = result.data
             let paging = data.shift()
+            console.log(paging)
             this.totalCount = Number(paging.totalCount)
-            this.currentPage = Number(paging.pageNo)
+            this.currentPage = Number(paging.pageNo) + 1
             let tmpdata = data
             tmpdata = tmpdata[0]
             this.categorycode1 = tmpdata.code1
