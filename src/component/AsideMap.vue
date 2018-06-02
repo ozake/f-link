@@ -3,25 +3,7 @@
 	<div class="aside">
 
 		<!-- 검색-->
-		<div class="search">
-			<form name="search" id="search" v-on:submit.prevent="keymonitor">
-				<fieldset>
-					<legend>검색</legend>
-					<input name="s_keyword" title="검색어 입력" type="text" placeholder="지역명으로 검색" @input="keyword" v-bind:value="searchTxt" @keydown.up="keyUp" @keydown.down="keyDown" 
-            @keyup.enter="keyEnter" @blur="blur" @focus="focus" ref="search" autocomplete="off">
-					<a href="#none" @click="searchResMove"><img alt="검색하기" src="http://img.mk.co.kr/2018/franchise/search_w.png" class="sbtn"></a>
-				</fieldset>
-				<!-- 메인 검색 레이어-->
-				<div class="search_layer" v-show="searchAreaToggle">
-					<ul @keydown.up="keyUp" @keydown.down="keyDown">	
-							<li v-for="(item, index) in searchDisplay" 
-							class="autocomplete-item"
-								:class="{'autocomplete-item-active': index === cursor}" @click="onClickItem(item)"><a href="#none" >{{item.txt}}</a></li>
-					</ul>
-        </div>
-				<!--// 메인 검색 레이어-->
-			</form>
-		</div>
+		<searchInputAside></searchInputAside>
 		<!-- //검색-->
 
 		<!-- 매장찾기-->
@@ -123,9 +105,13 @@
 	<!-- //우측영역-->
 </template>
 <script>
+import searchInputAside from "./searchInputAside.vue"
 import ApiModel from "../model/apiModel.js"
 export default {
-  name: 'AsideMap',
+	name: 'AsideMap',
+	components: {
+		searchInputAside	
+	},
   data(){
 	return {
 		//isIe : false,
@@ -227,7 +213,7 @@ export default {
 	alerm() {
 		alert('준비중입니다.')
 	},
-	typing(e){
+/* 	typing(e){
 		clearTimeout(this.to);
         this.to = setTimeout(()=>{
           //console.log(e.target.value);
@@ -260,7 +246,7 @@ export default {
           this.searchDisplay = tmpArr
         }
       })
-  },
+  }, */
 	getSector(){
 		  let url = "./dist/sectorCode.json"
 		  if(location.hostname === "110.13.170.148"){
@@ -297,7 +283,7 @@ export default {
          return false
        }
 	}, */
-	selector(){
+/* 	selector(){
       let flag = this.flag
       if(flag === 'addr'){
         this.addrCodeSelected = true
@@ -316,7 +302,7 @@ export default {
           else{
             alert('지역을 선택해주세요.')
           }
-    },
+    }, */
   }
 
 }
@@ -355,24 +341,5 @@ export default {
 }
 .memul_list {
 	height: 120px;
-}
-.search_layer {
-	position: absolute;
-    top: 58px;
-    background: #fff;
-    width: 100%;
-    border: 1px solid #ddd;
-    box-sizing: border-box;
-    padding: 7px 20px;
-    background: #f5f5f5;
-	height: 200px;
-    overflow-y: auto;
-}
-.search_layer ul li {
-    padding: 5px 0;
-}
-.search_layer ul li a {
-	font-size: 17px;
-    letter-spacing: -.5px;
 }
 </style>

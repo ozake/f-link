@@ -21,8 +21,8 @@
             <dd>{{this.displayItem.ceo}}</dd>
             <dt>창업 비용</dt>
             <dd>{{this.displayItem.total}}만원 ({{this.displayItem.storearea}}평)</dd>
-            <dt>평당 평균 매출액</dt>
-            <dd>{{displayItem.sicost}}만원</dd>
+            <dt>현재 가맹점수</dt>
+            <dd>{{displayItem.fcount}}개</dd>
             <dt>홈페이지 </dt>
             <dd>{{this.displayItem.url}}</dd>
             <p>※ 본 서비스는 공정거래위원회 ‘가맹사업거래 정보공개서’에 기초한 정보입니다.</p>
@@ -105,94 +105,68 @@
 
       <!--//가맹 창업 조건-->
 
-      <!--가맹 사업 규모-->
-        <div class="frinfo2">
-          <h5>가맹 사업 규모</h5>
+      				<!--가맹 사업 규모-->
+					<div class="frinfo2">
+						<h5>가맹 사업 규모</h5>
 
-          <!--가맹점수-->
-          <table width="805"  border="0" cellpadding="0" cellspacing="0" class="infotable1">
-            <caption>가맹점수</caption>
+						<!--가맹점수-->
+						<table width="805"  border="0" cellpadding="0" cellspacing="0" class="infotable1">
+							 <caption>가맹점수</caption>
+							
+							 <colgroup> 
+                <col width="134"> 
+							  <col width="134">
+							  <col width="134"> 
+								<col width="134"> 
+								<col width="134"> 
+								<col width="134">
+              </colgroup>
+														 
+							 <tr>
+								<th>연도 </th>
+								<th>신규개점</th>
+								<th>명의변경 </th>
+								<th>총 매장 수 </th>
+								<th>폐업 매장 수 </th>
+								<th>폐업률</th>
+							  </tr>			 
+							  
+							  <tr v-for="ydata in yearData">
+								<td>{{ydata.year}} </td>
+								<td>{{ydata.rcount}}</td>
+                <td>{{ydata.mcount}}</td>
+								<td>{{ydata.totalStore}}</td>
+								<td>{{ydata.closerStore}}</td>
+								<td>{{ydata.closerRate}}</td>
+							  </tr>
+							
+						</table>	
 
-            <colgroup>
-              <col width="200">
-              <col width="121">
-              <col width="121">
-              <col width="121">
-              <col width="121">
-              <col width="121">
-            </colgroup>
+						
 
-            <tr>
-              <td rowspan="3">가맹점 수</td>
-              <th>연도 </th>
-              <th>신규개점 </th>
-              <th>계약종료 </th>
-              <th>계약해지 </th>
-              <th>명의변경</th>
-            </tr>
+						<!--임직원-->
+						<table width="805"  border="0" cellpadding="0" cellspacing="0" class="infotable1">
+							 <caption>임직원</caption>
+							
+							 <colgroup> 
+                  <col width="200"> 
+							    <col width="200">
+							    <col width="200"> 
+								  <col width="205"> 															
+                </colgroup>
+														 
+							 <tr>
+                <td>임직원수</td>
+                <th>{{this.displayItem.executives}} /{{this.displayItem.employee}} 명</th>
+                <td>가맹사업 개시일</td>
+                <th>{{displayItem.start}}</th>
+							 </tr>			 
+							
 
-            <tr v-for="ydata in yearData">
-              <td>{{ydata.year}} </td>
-              <td>{{ydata.rcount}} </td>
-              <td>{{ydata.ecount}}</td>
-              <td>{{ydata.ccount}}</td>
-              <td>{{ydata.mcount}}</td>
-            </tr>
-
-          </table>
-
-          <!--폐점률-->
-          <table width="805"  border="0" cellpadding="0" cellspacing="0" class="infotable1">
-             <caption>폐점률</caption>
-
-             <colgroup>
-                              <col width="200">
-                <col width="151">
-                <col width="151">
-              <col width="151">
-              <col width="151">
-                           </colgroup>
-
-             <tr>
-              <td rowspan="3">폐점률</td>
-              <th>연도 </th>
-              <th>총 매장 수</th>
-              <th>폐업 매장 수</th>
-              <th>폐업률</th>
-             </tr>
-
-            <tr v-for="ydata in yearData">
-              <td>{{ydata.year}} </td>
-              <td>{{ydata.totalStore}} </td>
-              <td>{{ydata.closerStore}}</td>
-              <td>{{ydata.closerRate}}</td>
-            </tr>
-
-          </table>
-
-          <!--임직원-->
-          <table width="805"  border="0" cellpadding="0" cellspacing="0" class="infotable1">
-             <caption>임직원</caption>
-
-             <colgroup>
-                              <col width="200">
-                <col width="200">
-                <col width="200">
-              <col width="205">
-                           </colgroup>
-
-             <tr>
-              <td>임직원수</td>
-              <th>{{this.displayItem.executives}} /{{this.displayItem.employee}}</th>
-              <td>브랜드수</td>
-              <th>3</th>
-             </tr>
-
-
-          </table>
-
-        </div>
-      <!--//가맹 사업 규모-->
+						</table>	
+		
+					</div>
+				<!--//가맹 사업 규모-->
 
 
       <!--지점안내-->
@@ -274,38 +248,6 @@
                   <p class="branch_info">{{store.tel}}</p>
                   <p class="branch_info">영업 개시일 : {{store.firstDate}}</p>
                 </li>
-                <!--
-                <li>
-                  <span>2</span>
-                  <p class="branch_name">매경피자 1호점</p>
-                  <p>서울특별시 중구 퇴계로 212 대한극장 1,2층 지번 </p>
-                  <p class="branch_info">02-2000-5450</p>
-                  <p class="branch_info">영업 개시일 : 2015.01</p>
-                </li>
-
-                <li>
-                  <span>10</span>
-                  <p class="branch_name">매경피자 1호점</p>
-                  <p>서울특별시 중구 퇴계로 212 대한극장 1,2층 지번 </p>
-                  <p class="branch_info">02-2000-5450</p>
-                  <p class="branch_info">영업 개시일 : 2015.01</p>
-                </li>
-
-                <li>
-                  <span>10</span>
-                  <p class="branch_name">매경피자 1호점</p>
-                  <p>서울특별시 중구 퇴계로 212 대한극장 1,2층 지번 </p>
-                  <p class="branch_info">02-2000-5450</p>
-                  <p class="branch_info">영업 개시일 : 2015.01</p>
-                </li>
-
-                <li>
-                  <span>10</span>
-                  <p class="branch_name">매경피자 1호점</p>
-                  <p>서울특별시 중구 퇴계로 212 대한극장 1,2층 지번 </p>
-                  <p class="branch_info">02-2000-5450</p>
-                  <p class="branch_info">영업 개시일 : 2015.01</p>
-                </li> -->
               </ul>
 
             </div>
@@ -432,11 +374,17 @@ export default {
       let data2 = result[1];
       let tmpArray = [];
       console.log(data1[0]);
-      console.log(data1[0].memo)
-      if(data1[0].memo){
-        this.brandMemo = true
+      console.log(data1[0].memo);
+      if (data1[0].memo) {
+        this.brandMemo = true;
       }
-      this.displayItem = data1[0];
+      data1 = data1[0];
+
+      let date = data1.start;
+      date =
+        date.substr(0, 4) + "년 " + date.substr(4, 2) + "월 " + date.substr(6, 2);
+      data1.start = date;
+      this.displayItem = data1;
       for (let v of data2) {
         let totalStore = Number(v.fcount) + Number(v.rcount);
         totalStore = Number(totalStore);
@@ -515,9 +463,9 @@ export default {
       this.mapInstance = map;
       this.geocorderInstance = geocoder;
       this.searchAddrFromCoords(
-          geocoder,
-          map.getCenter(),
-          this.displayCenterInfo
+        geocoder,
+        map.getCenter(),
+        this.displayCenterInfo
       );
 
       console.log("마운티드 종료");
@@ -639,13 +587,13 @@ export default {
                   x = Number(value.xAxis);
                   y = Number(value.yAxis);
                   let date = this.getDateFormat(new Date(value.firstDate));
-                  let tel = value.tel
-                  tel = tel.slice(1)
-                  tel = this.phoneFomatter(tel)
-                  if(tel.slice(1,2) === '0'){
-                    tel = tel.slice(1)
+                  let tel = value.tel;
+                  tel = tel.slice(1);
+                  tel = this.phoneFomatter(tel);
+                  if (tel.slice(1, 2) === "0") {
+                    tel = tel.slice(1);
                   }
-                  value.tel = tel
+                  value.tel = tel;
                   value.firstDate = date;
                   let position = [];
                   position = convertGeo([x, y]);

@@ -26,6 +26,8 @@
         </form>
        </div>
        <!-- //메인 검색-->
+       <!-- <router-link style="display:none" :to="{ name: 'franchise-view', params: { id : fSelected.no } }" ref="franRes"></router-link>
+       <router-link style="display:none" :to="{ name: 'store-search', params: { categoryCode : this.sectorSelected.no, addr : this.addrSelected.txt } }" ref="storeRes"></router-link> -->
     </div>
 </template>
 <script>
@@ -46,6 +48,7 @@ export default {
       apiModel : new ApiModel(this.$http),
       T : '',
       searchTxt: '',
+      fSelected: {},
       searchAreaToggle: false,
       addrSelected: {},
       addrOrgsearchTxt: '',
@@ -214,8 +217,11 @@ export default {
         
         if(this.fActive){
           this.searchTxt = item.txt
+          this.fSelected = item
           //location.href = `./franchiseView/${item.no}`
           this.$router.push({ name: 'franchise-view', params: {id:item.no } })
+          /* let url = this.$refs.franRes
+          url.$el.click() */
         }
         else if(this.storeActive){
             if(item.flag === 'addr'){
@@ -256,6 +262,8 @@ export default {
             if(this.sectorSelectedFlag && this.addrSelectedFlag){
                 //location.href = `./store/${this.sectorSelected.no}/${this.addrSelected.txt}`
                 this.$router.push({ name: 'store-search', params: {categoryCode: this.sectorSelected.no, addr: this.addrSelected.txt } })
+                /* let url = this.$refs.storeRes
+                url.$el.click() */
             }else{
                 alert('지역 + 업종을 서제스트에서 선택해주세요.')
             }

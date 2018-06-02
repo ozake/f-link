@@ -20,11 +20,6 @@ export default [
     component: Main
   },
   {
-    path: '/stest',
-    name: 'home-page',
-    component: Main2
-  },
-  {
     path: '/store',
     name: 'store-page',
     component: Store,
@@ -74,7 +69,6 @@ export default [
           }
         ]
       },
-      
     ]
   },
   {
