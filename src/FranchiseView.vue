@@ -128,7 +128,7 @@
 								<th>명의변경 </th>
 								<th>총 매장 수 </th>
 								<th>폐업 매장 수 </th>
-								<th>폐업률</th>
+								<th>폐업률(%)</th>
 							  </tr>			 
 							  
 							  <tr v-for="ydata in yearData">
@@ -382,7 +382,7 @@ export default {
 
       let date = data1.start;
       date =
-        date.substr(0, 4) + "년 " + date.substr(4, 2) + "월 " + date.substr(6, 2);
+        date.substr(0, 4) + "년 " + date.substr(4, 2) + "월 " + date.substr(6, 2) + "일";
       data1.start = date;
       this.displayItem = data1;
       for (let v of data2) {
@@ -683,6 +683,7 @@ export default {
         if (result.status === 200) {
           //console.log(result)
           let data = result.data;
+          console.log(data)
           let paging = data.shift();
           for (const value of data) {
             let img = value.img_url;
@@ -700,6 +701,8 @@ export default {
               img = str;
             }
             value.img_url = img;
+            let regdate = value.mk_reg_date
+            value.mk_reg_date = regdate.substr(0,10)
           }
           this.estateList = data;
         }

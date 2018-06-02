@@ -10,7 +10,9 @@
         <!-- <li class="premium "><span class="icon">권</span>1억5000만원</li> -->
         <li class="text">{{item.corrp_flr}}층  {{item.supp_meter}}㎡<br>
           추천업종 : {{item.rec_using}}
+          {{item.subway_info}}
         </li>
+        <li class="text">매물등록일 {{item.mk_reg_date}}</li>
       </router-link>
     </ul>
 

@@ -165,9 +165,11 @@
 					<div class="graph4">
 						<span class="subtit">전년도 연간 매출 변동 추이</span>
 						<!--그래프영역 -->
-						<div style="width:1003px;height:300px;background-color:#f2f2f2">
+
+						<div class="lindGraphContainer">
+							<chart-line :labels="lineChartLabels" :datasets="lineChartDatasets" :options="lineChartOption"></chart-line>
 						      <!--그래프 없을경우 -->
-						      <p class="nograph">해당업종 정보가 5건 이하로 그래프를 제공하지 않습니다.</p>
+						      <!-- <p class="nograph">해당업종 정보가 5건 이하로 그래프를 제공하지 않습니다.</p> -->
 							  <!--//그래프 없을경우 -->
 						</div>
 						<!--//그래프영역 -->
@@ -195,22 +197,7 @@
 						<!--배후지 영역 내 사업체 수 -->
 						<div style="width:490px;height:200px;background-color:#f6f6f6;border:1px solid #dcdcdc">
 							<dl>
-								<dt> 사랑방 갈비</dt>
-								<dd>서울특별시 중구 필동1가 135 태광빌딩 102호)</dd>
-								<dt> 고랭지 김치찌개</dt>
-								<dd>서울특별시 중구 필동1가 120 A빌딩 B 101호)</dd>
-								<dt> 원님 곰탕 </dt>
-								<dd>서울특별시 중구 필동1가 120 A빌딩 B 101호)</dd>
-								<dt> 사랑방 갈비</dt>
-								<dd>서울특별시 중구 필동1가 135 태광빌딩 102호)</dd>
-								<dt> 고랭지 김치찌개</dt>
-								<dd>서울특별시 중구 필동1가 120 A빌딩 B 101호)</dd>
-								<dt> 원님 곰탕 </dt>
-								<dd>서울특별시 중구 필동1가 120 A빌딩 B 101호)</dd>
-								<dt> 고랭지 김치찌개</dt>
-								<dd>서울특별시 중구 필동1가 120 A빌딩 B 101호)</dd>
-								<dt> 원님 곰탕 </dt>
-								<dd>서울특별시 중구 필동1가 120 A빌딩 B 101호)</dd>
+								<dt v-for="item in catStoreList">{{item.refNm + ' ' + item.refBnm}}</dt>
 							</dl>
 						</div>
 						<!--//배후지 영역 내 사업체 수 -->
@@ -296,7 +283,7 @@ export default {
 			},
 			basedInfo: {},
       ageText: '',
-      catStore: []
+      catStoreList: []
     }
 	},
 	/* computed: {
@@ -390,8 +377,8 @@ export default {
           data.grossArea = Number(data.grossArea).toFixed(2)
           let useYear = new Date(Number(data.useapprovaldate))
 					data.useapprovaldate = useYear.getFullYear()
-					let xAxis = data.xAxis
-					let yAxis = data.yAxis
+					let xAxis = Number(data.xAxis)
+					let yAxis = Number(data.yAxis)
 					this.setMaker(xAxis,yAxis,data.storeName)
 
           this.item = data
@@ -494,6 +481,7 @@ export default {
 		getBasedCategory(basedCode, categoryCode, bdid){
 			this.apiModel.getOP410(basedCode, categoryCode, bdid).then((result)=>{
 				if(result.status === 200){
+					console.log("410")
 					console.log(result)
 					let data = result.data.data.rows[0]
 					let stbiz = this.reverseData(Number(data.stbiz))
@@ -506,6 +494,7 @@ export default {
 					let prftbAvg = this.reverseData(Number(data.prftbAvg))
 					let acesAvg = this.reverseData(Number(data.acesAvg))
 					let grothAvg = this.reverseData(Number(data.grothAvg))
+					let tpindSlngPanal = data.tpindSlngPanal
 					this.raderChartDatasets = [{
 						label: '건물 평가지표',
 						backgroundColor: 'rgba(200, 0, 27, 0.25)',
@@ -566,9 +555,12 @@ export default {
     getStoreListbyCte(basedCode, categoryCode){
       this.apiModel.getOP411(basedCode, categoryCode).then((result)=>{
         if(result.status === 200){
-          console.log('411')
-          console.log(result.data.data.rows)
-          //this.catStore = result.data.rows
+					console.log('411')
+					let data = result.data.data.rows
+					for (const value of data) {
+						
+					}
+          this.catStoreList = data
         }
       })
     },
@@ -731,11 +723,39 @@ export default {
         strokeColor: '#FF00FF',
         strokeOpacity: 0.8,
         strokeStyle: 'dashed',
-        fillColor: '#00EEEE',
+        fillColor: '#61D5B4',
         fillOpacity: 0.6
       })
 
-      polygon.setMap(this.mapInstance)
+			polygon.setMap(this.mapInstance)
+
+			let customOverlay = new daum.maps.CustomOverlay({})
+			customOverlay.setZIndex(1000)
+			
+			daum.maps.event.addListener(polygon, 'mouseover', (mouseEvent) => {
+        polygon.setOptions({fillColor: '#8EF5CD'});
+
+        customOverlay.setContent(`<div class="areainfo">
+					    <b>배후지 영역이란?</b>
+						해당 건물 기준  인구수, 이동거리,이동방향을 고려해<br> 창업에 영향을 미치는 상권영역	
+					</div>`);
+        
+        customOverlay.setPosition(mouseEvent.latLng); 
+        customOverlay.setMap(this.mapInstance);
+			});
+
+			// 다각형에 mousemove 이벤트를 등록하고 이벤트가 발생하면 커스텀 오버레이의 위치를 변경합니다 
+			daum.maps.event.addListener(polygon, 'mousemove', (mouseEvent) => {
+					
+					customOverlay.setPosition(mouseEvent.latLng); 
+			});
+
+			// 다각형에 mouseout 이벤트를 등록하고 이벤트가 발생하면 폴리곤의 채움색을 원래색으로 변경합니다
+			// 커스텀 오버레이를 지도에서 제거합니다 
+			daum.maps.event.addListener(polygon, 'mouseout', ()=> {
+					polygon.setOptions({fillColor: '#61D5B4'});
+					customOverlay.setMap(null);
+			});
 
 	},
 	setCenterMap(x,y){
