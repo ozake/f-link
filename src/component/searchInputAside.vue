@@ -135,6 +135,7 @@ export default {
         this.searchSelected = item
         this.$EventBus.$emit('addrSearch', item.txt)
         this.searchSelected = {}
+        this.$refs.search.blur()
           //location.href = `./franchiseView/${item.no}`
           //this.$router.push({ name: 'franchise-view', params: {id:item.no } })
         //this.$emit('item-selected', item)

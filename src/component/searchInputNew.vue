@@ -15,7 +15,7 @@
           </fieldset>
           <!-- 메인 검색 레이어-->
             <div class="search_layer" v-show="searchAreaToggle">
-                <ul @keydown.up="keyUp" @keydown.down="keyDown">	
+                <ul @keydown.up="keyUp" @keydown.down="keyDown" ref="suggest">	
                     <li v-for="(item, index) in searchDisplay" 
                     class="autocomplete-item"
                      :class="{'autocomplete-item-active': index === cursor}" @click="onClickItem(item)"><a href="#none" >{{item.txt}}</a></li>
@@ -64,7 +64,10 @@ export default {
     keyword(e){
         clearTimeout(this.T)
         this.T = setTimeout(()=>{
-            this.cursor = -1
+            if(this.cursor > 2){
+                this.cursor = -1    
+            }
+            
             if(this.fActive){
                 if(e.target.value !== ''){
                     this.searchFc(e.target.value)
@@ -122,13 +125,25 @@ export default {
         if(data !== ''){
             this.apiModel.getFranchiseSearch(data).then((result)=>{
             if(result.status === 200){
-                console.log(result)
+                //console.log(result.data)
                 let data = []
+
+                /* for(let i=0; i<10; i++){
+                    let tmpdata = {}
+                    tmpdata.txt = result.data[i].brand
+                    tmpdata.no = result.data[i].regnumber
+                    data.push(tmpdata)
+                } */
+                let i=0
                 for (const value of result.data) {
                     let tmpdata = {}
                     tmpdata.txt = value.brand
                     tmpdata.no = value.regnumber
                     data.push(tmpdata)
+                    if(i===10){
+                        break
+                    }
+                    i++
                 }
                 this.searchDisplay = data
             }
@@ -142,6 +157,18 @@ export default {
             if(result.status === 200){
                 //console.log(result)
                 let data = []
+                /* for(let i=0; i<10; i++){
+                    console.log(result.data[i])
+                    let tmpdata ={}
+                    tmpdata.txt = result.data[i].area2
+                    if(result.data[i].area3){
+                        tmpdata.txt = tmpdata.txt + "(" + result.data[i].area3 + ")"
+                    }
+                    tmpdata.no = result.data[i].code
+                    tmpdata.flag = 'addr'
+                    data.push(tmpdata)
+                } */
+                let i=0
                 for (const value of result.data) {
                     let tmpdata ={}
                     tmpdata.txt = value.area2
@@ -151,6 +178,10 @@ export default {
                     tmpdata.no = value.code
                     tmpdata.flag = 'addr'
                     data.push(tmpdata)
+                    if(i===10){
+                        break
+                    }
+                    i++
                 }
 
                 this.searchDisplay = data
@@ -165,12 +196,25 @@ export default {
             if(result.status === 200){
                 console.log(result)
                 let data = []
+
+                /* for(let i=0; i<10; i++){
+                    let tmpdata ={}
+                    tmpdata.txt = result.data[i].category2
+                    tmpdata.no = result.data[i].code2
+                    tmpdata.flag = 'sector'
+                    data.push(tmpdata)
+                } */
+                let i=0
                 for (const value of result.data) {
                     let tmpdata ={}
                     tmpdata.txt = value.category2
                     tmpdata.no = value.code2
                     tmpdata.flag = 'sector'
                     data.push(tmpdata)
+                    if(i===10){
+                        break
+                    }
+                    i++
                 }
                 this.searchDisplay = data
             }
@@ -203,9 +247,19 @@ export default {
         }
     },
     itemView (item) {
-      if (item && item.scrollIntoView) {
-        item.scrollIntoView(false)
+      if (item) {
+          //item.scrollIntoView(false)
+          /* let scrollDom = this.$refs.suggest
+          let scrollHeight = scrollDom.scrollHeight
+          if(scrollHeight > 200){
+              if(this.cursor > 3){
+                  scrollDom.style.top = -
+              }
+          } */
+        //item.scrollIntoView(false)
+        //console.log(item.scrollY())
       }
+      //console.log(item)
     },
     onClickItem(item) {
       this.onSelectItem(item)
@@ -288,10 +342,10 @@ export default {
 </script>
 <style scoped>
 .search_layer {
-  height: 200px;
-  overflow-y: auto;
+  height: 240px;
+  overflow:hidden;
   z-index: 10000;
-  line-height: 30px;
+  line-height: 12px;
 }
 /* #search {
     position: relative;

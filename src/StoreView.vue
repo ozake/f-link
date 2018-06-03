@@ -34,7 +34,7 @@
 					<!--유동인구 유입경로-->
 					<ul style="z-index:1000">
 						<li class="leftinfo">유동인구<br> 유입경로</li>
-						<li class="rightinfo">이 영역에서 유동인구가 가장 높게 유입되는 방향은 ‘{{basedMaster.direction}}’측이며, 도보한계치는 최대 {{basedMaster.distM}}m까지 입니다.
+						<li class="rightinfo">이 영역에서 유동인구가 가장 높게 유입되는 방향은 ‘{{basedMaster.direction}}’이며, 도보한계치는 최대 {{basedMaster.distM}}m까지 입니다.
                                              <span>※ 도보한계치란? 도보로 이동했을 때, 빌딩을 이용하는데 불편함을 느끼지 않는 한계 거리를 의미합니다 </span></li>
 					</ul>
 				</div>
@@ -93,10 +93,10 @@
 						</div>
 					  <ul>
 						<li class="tit">지표 설명</li>
-						<li><b>성장성</b>한식 업종의 전(12개월 전)년 대비 매출 성장률을 지수로 나타냅니다. </li>
-						<li><b>안정성</b>한식 업종을 창업 시 얼마나 오래 유지할 수 있는지를 지수화 했습니다.</li>
+						<li><b>성장성</b>{{sectorName}} 업종의 전(12개월 전)년 대비 매출 성장률을 지수로 나타냅니다. </li>
+						<li><b>안정성</b>{{sectorName}} 업종을 창업 시 얼마나 오래 유지할 수 있는지를 지수화 했습니다.</li>
 						<li><b>유동성</b>건물의 배후지영역의 잠재 고객수를 지수화 했습니다.</li>
-						<li><b>수익성</b>한식 업종 창업 시 객단가를 지역 평균과 비교해 제시합니다.</li>
+						<li><b>수익성</b>{{sectorName}} 업종 창업 시 객단가를 지역 평균과 비교해 제시합니다.</li>
 						<li><b>접근성</b>건물의 교통 및 접근 편의성을 지수화 했습니다.</li>
 					  </ul>
 					</div>
@@ -167,7 +167,7 @@
 						<!--그래프영역 -->
 
 						<div class="lindGraphContainer">
-							<chart-line :labels="lineChartLabels" :datasets="lineChartDatasets" :options="lineChartOption"></chart-line>
+							<chart-line :labels="salesChartLabels" :datasets="salesChartDatasets" :options="salesChartOption"></chart-line>
 						      <!--그래프 없을경우 -->
 						      <!-- <p class="nograph">해당업종 정보가 5건 이하로 그래프를 제공하지 않습니다.</p> -->
 							  <!--//그래프 없을경우 -->
@@ -182,24 +182,34 @@
 					<!--안정성-->
 					<h6>안정성</h6>
 					<div class="graph5">
-						<span class="subtit">한식업종 평균 영업기간 [단위: 년]  </span>
+						<span class="subtit">{{sectorName}}업종 평균 영업기간 [단위: 년]  </span>
 						<!--한식업종 평균 영업기간  -->
-						<div style="width:490px;height:200px;background-color:#f2f2f2">
+						<div style="width:490px;height:200px;">
+							<chart-bar :labels="averageChartLabels" :datasets="averageChartDatasets" :options="averageChartOption"></chart-bar>
 							<!--그래프 없을경우 -->
-						      <p class="nograph">해당업종 정보가 5건 이하로 <br>그래프를 제공하지 않습니다.</p>
+						      <!-- <p class="nograph">해당업종 정보가 5건 이하로 <br>그래프를 제공하지 않습니다.</p> -->
 							  <!--//그래프 없을경우 -->
 						</div>
 						<!--//한식업종 평균 영업기간  -->
 					</div>
 
 					<div class="graph6">
-						<span class="subtit">배후지 영역 내 한식업종 사업체 수</span>
+						<span class="subtit">배후지 영역 내 {{sectorName}}업종 사업체 수({{catStoreListNum}}개)</span>
 						<!--배후지 영역 내 사업체 수 -->
-						<div style="width:490px;height:200px;background-color:#f6f6f6;border:1px solid #dcdcdc">
+							<div style="width:490px;height:200px;background-color:#f6f6f6;border:1px solid #dcdcdc">
+								<ul>
+									<li v-for="item in catStoreList">
+										<span>{{item.refNm + ' ' + item.refBnm}}</span>
+										<span>{{item.addr}}</span>
+									</li>
+								</ul>
+							</div>
+
+						<!-- <div style="width:490px;height:200px;background-color:#f6f6f6;border:1px solid #dcdcdc">
 							<dl>
 								<dt v-for="item in catStoreList">{{item.refNm + ' ' + item.refBnm}}</dt>
 							</dl>
-						</div>
+						</div> -->
 						<!--//배후지 영역 내 사업체 수 -->
 					</div>
 					<!--//안정성-->
@@ -207,10 +217,10 @@
 
 
 					<!--수익성  -->
-					<h6>수익성<span>※한식 업종의 지역 객단가 비교</span></h6>
+					<!-- <h6>수익성<span>※{{sectorName}} 업종의 지역 객단가 비교</span></h6>
 					<div class="graph7">
-					한식 업종의 선택 지역 객단가(결제 1건당 매출액)는 지역 평균값 0,000원과 비슷한 수준입니다.  (업종 특성 상 메뉴, 영업형태 등 요소에 의해 객단가 평가에 차이가 발생할 수 있습니다.)
-					</div>
+					{{sectorName}} 업종의 선택 지역 객단가(결제 1건당 매출액)는 지역 평균값 0,000원과 비슷한 수준입니다.  (업종 특성 상 메뉴, 영업형태 등 요소에 의해 객단가 평가에 차이가 발생할 수 있습니다.)
+					</div> -->
 
 
 
@@ -226,6 +236,7 @@
 <script>
 import ChartRader from './component/ChartRader.vue';
 import ChartLine from './component/ChartLine.vue';
+import ChartBar from './component/ChartBar.vue';
 import ApiModel from './model/apiModel.js'
 import DataPaser from "./model/dataPaser.js"
 import { convertGeo } from "./model/util.js"
@@ -233,7 +244,8 @@ export default {
   name: 'StoreView',
   components:{
 		ChartRader,
-		ChartLine
+		ChartLine,
+		ChartBar
   },
   data () {
     return {
@@ -281,9 +293,56 @@ export default {
 					}]
 				}
 			},
+			salesChartLabels : ['12','1',	'2', '3', '4', '5', '6', '7',	'8', '9',	'10',	'11',	'12'],
+			salesChartDatasets : [],
+			salesChartOption : {
+				tooltips: {
+					mode: 'index',
+					intersect: false,
+				},
+				hover: {
+					mode: 'nearest',
+					intersect: true
+				},
+				scales: {
+					xAxes: [{
+						display: true,
+						scaleLabel: {
+							display: true,
+							labelString: 'Month'
+						}
+					}],
+					yAxes: [{
+						display: true,
+						scaleLabel: {
+							display: true,
+							labelString: '매출(만원)'
+						}
+					}]
+				}
+			},
+			averageChartLabels: [],
+			averageChartDatasets : [],
+			averageChartOption : {
+				responsive: true,
+				legend: {
+					position: 'top'
+				},
+				scales: {
+					yAxes: [{
+						display: true,
+						scaleLabel: {
+							display: true,
+							labelString: '영업기간(년도)'
+						}
+					}]
+				}
+			},
 			basedInfo: {},
       ageText: '',
-      catStoreList: []
+			catStoreList: [],
+			catStoreListNum: 0,
+			sectorName: ''
     }
 	},
 	/* computed: {
@@ -328,7 +387,16 @@ export default {
     this.$EventBus.$emit('HeaderActive', 'store')
     let bdid = this.$route.params.id
     this.getBuildingInfo(bdid)
-    this.getBuildingBasedStore(bdid)
+		this.getBuildingBasedStore(bdid)
+		this.$http.get('../../../src/assets/sectorMcode.json').then((result)=>{
+			if(result.status === 200){
+				for (const value of result.data.sectorM) {
+					if(value.code === this.$route.params.categoryCode){
+						this.sectorName = value.categoryName
+					}
+				}
+			}
+		})
 	},
 	mounted() {
     	this.$nextTick(function () {
@@ -494,7 +562,42 @@ export default {
 					let prftbAvg = this.reverseData(Number(data.prftbAvg))
 					let acesAvg = this.reverseData(Number(data.acesAvg))
 					let grothAvg = this.reverseData(Number(data.grothAvg))
-					let tpindSlngPanal = data.tpindSlngPanal
+					let tpindSlngPanal = JSON.parse(data.tpindSlngPanal)
+					let tpindSlngPanalAvg = JSON.parse(data.tpindSlngPanalAvg)
+					let mktPerd = Number(data.mktPerd)
+					let mktPerdAvg = Number(data.mktPerdAvg)
+					this.salesChartDatasets = [
+						{
+							label : '배후지',
+							borderColor: '#f53794',
+							backgroundColor: '#f53794',
+							fill: false,
+							data: tpindSlngPanal
+						}
+						/* {
+							label : '지역평균',
+							borderColor: '#4dc9f6',
+							backgroundColor: '#4dc9f6',
+							fill: false,
+							data: tpindSlngPanalAvg
+						}, */
+					]
+					this.averageChartDatasets = [
+						{
+							label : '배후지',
+							borderColor: '#f53794',
+							backgroundColor: 'rgba(245, 55, 148, 0.6)',
+							borderWidth: 1,
+							data: [mktPerd]
+						},
+						{
+							label : '지역평균',
+							borderColor: '#4dc9f6',
+							backgroundColor: 'rgba(77, 201, 246, 0.6)',
+							borderWidth: 1,
+							data: [mktPerdAvg]
+						}
+					]
 					this.raderChartDatasets = [{
 						label: '건물 평가지표',
 						backgroundColor: 'rgba(200, 0, 27, 0.25)',
@@ -557,6 +660,7 @@ export default {
         if(result.status === 200){
 					console.log('411')
 					let data = result.data.data.rows
+					this.catStoreListNum = data.length
 					for (const value of data) {
 						
 					}
@@ -912,6 +1016,44 @@ export default {
 	width:1003px;
 	height:300px;
 	overflow: hidden;
+}
+.building_view .graph6 ul{
+  width:450px;
+  height:180px;
+  line-height:30px;
+  font-size:14px;
+  float:left;
+  overflow:auto;
+  margin:10px 20px
+}
+
+.building_view .graph6 ul li{
+  overflow: hidden;
+}
+.building_view .graph6 ul li span:nth-of-type(1) {
+  float:left;
+  width:160px;
+  font-weight:500;
+  color:#555;
+  margin-right:10px;
+  text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  word-wrap: normal !important;
+}
+.building_view .graph6 ul li span:nth-of-type(2) {
+  float:left;
+  font-weight:300;
+  color:#888;
+  width:280px;
+  font-size:14px;
+  letter-spacing:-1px;
+  text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  word-wrap: normal !important;
 }
 </style>
 

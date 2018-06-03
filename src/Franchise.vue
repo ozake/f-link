@@ -2,7 +2,7 @@
       <div id="content">
         <BigSubHeader></BigSubHeader>
         <!-- 서브메뉴-->
-  			<div class="smenu">
+  			<div class="smenu" id="smenu">
           <div class="menuWrap">
             <button class="btn_menu" v-on:click="menuToggle">
 					    <img v-show="!memuBoardFlag" src="http://img.mk.co.kr/2018/franchise/list.png" alt="전체메뉴보기">

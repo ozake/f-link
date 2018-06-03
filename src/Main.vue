@@ -2,7 +2,7 @@
   <!-- 콘텐츠 -->
   <div id="content">
     <!-- 메인이미지 영역-->
-    <div class="mcontent">
+    <div class="mcontent" >
       <h2>더 나은 내일을 만들어 줄 <br><span>나의 프랜차이즈를 찾아보세요</span></h2>
       <MainSearch></MainSearch>
     </div>
@@ -17,8 +17,23 @@ export default {
   components:{
     MainSearch
   },
+  /* computed: {
+    styles: function() {
+      let height = window.innerHeight - 243
+
+      return {
+        height: height + 'px'
+      }
+    }
+  }, */
   created(){
     this.$EventBus.$emit('HeaderActive', '')
   }
 }
 </script>
+<style>
+#content .mcontent h2 {
+  padding: 175px 0 68px 0;
+}
+</style>
+
