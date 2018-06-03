@@ -43,6 +43,26 @@ export default class ApiModel {
     }
 
     /**
+     * OP-403 API 조회 메소드
+     * 업종별 SNS 베스트
+     * 리턴형은 http Axios의 promise형으로 반환
+     * @param {*} ftcCate2Cd 업종코드
+     * @param {*} pageNo
+     * @param {*} row
+     * @returns {promise}
+     */
+    getOP403(ftcCate2Cd='0101', row='16', pageNo='1'){
+      this.apiNo = '403';
+      this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
+      this.config.data = {
+        'pageNo':'1',
+        'row':'16',
+        'ftcCate2Cd': ftcCate2Cd
+      }
+      return this.http(this.config)
+    }
+
+    /**
      * OP-404 API 조회 메소드
      * @param {*} centerCode 구단위 코드
      * @param {*} ftcCate2Cd 업종코드
@@ -54,6 +74,29 @@ export default class ApiModel {
     getOP404(centerCode, ftcCate2Cd = '0101', row='10', pageNo='1', emdCd=''){
       centerCode = centerCode.substring(0,5);
       this.apiNo = '404'
+      this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
+      this.config.data = {
+        'pageNo':pageNo,
+        'row':row,
+        'sggCd':centerCode,
+        'emdCd':emdCd,
+        'ftcCate2Cd':ftcCate2Cd
+      }
+      return this.http(this.config)
+    }
+
+    /**
+     * OP-501 API 조회 메소드
+     * @param {*} centerCode 구단위 코드
+     * @param {*} ftcCate2Cd 업종코드
+     * @param {*} row 표시할 데이터 갯수
+     * @param {*} pageNo 페이지 넘버
+     * @param {*} emdCd 법정동 코드
+     * @returns {Promise}
+     */
+    getOP501(centerCode, ftcCate2Cd = '0101', row='10', pageNo='1', emdCd=''){
+      centerCode = centerCode.substring(0,5);
+      this.apiNo = '501'
       this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
       this.config.data = {
         'pageNo':pageNo,

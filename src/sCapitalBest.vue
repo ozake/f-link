@@ -1,6 +1,6 @@
 <template>
   <div id="content">
-    <SubHeaderTitle :title="this.title" :subTitle="this.subTitle"></SubHeaderTitle>
+    <SubHeaderTitle :title="this.title" :subTitle="this.subTitle" :flag="flag"></SubHeaderTitle>
 		<div class="frlist">
       <!--프랜차이즈 현황 리스트-->
 			<div class="thlistbox">
@@ -38,7 +38,8 @@ export default {
       currentPage : 1,
       pageingRange : 10,
       pageRows : 16,
-      routeName : 'scapital-list'
+      routeName : 'scapital-list',
+      flag: 'sCaptial'
     }
   },
   watch: {

@@ -329,6 +329,9 @@ export default {
 					position: 'top'
 				},
 				scales: {
+					ticks: {
+						beginAtZero: true
+					},
 					yAxes: [{
 						display: true,
 						scaleLabel: {

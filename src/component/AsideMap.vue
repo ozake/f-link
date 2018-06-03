@@ -141,7 +141,8 @@ export default {
 	  updateFlag : Boolean,
     isIe : Boolean,
     estateList : Array,
-    estateHeight : Object
+    estateHeight : Object,
+		oldBrandCk : Array
   },
   /* computed: {
 	  brand : function () {
@@ -194,6 +195,9 @@ export default {
       if(this.updateFlag){
         this.brandCk = []
         this.brandList = this.brand
+				if(this.oldBrandCk.length > 0){
+					this.brandCk = this.oldBrandCk
+				}
       }
 	  },
 	  nonFranchise : function (val) {

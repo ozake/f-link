@@ -32,7 +32,7 @@
       </div>
       <!-- //건물 추천서비스-->
     </div>
-    <AsideMap :brand="brand" :isIe="isIe" :updateFlag="updateFlag" :estateList="estateList" :estateHeight="estateHeight"></AsideMap>
+    <AsideMap :brand="brand" :isIe="isIe" :updateFlag="updateFlag" :estateList="estateList" :estateHeight="estateHeight" :oldBrandCk="oldBrandCk"></AsideMap>
 
 
   </div>
@@ -62,7 +62,7 @@ export default {
       brandQueue : new Queue(),
       isIe : false,
       apiModel : new ApiModel(this.$http),
-      franchiseNo : '',
+      franchiseNo : [],
       updateFlag : true,
       cluster : '',
       RecommBld : false,
@@ -74,6 +74,7 @@ export default {
       RecommMarkers : new Queue(),
       RecommList : [],
       estateList : [],
+      oldBrandCk : [], 
       infoPop : false
     }
   },
@@ -143,6 +144,7 @@ export default {
       this.$EventBus.$on('brandChecked', this.setFranchiseNo)
 
       this.$EventBus.$on('brandUnchecked', ()=>{
+        this.franchiseNo = []
         this.getFranchiseList(this.centerCode,this.ftcCate2Cd,this.FcenterCode)
       })
 
@@ -434,7 +436,7 @@ export default {
         rows = '1000'
         console.log('404실행1')
         this.makersClean()
-        this.apiModel.getOP404(code, ftcCate2Cd, rows, '1', emdCd).then((result)=>{
+        this.apiModel.getOP501(code, ftcCate2Cd, rows, '1', emdCd).then((result)=>{
           if(result.status === 200){
             console.log('404응답1')
             this.makeMakers(result,this.nonFranchise)
@@ -444,20 +446,61 @@ export default {
       }
       else {
         this.makersClean()
-        this.getOP404Fivetimes(code, ftcCate2Cd, rows).then(()=>{
+        this.getOP501(code, ftcCate2Cd, rows)
+        /* this.getOP404Fivetimes(code, ftcCate2Cd, rows).then(()=>{
           this.brand = this.brandQueue.getQueueAll()
           this.cluster = this.makeCluster(this.queue.queue)
-        })
+        }) */
       }
+    },
+    getOP501(code, ftcCate2Cd, rows){
+      console.log('501실행')
+      this.apiModel.getOP501(code, ftcCate2Cd, 500, 1).then((result)=>{
+        if(result.status === 200){
+          console.log('501응답')
+          //console.log(result)
+          let data = result.data.data.rows       
+          let brandCkArr = this.franchiseNo
+          console.log(brandCkArr.length)
+          let brand = result.data.data.brands
+          if(brandCkArr.length === 0){
+            let maxNum = Number(data.length / 5).toFixed(0)
+            let arr1 = data.splice(0,maxNum)
+            let arr2 = data.slice(0,maxNum)
+            let arr3 = data.slice(0,maxNum)
+            let arr4 = data.slice(0,maxNum)
+            let arr5 = data.slice(0,maxNum)
+            this.makeMakersNobrand(arr1,this.nonFranchise)
+            this.makeMakersNobrand(arr2,this.nonFranchise)
+            this.makeMakersNobrand(arr3,this.nonFranchise)
+            this.makeMakersNobrand(arr4,this.nonFranchise)
+            this.makeMakersNobrand(arr5,this.nonFranchise)
+            this.brand = brand
+          }else{
+            let tmparr = []
+            for (const value of brand) {
+              let index = brandCkArr.indexOf(value.franchiseNo)
+              if( index !== -1){
+                tmparr.push(brandCkArr[index])
+              }
+            }
+            this.oldBrandCk = tmparr
+            this.brand = brand
+          }
+          
+          
+        }
+      })
     },
     async getOP404Fivetimes(code, ftcCate2Cd, rows){
       let promiseArr = []
       for(let i=1; i<=5; i++){
         let promise = new Promise((resolve, reject)=>{
           console.log('404실행'+i)
-          this.apiModel.getOP404(code, ftcCate2Cd, rows, `${i}`).then((result)=>{
+          this.apiModel.getOP501(code, ftcCate2Cd, rows, `${i}`).then((result)=>{
             if(result.status === 200){
               console.log('404응답'+i)
+              //console.log(result.data)
               this.makeMakers(result,this.nonFranchise)
               resolve()
             }
@@ -486,6 +529,37 @@ export default {
         }
       }
       this.brandQueue.queue = []
+    },
+    makeMakersNobrand(result, nonFranchise=false){
+      let x = null
+      let y = null
+      let tmpQueue = new Queue()
+      let flag = null
+      let overlay = null
+      let closeBtnDom = null
+      let marker = null
+
+      for (const value of result) {
+        x = Number(value.xAxis)
+        y = Number(value.yAxis)
+
+        if(!nonFranchise){
+          if(value.isFranchise === '1'){
+            marker = this.setMaker(x,y,value)
+            overlay = this.setOverlay(marker,value)
+            this.overlayEventListener(marker,overlay,value.bdMgtSn)
+            this.queue.setQueue(marker)
+          }
+        }
+        else {
+          marker = this.setMaker(x,y,value)
+          overlay = this.setOverlay(marker,value)
+
+          this.overlayEventListener(marker,overlay,value.bdMgtSn)
+
+          this.queue.setQueue(marker)
+        }    
+      }
     },
     makeMakers(result, nonFranchise=false){
       let data = result.data.data
