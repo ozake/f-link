@@ -74,8 +74,10 @@ export default {
       RecommMarkers : new Queue(),
       RecommList : [],
       estateList : [],
-      oldBrandCk : [], 
-      infoPop : false
+      estateQueue : new Queue(),
+      oldBrandCk : [],
+      infoPop : false,
+      estateCluster: ''
     }
   },
   props:{
@@ -202,6 +204,7 @@ export default {
   },
   watch: {
     ftcCate2Cd : function (val){
+      this.franchiseNo = []
       if(this.mapLevel <= 3){
         this.getFranchiseList(this.centerCode,this.ftcCate2Cd,this.FcenterCode)
       }
@@ -239,10 +242,14 @@ export default {
       //let tmp = tmparr.pop()
       //console.log(tmparr)
       this.franchiseNo = data
-      this.$nextTick(function() {
-        this.makersClean()
-        this.getBrandList(this.centerCode,this.franchiseNo)
-      })
+      this.makersCleanPromise().then(()=>{
+          console.log('브랜드 체크되서 실행')
+          this.getBrandList(this.centerCode,this.franchiseNo)
+        })
+      /* this.$nextTick(()=>{
+
+
+      }) */
     },
 
     mapEventListener(map,geocoder){
@@ -282,7 +289,10 @@ export default {
                     code = code.substring(0,5)
                     fullCode = fullCode.substring(0,8)
                     this.RecommCcode = fullCode
-                    this.getEstateList(code)
+                    if(!this.RecommBld){
+                      this.getEstateList(code)
+                    }
+
                     if(this.mapLevel <= 3){
                         if( this.FcenterCode !== fullCode ){
                           this.FcenterCode = fullCode
@@ -297,7 +307,7 @@ export default {
                         this.centerCode = code
                         if(this.ftcCate2Cd !== ''){
                           this.getFranchiseList(code,this.ftcCate2Cd)
-                          this.getEstateList(code)
+                          //this.getEstateList(code)
                         }
                       }
                     }
@@ -381,19 +391,26 @@ export default {
       polyline.setMap(this.mapInstance)
     },
     getBrandList(code,franchiseNo){
-      console.log(franchiseNo)
+      console.log('브랜드리스트 실행')
+      //console.log(franchiseNo)
       //let tmparr = []
-
       let rows = '1000'
-      this.makersClean()
+      //this.makersClean()
       let idx = 1
       for (const value of franchiseNo) {
-        this.apiModel.getOP405(code, value, '1000', '1').then((result)=>{
-          if(result.status === 200){
-            this.makeMakers(result)
-            this.updateFlag = false
-          }
-        })
+        setTimeout(()=>{
+          this.apiModel.getOP405(code, value, '1000', '1').then((result)=>{
+            if(result.status === 200){
+              let data = result.data.data.rows
+              console.log("브랜드당갯수:"+data.length)
+              console.log(data)
+              this.makeMakersNobrand(data)
+              //this.makeMakers(result)
+              this.updateFlag = false
+            }
+          })
+        },300)
+
       }
       /* if(this.mapLevel <= 3){
         emdCd = fullCode
@@ -426,45 +443,43 @@ export default {
       }
       //let model = new ApiModel(this.$http)
       let emdCd = ''
-      let rows = '100'
+      let rows = '200'
       this.updateFlag = true
       if(this.isIe === true){
-        rows = '30'
+        rows = '200'
       }
       if(this.mapLevel <= 3){
         emdCd = fullCode
         rows = '1000'
-        console.log('404실행1')
-        this.makersClean()
-        this.apiModel.getOP501(code, ftcCate2Cd, rows, '1', emdCd).then((result)=>{
-          if(result.status === 200){
-            console.log('404응답1')
-            this.makeMakers(result,this.nonFranchise)
-            this.brand = this.brandQueue.getQueueAll()
-          }
+        this.makersCleanPromise().then(()=>{
+          this.getOP501(code, ftcCate2Cd, rows, emdCd)
         })
       }
       else {
-        this.makersClean()
-        this.getOP501(code, ftcCate2Cd, rows)
+        this.makersCleanPromise().then(()=>{
+          this.getOP501(code, ftcCate2Cd, rows)
+        })
         /* this.getOP404Fivetimes(code, ftcCate2Cd, rows).then(()=>{
           this.brand = this.brandQueue.getQueueAll()
           this.cluster = this.makeCluster(this.queue.queue)
         }) */
       }
     },
-    getOP501(code, ftcCate2Cd, rows){
+    getOP501(code, ftcCate2Cd, rows, emdCd=''){
       console.log('501실행')
-      this.apiModel.getOP501(code, ftcCate2Cd, 500, 1).then((result)=>{
+      this.apiModel.getOP501(code, ftcCate2Cd, rows, 1, emdCd).then((result)=>{
         if(result.status === 200){
           console.log('501응답')
           //console.log(result)
-          let data = result.data.data.rows       
+          let data = result.data.data.rows
           let brandCkArr = this.franchiseNo
-          console.log(brandCkArr.length)
+          console.log("브랜드 체크 갯수:"+brandCkArr.length)
           let brand = result.data.data.brands
           if(brandCkArr.length === 0){
+            this.oldBrandCk = []
+            console.log("총갯수:"+data.length)
             let maxNum = Number(data.length / 5).toFixed(0)
+            //console.log("전체 나누기 5 값"+maxNum)
             let arr1 = data.splice(0,maxNum)
             let arr2 = data.slice(0,maxNum)
             let arr3 = data.slice(0,maxNum)
@@ -476,6 +491,9 @@ export default {
             this.makeMakersNobrand(arr4,this.nonFranchise)
             this.makeMakersNobrand(arr5,this.nonFranchise)
             this.brand = brand
+            this.$nextTick(function(){
+              this.cluster = this.makeCluster(this.queue.queue)
+            })
           }else{
             let tmparr = []
             for (const value of brand) {
@@ -487,8 +505,8 @@ export default {
             this.oldBrandCk = tmparr
             this.brand = brand
           }
-          
-          
+
+
         }
       })
     },
@@ -530,10 +548,52 @@ export default {
       }
       this.brandQueue.queue = []
     },
+    async makersCleanPromise(){
+      let tmp = undefined
+      let length = this.queue.getQueueLength()
+      console.log('마커클린 실행')
+      console.log('기존 마커 갯수: '+length)
+      let promise = new Promise((resolve, reject)=>{
+        if(length !== 0){
+          /* if(this.mapLevel > 5){
+
+          } */
+          let clusterer = this.cluster
+            clusterer.clear()
+          for(let i=0; i<length; i++){
+            tmp = this.queue.getQueue()
+            if(typeof tmp === 'undefined'){
+              break;
+              resolve()
+            }
+            tmp.setMap(null)
+          }
+        }
+      })
+
+      this.brandQueue.queue = []
+      //return promise
+    },
+    estateMarkerClean(){
+
+      let estateMarker = undefined
+      let estateLength = this.estateQueue.getQueueLength()
+      if(estateLength !== 0){
+        let estateCluster = this.estateCluster
+        estateCluster.clear()
+        for(let i=0; i<estateLength; i++){
+            estateMarker = this.estateQueue.getQueue()
+            if(typeof tmp === 'undefined'){
+              break;
+            }
+            estateMarker.setMap(null)
+          }
+      }
+    },
     makeMakersNobrand(result, nonFranchise=false){
       let x = null
       let y = null
-      let tmpQueue = new Queue()
+      //let tmpQueue = new Queue()
       let flag = null
       let overlay = null
       let closeBtnDom = null
@@ -558,7 +618,7 @@ export default {
           this.overlayEventListener(marker,overlay,value.bdMgtSn)
 
           this.queue.setQueue(marker)
-        }    
+        }
       }
     },
     makeMakers(result, nonFranchise=false){
@@ -614,6 +674,27 @@ export default {
       }
       return marker
     },
+    setEstateMaker(x,y,title){
+      let icon = new daum.maps.MarkerImage(
+                'http://img.mk.co.kr/2018/franchise/icon_loca02.png',
+                new daum.maps.Size(20, 30),
+                {
+                  offset: new daum.maps.Point(15, 30),
+                  alt: title,
+                  shape: "rect",
+                  coords: "0,0,20,30"
+                })
+      let marker = new daum.maps.Marker({
+          //map: this.mapInstance, // 마커를 표시할 지도
+          image: icon,
+          position: new daum.maps.LatLng(y, x), // 마커를 표시할 위치
+          title : title, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
+      })
+      if(this.mapLevel !== 6){
+        marker.setMap(this.mapInstance)
+      }
+      return marker
+    },
     setOverlay(marker, value){
       let refBnm = value.refBnm
       let img = value.img1
@@ -640,7 +721,7 @@ export default {
                   <p>전화번호 : ${value.tel}</p>
                   <p>주소 : ${value.addr}</p>
                 </div>
-                <a href='./storeView/${this.ftcCate2Cd}/${refBnm}/${value.bdMgtSn}'><button type='button'>자세히 보기</button></a>
+                <a href='http://www.f-link.co.kr/storeView/${this.ftcCate2Cd}/${refBnm}/${value.bdMgtSn}'><button type='button'>자세히 보기</button></a>
               </div>
             </div>
 					</div>
@@ -700,12 +781,37 @@ export default {
       })
       return clusterer
     },
+    makeClusterEstate(markers){
+      let clusterer = new daum.maps.MarkerClusterer({
+        map: this.mapInstance,
+        markers: markers,
+        gridSize: 120,
+        averageCenter: true,
+        minLevel: 6,
+        disableClickZoom: true,
+        styles: [{
+          width: '85px',
+          height: '85px',
+          backgroundColor: '#14a114',
+          opacity: '0.7',
+          color: '#fff',
+          fontSize: '25px',
+          fontWeight: '500',
+          position: 'absolute',
+          borderRadius: '50px',
+          textAlign: 'center',
+          lineHeight: '80px'
+        }]
+      })
+      return clusterer
+    },
     recommBldOnOff(){
       if(!this.RecommBld){
         this.RecommBld = true
         this.RecommLayer = true
         // this.mapInstance.setDraggable(false)
         this.mapInstance.setLevel(3)
+        this.estateMarkerClean()
       } else{
         this.RecommBld = false
         this.RecommLayer = false
@@ -819,11 +925,14 @@ export default {
       }
     },
     getEstateList(code){
-      code = code+'00000'
+      this.estateMarkerClean()
+      let sggCd = code+'00000'
       console.log('부동산리스트')
+      console.log(code)
       let pageNo = '1'
-      let rows = '10'
-      this.apiModel.getEstateList(pageNo,rows,code='').then((result)=>{
+      let rows = '60'
+      let markers = []
+      this.apiModel.getEstateList(pageNo,rows,sggCd).then((result)=>{
         if(result.status === 200){
           console.log(result)
           let data = result.data
@@ -848,13 +957,26 @@ export default {
               img = str
             }
             value.img_url = img
+            let marker = this.setEstateMaker(value.xpos, value.ypos, value.build_kind)
+            markers.push(marker)
+            this.estateQueue.setQueue(marker)
           }
-          this.estateList = data
+          this.estateCluster = this.makeClusterEstate(markers)
+          let listArr = []
+          let i = 1
+          for (const value of data) {
+            listArr.push(value)
+            if(i === 10){
+              break
+            }
+            i++
+          }
+          this.estateList = listArr
         }
       })
 
     },
-    keymonitor(event){
+    /* keymonitor(event){
       console.log(event.key)
        if(event.key == "Enter")
        {
@@ -864,7 +986,7 @@ export default {
          //console.log("enter key was pressed!");
          return false
        }
-    },
+    }, */
     async addressTogeocode(address) {
       let geocoder = new daum.maps.services.Geocoder();
       //let coords = ''
