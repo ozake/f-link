@@ -93,6 +93,8 @@
 						<p class="monthly"><span class="icon">월</span>보 {{item.month_deposit_price}} / 월{{item.month_price}}</p>
 						<!-- <p class="premium "><span class="icon">권</span>1억5000만원</p> -->
 						<p class="text">{{item.corrp_flr}}층  {{item.supp_meter}}㎡<br>
+						{{item.area2 +' '+ item.area3}}<br>
+						{{item.subway_info}}
 						</p>
 					</router-link>
 				</li>
@@ -252,8 +254,15 @@ export default {
       })
   }, */
 	getSector(){
-		  let url = "./dist/sectorCode.json"
-		  if(location.hostname === "110.13.170.148"){
+		  //let url = "./dist/sectorCode.json"
+			let url = ''
+			if(location.hostname === "f-link.co.kr"){
+			  url = "http://f-link.co.kr/src/assets/sectorCode.json"
+		  }
+			else if(location.hostname === "www.f-link.co.kr"){
+			  url = "http://www.f-link.co.kr/src/assets/sectorCode.json"
+		  }
+		  else if(location.hostname === "110.13.170.148"){
 			  url = "http://110.13.170.148:8080/src/assets/sectorCode.json"
 		  }else if(location.hostname === "127.0.0.1"){
         url = "http://127.0.0.1:8080/src/assets/sectorCode.json"

@@ -56,17 +56,18 @@ export default {
     if(this.$route.params.page){
       this.currentPage = Number(this.$route.params.page)
     }
-    this.getScapitalBest(this.currentPage-1)
+    this.getScapitalBest(this.currentPage)
   },
   methods: {
     getScapitalBest(page) {
-        this.apiModel.getScapitalBest(page).then((result)=>{
+        let rPage = page - 1
+        this.apiModel.getScapitalBest(rPage).then((result)=>{
         if(result.status === 200){
           let data = result.data
           //console.log(result)
           let paging = data.shift()
           this.totalCount = Number(paging.totalCount)
-          this.currentPage = Number(paging.pageNo)
+          this.currentPage = Number(paging.pageNo) + 1
           console.log(paging)
           for (const value of data) {
             let total = value.total

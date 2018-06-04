@@ -207,7 +207,7 @@ export default {
         this.maxprice = this.$route.params.maxprice
         this.routeName = 'franchise-list-mnpage'
         //this.capital = {min:this.$route.params.minprice, max:this.$route.params.maxprice}
-        console.log('여기!?')
+        //console.log('여기!?')
         
         this.franchiseList(this.$route.params.categoryCode, page, this.$route.params.minprice, this.$route.params.maxprice).then((result)=>{
           //this.listItems = this.makeArrayModuler(result,5)

@@ -574,8 +574,9 @@ export default {
             addrText = result[i].address_name;
             let code = result[i].code;
             code = code.substring(0, 8);
-
-            this.getEstateList(code.substring(0, 5));
+            /* let estateCode = code.substring(0, 5)+'00000'
+            console.log('매물 조회 법정동 코드'+estateCode) */
+            this.getEstateList(code.substring(0, 5))
             if (this.centerCode !== code) {
               this.centerCode = code;
               //console.log(code)
@@ -675,11 +676,10 @@ export default {
       }
     },
     getEstateList(code) {
-      code = code + "00000";
-      //console.log('부동산리스트')
+      let sggCd = code + "00000";
       let pageNo = "1";
       let rows = "3";
-      this.apiModel.getEstateList(pageNo, rows, (code = "")).then(result => {
+      this.apiModel.getEstateList(pageNo, rows, sggCd).then(result => {
         if (result.status === 200) {
           //console.log(result)
           let data = result.data;

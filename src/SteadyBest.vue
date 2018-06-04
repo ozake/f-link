@@ -56,17 +56,18 @@ export default {
     if(this.$route.params.page){
       this.currentPage = Number(this.$route.params.page)
     }
-    this.getSteadyBest(this.currentPage-1)
+    this.getSteadyBest(this.currentPage)
   },
   methods: {
     getSteadyBest(page) {
-      this.apiModel.getSteadyBest(page).then((result)=>{
+      let rPage = page - 1
+      this.apiModel.getSteadyBest(rPage).then((result)=>{
         if(result.status === 200){
           console.log(result)
           let data = result.data
           let paging = data.shift()
           this.totalCount = Number(paging.totalCount)
-          this.currentPage = Number(paging.pageNo)
+          this.currentPage = Number(paging.pageNo) + 1
           for (const value of data) {
             let total = value.total
               total = total.slice(0,-1)

@@ -58,17 +58,18 @@ export default {
     if(this.$route.params.page){
       this.currentPage = Number(this.$route.params.page)
     }
-    this.getGrowthBest(this.currentPage-1)
+    this.getGrowthBest(this.currentPage)
   },
   methods : {
     getGrowthBest(page){
-      this.apiModel.getGrowthBest(page).then((result)=>{
+      let rPage = page - 1
+      this.apiModel.getGrowthBest(rPage).then((result)=>{
         if(result.status === 200){
           let data = result.data
           let paging = data.shift()
           for (const value of data) {
             this.totalCount = Number(paging.totalCount)
-            this.currentPage = Number(paging.pageNo)
+            this.currentPage = Number(paging.pageNo) + 1
             let total = value.total
               total = total.slice(0,-1)
               total = Number(total)

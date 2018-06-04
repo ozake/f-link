@@ -290,7 +290,14 @@ export default {
                     fullCode = fullCode.substring(0,8)
                     this.RecommCcode = fullCode
                     if(!this.RecommBld){
-                      this.getEstateList(code)
+                      if(this.mapLevel > 2){
+                        this.getEstateList(code)
+                      }
+                      if(this.mapLevel <3){
+                        this.estateMarkerClean()
+                      }
+
+                      
                     }
 
                     if(this.mapLevel <= 3){
@@ -676,7 +683,7 @@ export default {
     },
     setEstateMaker(x,y,title){
       let icon = new daum.maps.MarkerImage(
-                'http://img.mk.co.kr/2018/franchise/icon_loca02.png',
+                'http://www.f-link.co.kr/src/assets/estateMarker.png',
                 new daum.maps.Size(20, 30),
                 {
                   offset: new daum.maps.Point(15, 30),
@@ -690,9 +697,9 @@ export default {
           position: new daum.maps.LatLng(y, x), // 마커를 표시할 위치
           title : title, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
       })
-      if(this.mapLevel !== 6){
+      /* if(this.mapLevel !== 6){
         marker.setMap(this.mapInstance)
-      }
+      } */
       return marker
     },
     setOverlay(marker, value){
@@ -785,9 +792,9 @@ export default {
       let clusterer = new daum.maps.MarkerClusterer({
         map: this.mapInstance,
         markers: markers,
-        gridSize: 120,
+        gridSize: 240,
         averageCenter: true,
-        minLevel: 6,
+        minLevel: 3,
         disableClickZoom: true,
         styles: [{
           width: '85px',
@@ -803,6 +810,7 @@ export default {
           lineHeight: '80px'
         }]
       })
+      clusterer.setMinClusterSize(2)
       return clusterer
     },
     recommBldOnOff(){
