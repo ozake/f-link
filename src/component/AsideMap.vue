@@ -20,7 +20,7 @@
 				</div>
 
 				<div class="selectArea">
-					<select v-bind:class="[isIe ? ieClass : '', selectClass]" v-model="sectorSelected">
+					<select v-bind:class="[isIe ? ieClass : '', selectClass]" v-model="sectorSelected" @change="sectorChange">
 						<option>중분류</option>
 						<option v-for="item in sectorMcode" :value="item.code">{{item.categoryName}}</option>
 					</select>
@@ -84,11 +84,14 @@
 		<!-- //점포매물검색-->
 
 		<!-- 매물리스트-->
-		<div class="st_list" v-bind:style="estateHeight">
+		<div class="st_list">
+			<div style="height:40px; width:100%">
+				<span style="font:18px">점포매물 검색</span><router-link style="float:right" :to="{ name: 'estate-list', params: {code:sggCd } }">검색결과 더보기</router-link>
+			</div>
 			<ul v-bind:style="estateHeight">
-				<li v-for="item in estateList" class="memul_list">
+				<li v-for="item in estateList" class="memul_list" style="margin-top:15px">
 					<router-link :to="{ name: 'sales-view', params: {id: item.memul_seq } }">
-						<h5>{{item.build_kind}}</h5>
+						<h5> </h5>
 						<img v-bind:src="item.img_url" />
 						<p class="monthly"><span class="icon">월</span>보 {{item.month_deposit_price}} / 월{{item.month_price}}</p>
 						<!-- <p class="premium "><span class="icon">권</span>1억5000만원</p> -->
@@ -144,7 +147,8 @@ export default {
     isIe : Boolean,
     estateList : Array,
     estateHeight : Object,
-		oldBrandCk : Array
+		oldBrandCk : Array,
+		sggCd : String
   },
   /* computed: {
 	  brand : function () {
@@ -154,11 +158,16 @@ export default {
 	  }
   }, */
   created(){
+		this.getSector()
+		if(this.$route.params.categoryCode){
+			let categoryCode = this.$route.params.categoryCode
+      this.selected = categoryCode.substr(0,2)
+		}
+		
     /* const agent = navigator.userAgent.toLowerCase()
     if ( (navigator.appName == 'Netscape' && agent.indexOf('trident') != -1) || (agent.indexOf("msie") != -1)) {
      this.isIe = true
    	} */
-	this.getSector()
 
 	/* if(this.updateFlag){
 		this.brandList = this.brand
@@ -213,11 +222,17 @@ export default {
         this.addrCodeTxt = data.txt
         this.addrCode = data.code
       }
-    }
+    } 
   },
   methods: {
 	alerm() {
 		alert('준비중입니다.')
+	},
+	sectorChange(){
+		if(this.sectorSelected !== '중분류'){
+			  this.$EventBus.$emit('setftcCate2Cd', this.sectorSelected)
+		  }
+		  
 	},
 /* 	typing(e){
 		clearTimeout(this.to);
@@ -270,7 +285,13 @@ export default {
 		  this.$http.get(url).then((result)=>{
 			  if(result.status === 200){
 				  let data = result.data
-				  this.sector = data.sector
+					this.sector = data.sector
+					if(this.$route.params.categoryCode){
+						let categoryCode = this.$route.params.categoryCode
+            this.getSectorM(categoryCode.substr(0,2))
+            this.sectorSelected = categoryCode
+					}
+					
 			  }
 		  })
 

@@ -408,6 +408,30 @@ export default class ApiModel {
       return this.http(this.config)
     }
 
+    /**
+     *  법정동코드로 주소 조회 메소드
+     * @param {*} code
+     * @returns {promise}
+     */
+    getAddrToCodelaw(codelaw){
+      this.apiNo = '106'
+      this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
+      this.config.data = `code=${codelaw}`
+      return this.http(this.config)
+    }
+
+    /**
+     *  매물 번호를 통한 매물 리스트  조회 메소드
+     * @param {String} code 쉼표로 구분된 매물 번호 스트링
+     * @returns {promise}
+     */
+    getEstateListToSeq(memulSeq){
+      this.apiNo = '112'
+      this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
+      this.config.data = `memulSeq=${memulSeq}`
+      return this.http(this.config)
+    }
+
 
 
 

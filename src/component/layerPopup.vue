@@ -2,7 +2,8 @@
     <transition name="fade">
         <div class="layer_pop">
             <span class="closeBtn" @click="recommOff"><img src="http://img.mk.co.kr/2018/franchise/list_close.png" ></span>
-            <h5>창업 시 예상매출이 높은 건물을 찾아드립니다.<br>관심 업종을 골라보세요.</h5>
+            <!-- <h5>창업 시 예상매출이 높은 건물을 찾아드립니다.<br>관심 업종을 골라보세요.</h5> -->
+            <h5>이지역에서 창업 시, 가장 유망한 건물은 어디?<br>관심 업종을 골라보세요.</h5>
             <ul>
                 <li><a href="#none" v-on:click="category('0101','한식')">한식</a></li>
                 <li><a href="#none" v-on:click="category('0102','치킨')">치킨</a></li>
@@ -35,6 +36,10 @@ export default {
     position: absolute;
     top: 30px;
     right: 30px;
+}
+.layer_pop h5 {
+    margin: 20px 0 80px 0;
+    line-height: 40px;
 }
 </style>
 

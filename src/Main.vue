@@ -28,6 +28,11 @@ export default {
   }, */
   created(){
     this.$EventBus.$emit('HeaderActive', '')
+    /* function mobRf(){
+  		var rf = new EN();
+		  rf.setSSL(true);
+  		rf.sendRf();
+	  } */
   }
 }
 </script>

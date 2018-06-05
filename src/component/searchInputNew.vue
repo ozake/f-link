@@ -8,7 +8,7 @@
             <input v-if="fActive" name="s_keyword" title="검색어 입력" type="text" placeholder="프랜차이즈명 or 회사명으로 검색" 
             @input="keyword" v-bind:value="searchTxt" @keydown.up="keyUp" @keydown.down="keyDown" 
             @keyup.enter="keyEnter" @keyup.space="keyEnter" @blur="blur" @focus="focus" ref="search" autocomplete="off">
-            <input v-if="storeActive" name="s_keyword" title="검색어 입력" type="text" placeholder="지역 + 업종으로 검색" 
+            <input v-if="storeActive" name="s_keyword" title="검색어 입력" type="text" placeholder="지역 + 업종으로 검색 (지역을 선택한 후, 업종을 입력하세요!)" 
             @input="keyword" v-bind:value="searchTxt" @keydown.up="keyUp" @keydown.down="keyDown" 
             @keyup.enter="keyEnter" @keyup.space="keyEnter" @blur="blur" @focus="focus" ref="search" autocomplete="off">
             <button type="button" v-on:click="searchResMove"><img src="http://img.mk.co.kr/2018/franchise/msearch.png" alt="검색하기"></button>
@@ -363,3 +363,10 @@ export default {
     background-color: antiquewhite;
 }
 </style>
+<style>
+#content .msearch form input {
+    font-size: 19px;
+}
+</style>
+
+

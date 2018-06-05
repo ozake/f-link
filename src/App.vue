@@ -14,6 +14,9 @@ export default {
   components:{
     Header,
     Footer
+  },
+  created(){
+    
   }
   /* beforeDestroy() {
     alert('beforeDestroy')

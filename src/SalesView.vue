@@ -8,7 +8,7 @@
 
 				<!--매물정보-->
 				<h2 style="height:22px">
-					<p>매물정보</p> 
+					<p>매물정보</p> {{bubaddr}}
 				</h2>
 				<!--//매물정보-->
 				
@@ -84,7 +84,7 @@
 				<!--정보제공-->	
 				<div class="s_office">
 					<h6>정보제공</h6>
-					<img :src="item.PROFILE_IMAGE" />
+					<img style="height:115px" :src="item.PROFILE_IMAGE" />
 					<p class="tit"><img src="http://img.mk.co.kr/2018/franchise/icon_office.jpg" :alt="item.SANGHO_NAME">{{item.SANGHO_NAME}}</p>
 					<dl>
 						<dt>대표</dt>
@@ -133,7 +133,8 @@ export default {
 			item: '',
 			mapInstance: '',
 			pyeongToggle: false,
-			meterToggle: true
+			meterToggle: true,
+			bubaddr: ''
 		}
 	},
   created(){
@@ -214,8 +215,11 @@ export default {
 					}
 					data.SUPP_PYEONG = this.calPyeong(data.SUPP_METER)
 					data.USE_PYEONG = this.calPyeong(data.USE_METER)
+					//data.bubAddr = this.getAddrToCodelaw(data.bubcode)
+					this.getAddrToCodelaw(data.BUBCODE)
 					this.item = data
 					this.setMaker(data.YPOS, data.XPOS, data)
+					 
 				}
 			})
 		},
@@ -243,6 +247,18 @@ export default {
 				this.meterToggle = true
 				this.pyeongToggle = false
 			}
+		},
+		getAddrToCodelaw(codelaw){
+			
+			this.apiModel.getAddrToCodelaw(codelaw).then((result)=>{
+				let addr = ''
+				if(result.status === 200){
+					let data = result.data[0]
+					console.log(data)
+					addr = `${data.area1} ${data.area2} ${data.area3}`
+					this.bubaddr = addr
+				}
+			})
 		}
 	}
 }

@@ -161,7 +161,7 @@
 
 
 					<!--성장성-->
-					<h6>성장성<span>※한식 업종 매출 추이</span></h6>
+					<h6>성장성<span>※ 건물 주변 배후지영역 내 {{sectorName}} 업종 매출 추이</span></h6>
 					<div class="graph4">
 						<span class="subtit">전년도 연간 매출 변동 추이</span>
 						<!--그래프영역 -->
@@ -182,7 +182,7 @@
 					<!--안정성-->
 					<h6>안정성</h6>
 					<div class="graph5">
-						<span class="subtit">{{sectorName}}업종 평균 영업기간 [단위: 년]  </span>
+						<span class="subtit">배후지 영역 내 {{sectorName}}업종 평균 영업기간 </span>
 						<!--한식업종 평균 영업기간  -->
 						<div style="width:490px;height:200px;">
 							<chart-bar :labels="averageChartLabels" :datasets="averageChartDatasets" :options="averageChartOption"></chart-bar>

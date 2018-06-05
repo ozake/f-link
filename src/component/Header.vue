@@ -4,7 +4,7 @@
   <!-- 로고,로그인 -->
   <h1><router-link to="/"><img src="http://img.mk.co.kr/2018/franchise/fc_logo.jpg" alt="franchise link"></router-link></h1>
   <p class="login">
-    <a v-if="Nauth" href="http://www.f-link.co.kr/index.php?TM=M&MM=1">로그인</a><template v-else>{{sessionstroage.ID}}&nbsp;<a v-if="isMkUser" href="http://www.f-link.co.kr/index.php?TM=M&MM=6">비밀번호 변경</a></template><span class="line">|</span>
+    <a v-if="Nauth" href="http://www.f-link.co.kr/index.php?TM=M&MM=1">로그인</a><template v-else><span class='id'>{{sessionstroage.ID}}</span>&nbsp; <a v-if="isMkUser" href="http://www.f-link.co.kr/index.php?TM=M&MM=6">비밀번호 변경</a></template><span class="line">|</span>
     <template v-if="Nauth"><a href="http://www.f-link.co.kr/index.php?TM=M&MM=2">회원가입</a><span class="line">|</span><a href="http://www.f-link.co.kr/index.php?TM=M&MM=3">아이디·비밀번호찾기</a></template>
     <template v-else><a href="http://www.f-link.co.kr/index.php?TM=M&MM=5">회원수정ㆍ탈퇴</a><span class="line">|</span><a href="http://www.f-link.co.kr/index.php?TM=M&MM=4">로그아웃</a></template>
   </p>
@@ -49,7 +49,8 @@ export default {
   },
   created() {
     this.$EventBus.$on('HeaderActive', this.setActiveClass)
-    this.getAuth()
+    this.sessionCheck()
+    //this.getAuth()
   },
   methods : {
     setActiveClass(text) {
@@ -74,6 +75,26 @@ export default {
           this.themeBestActive = false
           this.franchiseActive = false
       }
+    },
+    sessionCheck(){
+      this.$http.get("http://www.f-link.co.kr/member/sessionCheck.php").then((result)=>{
+        if(result.status === 200){
+          let data = result.data
+          if(data.SESSION){
+            if(! sessionStorage.getItem('ID')){
+              for (const key in data) {
+                if (data.hasOwnProperty(key)) {
+                  const element = data[key];
+                  sessionStorage.setItem(key, element)
+                }
+              }
+            }
+            this.getAuth()
+          }else if(!data.SESSION && sessionStorage.getItem('ID')){
+            sessionStorage.clear()
+          }
+        }
+      })
     },
     getAuth(){
       if(sessionStorage.getItem('ID')) {

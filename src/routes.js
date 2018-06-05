@@ -11,6 +11,7 @@ import sCapitalBest from './sCapitalBest.vue'
 import SteadyBest from './SteadyBest.vue'
 import GrowthBest from './GrowthBest.vue'
 import SalesView from './SalesView.vue'
+import EstateList from './eatateListC.vue'
 //import CounterPage from 'components/CounterPage'
 
 export default [
@@ -129,6 +130,11 @@ export default [
     path: '/salesView/:id',
     name: 'sales-view',
     component: SalesView
+  },
+  {
+    path: '/estateList/:code',
+    name: 'estate-list',
+    component: EstateList
   },
   {
     path: '*',

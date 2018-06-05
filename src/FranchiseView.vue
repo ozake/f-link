@@ -205,10 +205,10 @@
 				    		<option :value="{code:380, name:'은평구'}">은평구</option>
 				    		<option :value="{code:410, name:'서대문구'}">서대문구</option>
 				    		<option :value="{code:440, name:'마포구'}">마포구</option>
-				    		<option :value="{code:470, name:'양만구'}">양만구</option>
+				    		<option :value="{code:470, name:'양천구'}">양천구</option>
 				    		<option :value="{code:500, name:'강서구'}">강서구</option>
 				    		<option :value="{code:530, name:'구로구'}">구로구</option>
-				    		<option :value="{code:545, name:'금만구'}">금만구</option>
+				    		<option :value="{code:545, name:'금천구'}">금천구</option>
 				    		<option :value="{code:560, name:'영등포'}">영등포구</option>
 				    		<option :value="{code:590, name:'동작구'}">동작구</option>
 				    		<option :value="{code:620, name:'관악구'}">관악구</option>

@@ -27,12 +27,12 @@
       <!-- 건물 추천서비스-->
       <div class="building" v-on:click="recommBldOnOff">
         <p>건물 추천서비스</p>
-        <span>창업 시, 예상매출이<br>
-        높은 건물을 추천합니다.</span>
+        <span>여기서 창업하기<br>
+        가장 좋은 건물은 어디?</span>
       </div>
       <!-- //건물 추천서비스-->
     </div>
-    <AsideMap :brand="brand" :isIe="isIe" :updateFlag="updateFlag" :estateList="estateList" :estateHeight="estateHeight" :oldBrandCk="oldBrandCk"></AsideMap>
+    <AsideMap :brand="brand" :isIe="isIe" :updateFlag="updateFlag" :estateList="estateList" :estateHeight="estateHeight" :oldBrandCk="oldBrandCk" :sggCd="sggCd"></AsideMap>
 
 
   </div>
@@ -77,7 +77,9 @@ export default {
       estateQueue : new Queue(),
       oldBrandCk : [],
       infoPop : false,
-      estateCluster: ''
+      estateCluster: '',
+      clusterClick : '',
+      sggCd: ''
     }
   },
   props:{
@@ -96,11 +98,17 @@ export default {
       }
     },
     estateHeight: function() {
-      let height = window.innerHeight - 495
+      let height = window.innerHeight - 535
       return {
         height: height + 'px'
       }
     }
+/*     sggCd : function() {
+      let sggCd = this.ftcCate2Cd
+      sggCd = sggCd.substring(0,5)
+      sggCd = sggCd + '00000'
+      return sggCd
+    } */
   },
   mounted() {
     this.$nextTick(function () {
@@ -224,6 +232,9 @@ export default {
       if(!val){
         this.RecommCategory = ''
       }
+    },
+    clusterClick : function(val) {
+      this.estateClusterList(val)
     }
     /* franchiseNo : function (val){
       this.getBrandList(this.centerCode,val)
@@ -243,7 +254,6 @@ export default {
       //console.log(tmparr)
       this.franchiseNo = data
       this.makersCleanPromise().then(()=>{
-          console.log('브랜드 체크되서 실행')
           this.getBrandList(this.centerCode,this.franchiseNo)
         })
       /* this.$nextTick(()=>{
@@ -287,6 +297,7 @@ export default {
                     let fullCode = code
                     this.setAddr(addrText+"/ 법정동코드: "+code)
                     code = code.substring(0,5)
+                    this.sggCd = code + '00000'
                     fullCode = fullCode.substring(0,8)
                     this.RecommCcode = fullCode
                     if(!this.RecommBld){
@@ -326,7 +337,6 @@ export default {
     searchRegionCode(geocoder,coords){
       geocoder.coord2RegionCode(coords.getLng(), coords.getLat(), (result, status)=> {
         if (status === daum.maps.services.Status.OK) {
-          console.log(result)
           //console.log('지역 명칭 : ' + result[0].address_name);
           //console.log('행정구역 코드 : ' + result[0].code);
         }
@@ -345,13 +355,10 @@ export default {
     setPolygon(Map){
       let goeArr = []
       goeArr = Map.get("1111012200100240000032840")
-      console.log("goeArrStart")
-      console.log(goeArr)
       let pathArr = []
       for(let value of goeArr){
         pathArr.push(new daum.maps.LatLng(value[1],value[0]))
       }
-      console.log(pathArr)
 
 
       let polygon = new daum.maps.Polygon({
@@ -377,7 +384,6 @@ export default {
       return convertRes
     },
     setPolyline(){
-      console.log("폴리라인")
       let polArr = []
       polArr.push(this.convGeo([955114.49242179352, 1943186.4108217508]))
       polArr.push(this.convGeo([955059.48222152225, 1944135.7711286196]))
@@ -398,7 +404,6 @@ export default {
       polyline.setMap(this.mapInstance)
     },
     getBrandList(code,franchiseNo){
-      console.log('브랜드리스트 실행')
       //console.log(franchiseNo)
       //let tmparr = []
       let rows = '1000'
@@ -409,8 +414,6 @@ export default {
           this.apiModel.getOP405(code, value, '1000', '1').then((result)=>{
             if(result.status === 200){
               let data = result.data.data.rows
-              console.log("브랜드당갯수:"+data.length)
-              console.log(data)
               this.makeMakersNobrand(data)
               //this.makeMakers(result)
               this.updateFlag = false
@@ -465,6 +468,8 @@ export default {
       else {
         this.makersCleanPromise().then(()=>{
           this.getOP501(code, ftcCate2Cd, rows)
+          console.log(code)
+          console.log(ftcCate2Cd)
         })
         /* this.getOP404Fivetimes(code, ftcCate2Cd, rows).then(()=>{
           this.brand = this.brandQueue.getQueueAll()
@@ -480,11 +485,11 @@ export default {
           //console.log(result)
           let data = result.data.data.rows
           let brandCkArr = this.franchiseNo
-          console.log("브랜드 체크 갯수:"+brandCkArr.length)
+          //console.log("브랜드 체크 갯수:"+brandCkArr.length)
           let brand = result.data.data.brands
           if(brandCkArr.length === 0){
             this.oldBrandCk = []
-            console.log("총갯수:"+data.length)
+            //console.log("총갯수:"+data.length)
             let maxNum = Number(data.length / 5).toFixed(0)
             //console.log("전체 나누기 5 값"+maxNum)
             let arr1 = data.splice(0,maxNum)
@@ -521,10 +526,10 @@ export default {
       let promiseArr = []
       for(let i=1; i<=5; i++){
         let promise = new Promise((resolve, reject)=>{
-          console.log('404실행'+i)
+          //console.log('404실행'+i)
           this.apiModel.getOP501(code, ftcCate2Cd, rows, `${i}`).then((result)=>{
             if(result.status === 200){
-              console.log('404응답'+i)
+              //console.log('404응답'+i)
               //console.log(result.data)
               this.makeMakers(result,this.nonFranchise)
               resolve()
@@ -538,7 +543,7 @@ export default {
     makersClean(){
       let tmp = undefined
       let length = this.queue.getQueueLength()
-      console.log(length)
+      //console.log(length)
 
       if(length !== 0){
         if(this.mapLevel > 5){
@@ -558,8 +563,8 @@ export default {
     async makersCleanPromise(){
       let tmp = undefined
       let length = this.queue.getQueueLength()
-      console.log('마커클린 실행')
-      console.log('기존 마커 갯수: '+length)
+      //console.log('마커클린 실행')
+      //console.log('기존 마커 갯수: '+length)
       let promise = new Promise((resolve, reject)=>{
         if(length !== 0){
           /* if(this.mapLevel > 5){
@@ -679,15 +684,16 @@ export default {
       if(this.mapLevel !== 6){
         marker.setMap(this.mapInstance)
       }
+      marker.setZIndex(100)
       return marker
     },
-    setEstateMaker(x,y,title){
+    setEstateMaker(x,y,memul_seq){
       let icon = new daum.maps.MarkerImage(
                 'http://www.f-link.co.kr/src/assets/estateMarker.png',
                 new daum.maps.Size(20, 30),
                 {
                   offset: new daum.maps.Point(15, 30),
-                  alt: title,
+                  alt: memul_seq,
                   shape: "rect",
                   coords: "0,0,20,30"
                 })
@@ -695,7 +701,7 @@ export default {
           //map: this.mapInstance, // 마커를 표시할 지도
           image: icon,
           position: new daum.maps.LatLng(y, x), // 마커를 표시할 위치
-          title : title, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
+          title : memul_seq, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
       })
       /* if(this.mapLevel !== 6){
         marker.setMap(this.mapInstance)
@@ -792,7 +798,7 @@ export default {
       let clusterer = new daum.maps.MarkerClusterer({
         map: this.mapInstance,
         markers: markers,
-        gridSize: 240,
+        gridSize: 120,
         averageCenter: true,
         minLevel: 3,
         disableClickZoom: true,
@@ -831,7 +837,7 @@ export default {
       this.recommMarkerClean()
       this.apiModel.getOP407(this.RecommCcode,data,'100').then((result)=>{
         if(result.status === 200){
-          console.log(result)
+          //console.log(result)
           this.makeRecommList(result)
         }
       })
@@ -935,14 +941,12 @@ export default {
     getEstateList(code){
       this.estateMarkerClean()
       let sggCd = code+'00000'
-      console.log('부동산리스트')
-      console.log(code)
       let pageNo = '1'
-      let rows = '60'
+      let rows = 100
       let markers = []
       this.apiModel.getEstateList(pageNo,rows,sggCd).then((result)=>{
         if(result.status === 200){
-          console.log(result)
+          //console.log(result)
           let data = result.data
           let paging = data.shift()
           for (const value of data) {
@@ -965,11 +969,13 @@ export default {
               img = str
             }
             value.img_url = img
-            let marker = this.setEstateMaker(value.xpos, value.ypos, value.build_kind)
+            let marker = this.setEstateMaker(value.xpos, value.ypos, value.memul_seq)
             markers.push(marker)
             this.estateQueue.setQueue(marker)
           }
-          this.estateCluster = this.makeClusterEstate(markers)
+          let clusterer = this.makeClusterEstate(markers)
+          this.estateCluster = clusterer
+          this.estateClusterAddEventListener(clusterer)
           let listArr = []
           let i = 1
           for (const value of data) {
@@ -979,10 +985,38 @@ export default {
             }
             i++
           }
-          this.estateList = listArr
+          if( this.clusterClick === ''){
+            this.estateList = listArr
+          }
+          
         }
       })
 
+    },
+    estateClusterAddEventListener(clusterer){
+      let clustererObj = clusterer
+      daum.maps.event.addListener( clusterer, 'clusterclick', ( cluster ) => {
+        /* let styles = [
+          {width:'85px',height:'85px',backgroundColor:'#4db007',opacity:'1.0',border:'8px solid #fff',color:'#fff',fontSize:'25px',fontWeight:'500',position:'absolute',borderRadius:'50px',textAlign:'center',lineHeight:'80px'}
+        ]
+        this.estateCluster.setStyles({width:'85px',height:'85px',backgroundColor:'red'}) */
+
+        
+        let markers = cluster.getMarkers()
+        let i=1
+        let str = ''
+        for (const value of markers) {
+          //console.log("매물번호:"+value.Xd)
+          str+= `${value.Xd},`
+          if(i === 10){
+            break
+          }
+          i++
+        }
+        str = str.slice(0,-1)
+        this.clusterClick = str
+        //console.log( cluster.getCenter() );
+      })
     },
     /* keymonitor(event){
       console.log(event.key)
@@ -998,7 +1032,7 @@ export default {
     async addressTogeocode(address) {
       let geocoder = new daum.maps.services.Geocoder();
       //let coords = ''
-      console.log("address:" + address);
+      //console.log("address:" + address);
       //console.log(this.geocorderInstance)
       // 주소로 좌표를 검색합니다
       //this.geocorderInstance.addressSearch('서울특별시 강남구 테헤란로 405 BGF리테일', function (result, status){
@@ -1027,6 +1061,43 @@ export default {
         setTimeout(()=>{ this.infoPop = true }, time)
         setTimeout(()=>{ this.infoPop = false }, time+6000)
       }
+    },
+    estateClusterList(seq){
+      this.apiModel.getEstateListToSeq(seq).then((result)=>{
+        if(result.status === 200){
+          //console.log(result.data)
+          let data = result.data
+          let paging = data.shift()
+          for (const value of data) {
+            let img = value.img_url
+            if(img === ''){
+              img = '/src/assets/fc_noimg_263168.jpg'
+            }
+            else {
+              let tmparr = []
+              tmparr = img.split( ',', 2 )
+              img = tmparr[0]
+              let str = img.replace("http://image.bizmk.kr", "")
+              let res = str.search("http://image.bizmk.kr")
+              if(res === -1){
+                str = 'http://image.bizmk.kr'+str
+              }
+              img = str
+            }
+            value.img_url = img
+            let subwayInfo = value.subway_info
+            subwayInfo = subwayInfo.split(',')
+            let str = ''
+            if(subwayInfo.length > 1){
+              str = `${subwayInfo[0]}, ${subwayInfo[1]}`
+            }else{
+              str = subwayInfo[0]
+            }
+            value.subway_info = str
+          }
+          this.estateList = data
+        }
+      })
     }
 
   }
