@@ -24,19 +24,11 @@
       </div>
       <!--//중분류-->
 
-      <!--브랜드-->
-      <!-- <div class="select-box">
-        <select v-bind:class="[isIe ? ieClass : '', nonIeClass]" v-model="brandSelected">
-          <option>브랜드</option>
-          <option v-for="item in brandList" :value="item.regnumber">{{item.brand}}</option>
-        </select>
-      </div> -->
-      <!--//브랜드-->
-
       <!--창업 자금  -->
       <div class="select-box">
         <select v-bind:class="[isIe ? ieClass : '', nonIeClass]" v-model="capitalSelected">
           <option>창업자금</option>
+          <option>전체보기</option>
           <option :value="{min:1, max:50000}">5천만원 미만</option>
           <option :value="{min:1, max:100000}">1억원미만</option>
           <option :value="{min:100000, max:150000}">1억~1.5억원</option>
@@ -137,7 +129,7 @@ export default {
      const agent = navigator.userAgent.toLowerCase();
      if ( (navigator.appName == 'Netscape' && agent.indexOf('trident') != -1) || (agent.indexOf("msie") != -1)) {
       this.isIe = true
-    }
+     }
     this.getSector()
   },
   watch: {
@@ -150,9 +142,14 @@ export default {
       this.$nextTick(()=>{
         if(val !== '창업자금'){
 			  if(this.selected !== '업종' && this.sectorSelected !== '중분류'){
+          if(this.capitalSelected === '전체보기'){
+            this.$router.push({ name: 'franchise-list-page', params: {categoryCode: this.sectorSelected, page: 1 }  })
+          }else{
+            this.$router.push({ name: 'franchise-list-mnpage', params: {categoryCode: this.sectorSelected, page: 1, minprice: this.capitalSelected.min, maxprice:this.capitalSelected.max }  })
+          }
           /* let url = this.$refs.link
           url.$el.click() */
-          this.$router.push({ name: 'franchise-list-mnpage', params: {categoryCode: this.sectorSelected, page: 1, minprice: this.capitalSelected.min, maxprice:this.capitalSelected.max }  })
+          
           /* if(location.hostname === "www.f-link.co.kr"){
           location.href = `http://www.f-link.co.kr/franchiseList/${this.sectorSelected}/1?min=${this.capitalSelected.min}&max=${this.capitalSelected.max}`
           }else if(location.hostname === "f-link.co.kr") {

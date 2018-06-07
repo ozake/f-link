@@ -326,7 +326,6 @@ export default {
 #content .theme_m .select {
   width: 430px;
   overflow: hidden;
-  display: inline-block;
 }
 </style>
 
