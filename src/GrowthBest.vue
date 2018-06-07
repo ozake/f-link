@@ -8,7 +8,7 @@
 			</div>
 			<!--//프랜차이즈 현황 리스트-->
 
-      <!--페이징-->
+      
       <!--페이징-->
       <Pagination :totalCount="totalCount" :currentPage="currentPage" :pageingRange="pageingRange" :pageRows="pageRows" :routeName="routeName"></Pagination>
       <!--//페이징-->

@@ -421,6 +421,18 @@ export default class ApiModel {
     }
 
     /**
+     *  시도 코드로 시군구 목록 조회 메소드
+     * @param {*} sidocode
+     * @returns {promise}
+     */
+    getSggCdsToCodelaw(sidocode){
+      this.apiNo = '1004'
+      this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
+      this.config.data = `code=${sidocode}`
+      return this.http(this.config)
+    }
+
+    /**
      *  매물 번호를 통한 매물 리스트  조회 메소드
      * @param {String} code 쉼표로 구분된 매물 번호 스트링
      * @returns {promise}

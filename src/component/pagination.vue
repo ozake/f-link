@@ -46,6 +46,10 @@ export default {
             this.extendedParamFlag = true
             this.extendedParams = { minprice:this.min, maxprice:this.max }
         }
+        if(this.code){
+            this.extendedParamFlag = true
+            this.extendedParams = { code:this.code }
+        }
         let totalCount = this.totalCount
         if(this.routeName === 'growth-list' || this.routeName === 'scapital-list' || this.routeName === 'steady-list'){
             totalCount = totalCount - 16

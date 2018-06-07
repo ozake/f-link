@@ -86,7 +86,7 @@
 		<!-- 매물리스트-->
 		<div class="st_list">
 			<div style="height:40px; width:100%">
-				<span style="font:18px">점포매물 검색</span><router-link style="float:right" :to="{ name: 'estate-list', params: {code:sggCd } }">검색결과 더보기</router-link>
+				<span style="font:18px">점포매물 검색</span><router-link style="float:right" :to="{ name: 'estate-list', params: {page: 1, code:sggCd } }">검색결과 더보기</router-link>
 			</div>
 			<ul v-bind:style="estateHeight">
 				<li v-for="item in estateList" class="memul_list" style="margin-top:15px">

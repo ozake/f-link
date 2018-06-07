@@ -1,34 +1,65 @@
 <template>
   <div id="content">
-    <SubHeaderTitle :title="this.title" :subTitle="txt" :flag="flag"></SubHeaderTitle>
+    			<!-- 매물리스트 메인이미지-->
+			<div class="theme_m" style='background: url("http://ui.mk.co.kr/design/2018/franchise/img/estatelist.jpg") no-repeat center 0px;'>
+				
+				<h2 class="estateList">창업 예정지역의 상가점포 가격을 확인하고, 거래할 수 있습니다
+
+					
+					<!-- 셀렉트박스-->
+					<div class="select">
+						<div class="select-box">
+							<select v-bind:class="[isIe ? ieClass : '', nonIeClass]">
+								<option>서울</option> 
+							</select>
+						</div>
+
+						<div class="select-box">
+							<select v-bind:class="[isIe ? ieClass : '', nonIeClass]" v-model="sggCdSelected" @change="sggChange">
+								<option>시/군/구</option>
+                <option v-for="item in sggCd" :value="item.code">{{item.area2}}</option> 
+							 </select>
+						</div>
+					</div>	
+					<!-- 셀렉트박스-->
+				</h2>
+			</div>
+
+			<!-- //매물리스트 메인이미지-->
+
 		<div class="frlist">
       <!--프랜차이즈 현황 리스트-->
-			<div class="thlistbox">
-        <CardBoxNbtn1 v-for="(item, index) in listItems" :index="index" :item="item"></CardBoxNbtn1>
+			<div class="estatebox">
+        <CardBoxEstate v-for="(item, index) in listItems" :index="index" :item="item"></CardBoxEstate>
 			</div>
 			<!--//프랜차이즈 현황 리스트-->
 
       <!--페이징-->
+      <Pagination :totalCount="totalCount" :currentPage="currentPage" :pageingRange="pageingRange" :pageRows="pageRows" :routeName="routeName" :code="code"></Pagination>
+      <!--//페이징-->
   </div>
 
 
   </div>
 </template>
 <script>
-import SubHeaderTitle from './component/SubHeaderTitle.vue'
-import CardBoxNbtn1 from './component/CardBoxNbtn.1.vue'
+// import SubHeaderEstate from './component/SubHeaderEstate.vue'
+import CardBoxEstate from './component/CardBoxEstate.vue'
 import Pagination from './component/Pagination.vue'
 import ApiModel from './model/apiModel';
 import numeral from "numeral"
 export default {
   name: 'estate-list',
   components:{
-    SubHeaderTitle,
-    CardBoxNbtn1,
+    CardBoxEstate,
     Pagination
   },
   data(){
     return {
+      ieClass : 'box_title_ie',
+      nonIeClass : 'box_title',
+      isIe: false,
+      routeName: 'estate-list',
       listItems : '',
       title : '프랜차이즈 링크가 엄선한 상가 매물 입니다.',
       subTitle : '',
@@ -37,10 +68,13 @@ export default {
       currentPage : 1,
       pageingRange : 10,
       pageRows : 16,
-      routeName : 'scapital-list',
-      flag: 'sCaptial',
+      routeName : 'estate-list',
+      code: this.$route.params.code,
       txt:'',
-      addr: {
+      bubaddr: '',
+      sggCd: [],
+      sggCdSelected : ''
+      /* addr: {
           "1168000000" : "강남구",
           "1174000000" : "강동구",
           "1130500000" : "강북구",
@@ -108,60 +142,58 @@ export default {
           "4165000000" : "포천시",
           "4145000000" : "하남시",
           "4159000000" : "화성시"
-        }
+        } */
     }
   },
   watch: {
     // 라우트가 변경되면 메소드를 다시 호출됩니다.
-    /* $route: function () {
+    $route: function () {
       this.currentPage = this.$route.params.page
+      this.code = this.$route.params.code
       this.$nextTick(function(){
-        this.getScapitalBest(this.currentPage)
+        this.getEstateList(this.code, this.currentPage)
       })
-    } */
+    }
   },
   created(){
     this.$EventBus.$emit('HeaderActive', 'store')
-    this.getEstateList(this.$route.params.code)
-    console.log('addr')
-    let addr = this.addr
+    const agent = navigator.userAgent.toLowerCase();
+    if ( (navigator.appName == 'Netscape' && agent.indexOf('trident') != -1) || (agent.indexOf("msie") != -1)) {
+      this.isIe = true
+    }
+    if(this.$route.params.page){
+      this.currentPage = Number(this.$route.params.page)
+    }
+    this.getEstateList(this.$route.params.code, this.currentPage)
+    this.getAddrListToSidoCode(this.$route.params.code)
+    this.getAddrToCodelaw(this.$route.params.code)
+    // console.log('addr')
+    /* let addr = this.addr
     let code = this.$route.params.code
     for (const key in addr) {
-      /* if (object.hasOwnProperty(key)) {
-        const element = addr[key];
-        console.log(element)
-      } */
-      /* if(key === code){
-        console.log(addr[key])
-      } */
       if(key === code){
         this.txt = addr[key]
       }
-      // console.log(key+'::'+code)
-      
-    }
-    
-    
-    
-    /* if(this.$route.params.page){
-      this.currentPage = Number(this.$route.params.page)
     } */
-    //this.getScapitalBest(this.currentPage)
+    
   },
   methods: {
-    getEstateList(code){
+    getEstateList(code, page){
       let sggCd = code+'00000'
-      console.log('부동산리스트')
+      //console.log('부동산리스트')
       console.log(code)
-      let pageNo = '1'
-      let rows = 100
+      let pageNo = page - 1
+      let rows = 16
       let markers = []
-      this.apiModel.getEstateList(1,16,sggCd).then((result)=>{
+      this.apiModel.getEstateList(pageNo,rows,sggCd).then((result)=>{
         if(result.status === 200){
           console.log(result)
           let data = result.data
           let paging = data.shift()
+
           for (const value of data) {
+            this.totalCount = Number(paging.totalCount)
+            this.currentPage = Number(paging.pageNo) + 1
             // if(value.month_deposit_price === 0 && value.month_price){
             //   continue
             // }
@@ -184,6 +216,18 @@ export default {
             //let marker = this.setEstateMaker(value.xpos, value.ypos, value.memul_seq)
             //markers.push(marker)
             //this.estateQueue.setQueue(marker)
+            let subwayInfo = value.subway_info
+            subwayInfo = subwayInfo.split(',')
+            let string = ''
+            if(subwayInfo.length > 1){
+              string = `${subwayInfo[0]}, ${subwayInfo[1]}`
+            }else{
+              string = subwayInfo[0]
+            }
+            value.subway_info = string
+
+            let regdate = value.mk_reg_date
+            value.mk_reg_date = regdate.substr(0,10)
           }
           this.listItems = data
           //let clusterer = this.makeClusterEstate(markers)
@@ -206,34 +250,83 @@ export default {
       })
 
     },
-    getScapitalBest(page) {
-        let rPage = page - 1
-        this.apiModel.getScapitalBest(rPage).then((result)=>{
+    getAddrToCodelaw(codelaw){
+			this.apiModel.getAddrToCodelaw(codelaw).then((result)=>{
+				let addr = ''
+				if(result.status === 200){
+					let data = result.data[0]
+					console.log(data)
+					addr = `${data.area1} ${data.area2} ${data.area3}`
+					this.bubaddr = addr
+				}
+			})
+    },
+    getAddrListToSidoCode(sidoCode){
+      let sidocode = sidoCode.substr(0,2)
+      //sidocode = sidocode + '00000000'
+      console.log('시도코드'+sidocode)
+      this.apiModel.getSggCdsToCodelaw(sidocode).then((result)=>{
         if(result.status === 200){
           let data = result.data
-          //console.log(result)
-          let paging = data.shift()
-          this.totalCount = Number(paging.totalCount)
-          this.currentPage = Number(paging.pageNo) + 1
-          console.log(paging)
-          for (const value of data) {
-            let total = value.total
-              total = total.slice(0,-1)
-              total = Number(total)
-              total = numeral(total).format('0,0')
-            value.total = total
-            let img2 = value.img2
-            if(img2 === ''){
-              img2 = "/src/assets/fc_noimg_253128.jpg"
-            }else{
-              img2 = "//file.mk.co.kr"+img2.slice(12)
-            }
-            value.img2 = img2
-          }
-          this.listItems = data
+          data.shift()
+          this.sggCd = data
+          this.sggCdSelected = this.$route.params.code
         }
+        
       })
+    },
+    sggChange(){
+      this.$router.push({ name: 'estate-list', params: {page:1, code: this.sggCdSelected } })
     }
   }
 }
 </script>
+<style>
+.select-box {
+  width: 185px;
+  height: 40px;
+  float: left;
+  margin-right: 30px;
+  font-size: 16px;
+  font-weight: 300;
+  color: #555;
+  padding: 0 0 0 0;
+  overflow: hidden;
+  background: #fff url(http://img.mk.co.kr/2018/franchise/btn_select.jpg) no-repeat 100%;
+}
+
+.box_title {
+  width: 185px;
+  height: 40px;
+  background: transparent;
+  display: block;
+  line-height: 37px;
+  padding-left: 12px;
+  /* margin-top: -6px; */
+  border: none;
+  text-transform: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+.box_title_ie {
+  width: 200px;
+  height: 40px;
+  background: transparent;
+  display: block;
+  line-height: 37px;
+  padding-left: 12px;
+  /* margin-top: -6px; */
+  border: none;
+  text-transform: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+#content .theme_m .select {
+  width: 430px;
+  overflow: hidden;
+  display: inline-block;
+}
+</style>
+

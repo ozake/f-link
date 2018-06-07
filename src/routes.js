@@ -132,7 +132,7 @@ export default [
     component: SalesView
   },
   {
-    path: '/estateList/:code',
+    path: '/estateList/:page/:code',
     name: 'estate-list',
     component: EstateList
   },

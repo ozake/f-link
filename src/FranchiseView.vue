@@ -373,8 +373,8 @@ export default {
       let data1 = result[0];
       let data2 = result[1];
       let tmpArray = [];
-      console.log(data1[0]);
-      console.log(data1[0].memo);
+      /* console.log(data1[0]);
+      console.log(data1[0].memo); */
       if (data1[0].memo) {
         this.brandMemo = true;
       }
@@ -505,6 +505,15 @@ export default {
       let data = null;
       if (result.status === 200) {
         data = result.data;
+        
+        if(typeof data === 'string'){
+          //data = data.replace(/\r/g, "")
+          //data = data.replace(/\n/g, "")
+          //data = data.replace(/"/g, "")
+          data = data.replace(/\\'/g, "")
+          //console.log(data)
+          data = JSON.parse(data)
+        }
         let paging = data.shift();
         for (const value of data) {
           value.total = this.numberFormating(value.total);
