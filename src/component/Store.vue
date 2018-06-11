@@ -86,7 +86,8 @@ export default {
       estateCluster: '',
       clusterClick : '',
       sggCd: '',
-      mapLoading: false
+      mapLoading: false,
+      clusterNumber : ''
     }
   },
   props:{
@@ -1026,38 +1027,47 @@ export default {
       daum.maps.event.addListener( clusterer, 'clusterclick', ( cluster ) => {
         let clickStyles = {
           width:'85px',
-          height:'85px',
+          height:'65px',
           backgroundColor:'#4db007',
           opacity:'1.0',
           border:'8px solid #fff',
+          paddingTop: '20px',
           color:'#fff',
-          fontSize:'25px',
+          fontSize: '22px',
           fontWeight:'500',
-          position:'absolute',
           borderRadius:'50px',
           textAlign:'center',
-          lineHeight:'80px'
+          lineHeight: '23px'
         }
         
         let defaultStyles = {
-          width: '82px',
-          height: '88px',
-          textAlign: 'center',
-          background: 'url(http://img.mk.co.kr/2018/franchise/store_icon01.png) no-repeat',
+          width: '85px',
+          height: '85px',
+          backgroundColor: '#14a114',
+          opacity: '0.7',
           color: '#fff',
           fontSize: '25px',
           fontWeight: '500',
-          paddingTop: '30px'
+          position: 'absolute',
+          borderRadius: '50px',
+          textAlign: 'center',
+          lineHeight: '80px',
+          paddingTop: '0',
+          border:'0px'
         }
+
+        
 
         //clustererObj.setStyles(styles)
         //console.log(clustererObj._clusters)
-        /* for (const value of clustererObj._clusters) {
+        for (const value of clustererObj._clusters) {
           
           this.domStyleObjSet(value._content, defaultStyles)
-        } */
+          value.clicked = false
+        }
         
-        //this.domStyleObjSet(cluster._content, clickStyles)
+        this.domStyleObjSet(cluster._content, clickStyles)
+        cluster.clicked = true
         //console.log(cluster._content)
 
         
@@ -1076,20 +1086,65 @@ export default {
         this.clusterClick = str
         //console.log( cluster.getCenter() );
       })
+
+      daum.maps.event.addListener( clusterer, 'clusterover', ( cluster ) => {
+        let onStyles = {
+          width: '85px',
+          height: '65px',
+          backgroundColor: '#14a114',
+          opacity: '0.9',
+          color: '#fff',
+          fontSize: '22px',
+          paddingTop: '20px',
+          fontWeight: '500',
+          borderRadius: '50px',
+          textAlign: 'center',
+          lineHeight: '23px'
+        }
+        //console.log(cluster._content.innerHTML)
+        this.clusterNumber = cluster._content.innerHTML
+        this.domStyleObjSet(cluster._content, onStyles)
+        cluster._content.innerHTML = '내놓은<br>매물'
+      })
+
+      daum.maps.event.addListener( clusterer, 'clusterout', ( cluster ) => {
+        let defaultStyles = {
+          width: '85px',
+          height: '85px',
+          backgroundColor: '#14a114',
+          opacity: '0.7',
+          color: '#fff',
+          fontSize: '25px',
+          fontWeight: '500',
+          position: 'absolute',
+          borderRadius: '50px',
+          textAlign: 'center',
+          lineHeight: '80px',
+          paddingTop: '0',
+        }
+        //console.log(cluster._content)
+        
+        this.domStyleObjSet(cluster._content, defaultStyles)
+        cluster._content.innerHTML = this.clusterNumber
+        
+      })
     },
     domStyleObjSet(dom, styles){
-      console.log('스타일 변경')
-      console.log(dom)
-      dom.style = null
       for (const key in styles) {
         if (styles.hasOwnProperty(key)) {
           const element = styles[key];
+          const hypenKey = this.camelCaseToDash(key)
           //console.log(element)
+          
+          //dom.style.removeProperty(key)
+          dom.style.setProperty(hypenKey, element)
+          
           //console.log(dom.style.key)
-          dom.style.key = element
-          console.log(dom.style.key)
         }
       }
+    },
+    camelCaseToDash( myStr ) {
+      return myStr.replace( /([a-z])([A-Z])/g, '$1-$2' ).toLowerCase();
     },
     /* keymonitor(event){
       console.log(event.key)

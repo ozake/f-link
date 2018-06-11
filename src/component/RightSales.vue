@@ -9,8 +9,9 @@
         <li class="monthly"><span class="icon">월</span>보 {{item.month_deposit_price}} / 월{{item.month_price}}</li>
         <!-- <li class="premium "><span class="icon">권</span>1억5000만원</li> -->
         <li class="text">{{item.corrp_flr}}층  {{item.supp_meter}}㎡<br>
+          {{item.subway_info}}<br/>
           추천업종 : {{item.rec_using}}
-          {{item.subway_info}}
+          
         </li>
         <li class="text">매물등록일 {{item.mk_reg_date}}</li>
       </router-link>
