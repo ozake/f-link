@@ -187,8 +187,20 @@ export default {
       let markers = []
       this.apiModel.getEstateList(pageNo,rows,sggCd).then((result)=>{
         if(result.status === 200){
-          console.log(result)
+          //console.log(result)
           let data = result.data
+          if(typeof data === 'string'){
+						data = data.replace(/\r/g, "")
+						data = data.replace(/\\r/g, "")
+						data = data.replace(/\n/g, "")
+						data = data.replace(/\\n/g, "")
+            data = data.replace(/\\'/g, "")
+            data = data.replace(/\\'/g, "")
+            //data = data.replace(/\//g, "")
+            //console.log(data)
+            data = eval("("+data+")")
+						//data = JSON.parse(data)
+        	}
           let paging = data.shift()
 
           for (const value of data) {

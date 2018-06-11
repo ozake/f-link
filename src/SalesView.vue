@@ -187,9 +187,14 @@ export default {
 					console.log(result)
 					let data = result.data
 					if(typeof data === 'string'){
-						data = data.replace(/\r/g, "")
+						/* data = data.replace(/\r/g, "")
+						data = data.replace(/\\r/g, "")
 						data = data.replace(/\n/g, "")
-						data = JSON.parse(data)
+						data = data.replace(/\\n/g, "")
+						data = data.replace(/\\'/g, "") */
+						console.log(data)
+						data = eval("("+data+")")
+						//data = JSON.parse(data)
         	}
 					data = data[0]
 					let tmpDate = data.FIRST_REG_DATE

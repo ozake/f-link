@@ -126,14 +126,14 @@
 								<th>연도 </th>
 								<th>신규개점</th>
 								<th>명의변경 </th>
-								<th>총 매장 수 </th>
+								<th>총 매장 수 <br> (가맹 + 직영) </th>
 								<th>폐업 매장 수 </th>
 								<th>폐업률(%)</th>
 							  </tr>			 
 							  
 							  <tr v-for="ydata in yearData">
 								<td>{{ydata.year}} </td>
-								<td>{{ydata.rcount}}</td>
+								<td>{{ydata.ncount}}</td>
                 <td>{{ydata.mcount}}</td>
 								<td>{{ydata.totalStore}}</td>
 								<td>{{ydata.closerStore}}</td>
@@ -242,11 +242,13 @@
             <div class="branch_list">
               <ul>
                 <li v-for="(store,idx) in storeList">
+                  <router-link :to="{name: 'store-view', params: { categoryCode: store.categoryCode, storeName: store.storeNameEncode, id: store.bdMgtSn }}">
                   <span>{{idx+1}}</span>
                   <p class="branch_name">{{store.refBnm}}</p>
                   <p>{{store.addr}}</p>
                   <p class="branch_info">{{store.tel}}</p>
                   <p class="branch_info">영업 개시일 : {{store.firstDate}}</p>
+                  </router-link>
                 </li>
               </ul>
 
@@ -327,6 +329,7 @@ import ApiModel from "./model/apiModel.js";
 import { convertGeo } from "./model/util.js";
 import { Queue } from "./model/colections";
 import numeral from "numeral";
+import { Base64 } from 'js-base64'
 export default {
   name: "FranchiseView",
   components: {
@@ -349,7 +352,8 @@ export default {
       estateList: [],
       selected: "시/군/구",
       selectedStore: "지점",
-      brandMemo: false
+      brandMemo: false,
+      categoryCode: ''
     };
   },
   computed: {
@@ -373,13 +377,24 @@ export default {
       let data1 = result[0];
       let data2 = result[1];
       let tmpArray = [];
+      if(typeof data1 === 'string'){
+        /* data = data.replace(/\r/g, "")
+        data = data.replace(/\\r/g, "")
+        data = data.replace(/\n/g, "")
+        data = data.replace(/\\n/g, "")
+        data = data.replace(/\\'/g, "") */
+        //console.log(data)
+        data1 = eval("("+data+")")
+        //data = JSON.parse(data)
+      }
       /* console.log(data1[0]);
       console.log(data1[0].memo); */
+
       if (data1[0].memo) {
         this.brandMemo = true;
       }
       data1 = data1[0];
-
+      this.categoryCode = data1.code2
       let date = data1.start;
       date =
         date.substr(0, 4) + "년 " + date.substr(4, 2) + "월 " + date.substr(6, 2) + "일";
@@ -608,8 +623,11 @@ export default {
                   let position = [];
                   position = convertGeo([x, y]);
                   value.position = position;
+                  value.categoryCode = this.categoryCode
+                  value.storeNameEncode = Base64.encode(value.refBnm)
                   tmparr.push(value);
                 }
+                console.log(tmparr)
                 this.storeList = tmparr;
                 this.makeMakers(result.rows);
               });

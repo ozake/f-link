@@ -7,15 +7,23 @@
       <MainSearch></MainSearch>
     </div>
     <!-- //메인이미지 영역-->
+    <!-- <popup-ad v-if="popupFlag"></popup-ad> -->
   </div>
   <!-- //콘텐츠 -->
 </template>
 <script>
 import MainSearch from "./component/MainSearch.vue"
+// import PopupAd from "./component/popupAd.vue"
 export default {
   name: 'Main',
   components:{
     MainSearch
+    // PopupAd
+  },
+  data () {
+    return {
+      popupFlag: true
+    }
   },
   /* computed: {
     styles: function() {
@@ -28,11 +36,15 @@ export default {
   }, */
   created(){
     this.$EventBus.$emit('HeaderActive', '')
-    /* function mobRf(){
-  		var rf = new EN();
-		  rf.setSSL(true);
-  		rf.sendRf();
-	  } */
+    /* if(localStorage.getItem('noPopup')){
+        let noPopup = localStorage.getItem('noPopup')
+        if(noPopup){
+          this.popupFlag = false
+        }
+      }
+    this.$EventBus.$on('popupOpen', (val)=>{
+      this.popupFlag = val
+    }) */
   }
 }
 </script>

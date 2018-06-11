@@ -240,6 +240,7 @@ import ChartBar from './component/ChartBar.vue';
 import ApiModel from './model/apiModel.js'
 import DataPaser from "./model/dataPaser.js"
 import { convertGeo } from "./model/util.js"
+import { Base64 } from 'js-base64'
 export default {
   name: 'StoreView',
   components:{
@@ -251,7 +252,7 @@ export default {
     return {
       apiModel: new ApiModel(this.$http),
       item : '',
-      storeName : this.$route.params.storeName,
+      storeName : Base64.decode(this.$route.params.storeName),
 			buildIn : [],
 			basedMaster : {},
 			mapInstance : '',
@@ -662,6 +663,7 @@ export default {
       this.apiModel.getOP411(basedCode, categoryCode).then((result)=>{
         if(result.status === 200){
 					console.log('411')
+					//console.log(result.data)
 					let data = result.data.data.rows
 					this.catStoreListNum = data.length
 					for (const value of data) {
@@ -795,8 +797,9 @@ export default {
 			if(result.status === 200){
 				console.log('배후지마스터')
 
+				console.log(result.data)
 				let data = result.data.data.rows[0]
-				console.log(data)
+				//console.log(data)
 				let direction = data.direction
 				data.direction = this.changeDirectionName(direction)
 				/* let geomJson = data.geomJson

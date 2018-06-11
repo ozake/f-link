@@ -23,6 +23,11 @@
 
     <!-- 지도영역-->
 		<div class="store_map" id="map" ref="map" v-bind:style="styles">
+      <div v-show="mapLoading" class="mapLoadingWrap">
+        <img class="loadImg" src="http://img.mk.co.kr/2018/franchise/loading.gif" />
+        <div class="mapLoading"></div>
+      </div>
+
       <!-- <AddrArea :addr="addr"></AddrArea> -->
       <!-- 건물 추천서비스-->
       <div class="building" v-on:click="recommBldOnOff">
@@ -44,7 +49,8 @@ import AsideMap from "./AsideMap.vue"
 import RecommBld from "./RecommBld.vue"
 import proj4 from "proj4"
 import ApiModel from "../model/apiModel.js"
-import { Queue } from '../model/colections';
+import { Queue } from '../model/colections'
+import { Base64 } from 'js-base64'
 export default {
   name: 'store',
   data () {
@@ -79,7 +85,8 @@ export default {
       infoPop : false,
       estateCluster: '',
       clusterClick : '',
-      sggCd: ''
+      sggCd: '',
+      mapLoading: false
     }
   },
   props:{
@@ -98,7 +105,7 @@ export default {
       }
     },
     estateHeight: function() {
-      let height = window.innerHeight - 535
+      let height = window.innerHeight - 555
       return {
         height: height + 'px'
       }
@@ -478,6 +485,10 @@ export default {
       }
     },
     getOP501(code, ftcCate2Cd, rows, emdCd=''){
+      this.mapLoading = true
+			/* setTimeout(()=>{
+				this.mapLoading = false
+			}, 400) */
       console.log('501실행')
       this.apiModel.getOP501(code, ftcCate2Cd, rows, 1, emdCd).then((result)=>{
         if(result.status === 200){
@@ -518,7 +529,7 @@ export default {
             this.brand = brand
           }
 
-
+          this.mapLoading = false
         }
       })
     },
@@ -710,6 +721,7 @@ export default {
     },
     setOverlay(marker, value){
       let refBnm = value.refBnm
+      refBnm = Base64.encode(refBnm)
       let img = value.img1
       if(img === '' || img === null || img === undefined){
         img = 'src/assets/fc_noimg_166166.jpg'
@@ -717,6 +729,10 @@ export default {
         // console.log(img)
         img = "//file.mk.co.kr"+img.slice(12)
       }
+      let url = `http://www.f-link.co.kr/storeView/${this.ftcCate2Cd}/${refBnm}/${value.bdMgtSn}`
+      if(location.hostname === "110.13.170.148"){
+			  url = `http://110.13.170.148:8080/storeView/${this.ftcCate2Cd}/${refBnm}/${value.bdMgtSn}`
+		  }
       //console.log(refBnm.length)
       /* if(refBnm.length > 15){
         refBnm = refBnm.slice(0,15)
@@ -726,15 +742,15 @@ export default {
       `<!-- 지점선택박스-->
 				<div class="branch">
 					<div class="branch_box">
-						<h4><span class="brand_name">${refBnm}</span><span class='close_btn'><a href='#none' id='img${value.bdMgtSn}'><img src="http://img.mk.co.kr/2018/franchise/btn_close1.gif" alt="닫기"></a></span></h4>
+						<h4><span class="brand_name">${value.refBnm}</span><span class='close_btn'><a href='#none' id='img${value.bdMgtSn}'><img src="http://img.mk.co.kr/2018/franchise/btn_close1.gif" alt="닫기"></a></span></h4>
 						<div class="branch_content_wrap">
-              <img src="${img}" alt="${refBnm}" class="logo">
+              <img src="${img}" alt="${value.refBnm}" class="logo">
               <div class="branch_right_box">
                 <div class="branch_right_text">
                   <p>전화번호 : ${value.tel}</p>
                   <p>주소 : ${value.addr}</p>
                 </div>
-                <a href='http://www.f-link.co.kr/storeView/${this.ftcCate2Cd}/${refBnm}/${value.bdMgtSn}'><button type='button'>자세히 보기</button></a>
+                <a href='${url}'><button type='button'>자세히 보기</button></a>
               </div>
             </div>
 					</div>
@@ -948,6 +964,18 @@ export default {
         if(result.status === 200){
           //console.log(result)
           let data = result.data
+          //console.log(data)
+          if(typeof data === 'string'){
+						data = data.replace(/\r/g, "")
+						data = data.replace(/\\r/g, "")
+						data = data.replace(/\n/g, "")
+						data = data.replace(/\\n/g, "")
+						data = data.replace(/\\'/g, "")
+            //console.log("파싱에러")
+            data1 = eval("("+data+")")
+            //data = JSON.parse(data)
+            
+        	}
           let paging = data.shift()
           for (const value of data) {
             // if(value.month_deposit_price === 0 && value.month_price){
@@ -996,10 +1024,41 @@ export default {
     estateClusterAddEventListener(clusterer){
       let clustererObj = clusterer
       daum.maps.event.addListener( clusterer, 'clusterclick', ( cluster ) => {
-        /* let styles = [
-          {width:'85px',height:'85px',backgroundColor:'#4db007',opacity:'1.0',border:'8px solid #fff',color:'#fff',fontSize:'25px',fontWeight:'500',position:'absolute',borderRadius:'50px',textAlign:'center',lineHeight:'80px'}
-        ]
-        this.estateCluster.setStyles({width:'85px',height:'85px',backgroundColor:'red'}) */
+        let clickStyles = {
+          width:'85px',
+          height:'85px',
+          backgroundColor:'#4db007',
+          opacity:'1.0',
+          border:'8px solid #fff',
+          color:'#fff',
+          fontSize:'25px',
+          fontWeight:'500',
+          position:'absolute',
+          borderRadius:'50px',
+          textAlign:'center',
+          lineHeight:'80px'
+        }
+        
+        let defaultStyles = {
+          width: '82px',
+          height: '88px',
+          textAlign: 'center',
+          background: 'url(http://img.mk.co.kr/2018/franchise/store_icon01.png) no-repeat',
+          color: '#fff',
+          fontSize: '25px',
+          fontWeight: '500',
+          paddingTop: '30px'
+        }
+
+        //clustererObj.setStyles(styles)
+        //console.log(clustererObj._clusters)
+        /* for (const value of clustererObj._clusters) {
+          
+          this.domStyleObjSet(value._content, defaultStyles)
+        } */
+        
+        //this.domStyleObjSet(cluster._content, clickStyles)
+        //console.log(cluster._content)
 
         
         let markers = cluster.getMarkers()
@@ -1017,6 +1076,20 @@ export default {
         this.clusterClick = str
         //console.log( cluster.getCenter() );
       })
+    },
+    domStyleObjSet(dom, styles){
+      console.log('스타일 변경')
+      console.log(dom)
+      dom.style = null
+      for (const key in styles) {
+        if (styles.hasOwnProperty(key)) {
+          const element = styles[key];
+          //console.log(element)
+          //console.log(dom.style.key)
+          dom.style.key = element
+          console.log(dom.style.key)
+        }
+      }
     },
     /* keymonitor(event){
       console.log(event.key)
@@ -1220,5 +1293,33 @@ export default {
 }
 .info_pop {
   top : 15px;
+}
+.loadImg {
+	/* margin: 0 auto; */
+  position: absolute;
+  top: 0px;
+  left: 45%;
+	padding-top: 20%;
+	display: block;
+  z-index: 100000000;
+}
+.mapLoadingWrap {
+  position: absolute; 
+  top: 0; 
+  left: 0; 
+  width: 100%;
+  height:100%;
+  z-index: 100000;
+}
+.mapLoading {
+  /* position: absolute; 
+  top: 0; 
+  left: 0;  */
+  width: 100%;
+  height:100%;
+  z-index: 100000;
+  background-color: rgb(219, 218, 218); 
+  opacity: 0.65; 
+  filter: alpha(opacity=65);
 }
 </style>

@@ -84,10 +84,11 @@
 		<!-- //점포매물검색-->
 
 		<!-- 매물리스트-->
-		<div class="st_list">
+		<div class="st_list" style="position:relative">
 			<div style="height:40px; width:100%">
 				<span style="font:18px">점포매물 검색</span><router-link style="float:right" :to="{ name: 'estate-list', params: {page: 1, code:sggCd } }">검색결과 더보기</router-link>
 			</div>
+			<div v-bind:style="estateHeight" class="loadingImgWrap" v-if="loadingImg"><img class="loadImgAside" src="http://img.mk.co.kr/2018/franchise/loading.gif" /></div>
 			<ul v-bind:style="estateHeight">
 				<li v-for="item in estateList" class="memul_list" style="margin-top:15px">
 					<router-link :to="{ name: 'sales-view', params: {id: item.memul_seq } }">
@@ -138,7 +139,8 @@ export default {
     addrCodeTxt: '',
     suggestSlect: [],
 		flag: '',
-		to: ''
+		to: '',
+		loadingImg : false
      }
   },
   props:{
@@ -222,7 +224,13 @@ export default {
         this.addrCodeTxt = data.txt
         this.addrCode = data.code
       }
-    } 
+    },
+		estateList : function() {
+			this.loadingImg = true
+			setTimeout(()=>{
+				this.loadingImg = false
+			}, 400)
+		}
   },
   methods: {
 	alerm() {
@@ -375,5 +383,18 @@ export default {
 }
 .memul_list {
 	height: 120px;
+}
+.loadingImgWrap {
+	position: absolute;
+	top: 60px;
+	left: 0;
+	z-index: 10000;
+	width: 100%;
+	background-color: #fff;
+}
+.loadImgAside {
+	margin: 0 auto;
+	padding-top: 27%;
+	display: block;
 }
 </style>
