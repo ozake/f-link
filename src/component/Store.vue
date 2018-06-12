@@ -308,16 +308,16 @@ export default {
                     this.sggCd = code + '00000'
                     fullCode = fullCode.substring(0,8)
                     this.RecommCcode = fullCode
-                    if(!this.RecommBld){
-                      if(this.mapLevel > 2){
+
+
+                    if( ! this.RecommBld && this.centerCode !== code ){
+                      if(this.mapLevel > 3){
                         this.getEstateList(code)
                       }
-                      if(this.mapLevel <3){
-                        this.estateMarkerClean()
-                      }
-
-                      
                     }
+                    /* if(this.mapLevel <3){
+                      this.estateMarkerClean()
+                    } */
 
                     if(this.mapLevel <= 3){
                         if( this.FcenterCode !== fullCode ){
@@ -331,9 +331,9 @@ export default {
                     else{
                       if( this.centerCode !== code ){
                         this.centerCode = code
+                        
                         if(this.ftcCate2Cd !== ''){
                           this.getFranchiseList(code,this.ftcCate2Cd)
-                          //this.getEstateList(code)
                         }
                       }
                     }
@@ -1056,18 +1056,22 @@ export default {
           border:'0px'
         }
 
-        
-
-        //clustererObj.setStyles(styles)
-        //console.log(clustererObj._clusters)
         for (const value of clustererObj._clusters) {
           
-          this.domStyleObjSet(value._content, defaultStyles)
+          if(value.clicked){
+            this.domStyleObjSet(value._content, defaultStyles)
+            let num = value._markers.length
+            value._content.innerHTML = num
+          }
           value.clicked = false
+          
         }
         
         this.domStyleObjSet(cluster._content, clickStyles)
+        cluster._content.innerHTML = '내놓은<br>매물'
         cluster.clicked = true
+
+        //console.log(cluster)
         //console.log(cluster._content)
 
         
@@ -1102,9 +1106,11 @@ export default {
           lineHeight: '23px'
         }
         //console.log(cluster._content.innerHTML)
-        this.clusterNumber = cluster._content.innerHTML
-        this.domStyleObjSet(cluster._content, onStyles)
-        cluster._content.innerHTML = '내놓은<br>매물'
+        if(!cluster.clicked){
+          this.clusterNumber = cluster._content.innerHTML
+          this.domStyleObjSet(cluster._content, onStyles)
+          cluster._content.innerHTML = '내놓은<br>매물'
+        }
       })
 
       daum.maps.event.addListener( clusterer, 'clusterout', ( cluster ) => {
@@ -1123,10 +1129,10 @@ export default {
           paddingTop: '0',
         }
         //console.log(cluster._content)
-        
-        this.domStyleObjSet(cluster._content, defaultStyles)
-        cluster._content.innerHTML = this.clusterNumber
-        
+        if(!cluster.clicked){
+          this.domStyleObjSet(cluster._content, defaultStyles)
+          cluster._content.innerHTML = this.clusterNumber
+        }
       })
     },
     domStyleObjSet(dom, styles){

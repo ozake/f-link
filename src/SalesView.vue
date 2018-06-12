@@ -192,7 +192,7 @@ export default {
 						data = data.replace(/\n/g, "")
 						data = data.replace(/\\n/g, "")
 						data = data.replace(/\\'/g, "") */
-						console.log(data)
+						//console.log(data)
 						data = eval("("+data+")")
 						//data = JSON.parse(data)
         	}

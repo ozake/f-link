@@ -183,7 +183,7 @@ export default {
   created(){
     //this.listItems = this.makeArrayModuler(this.items,5)
     this.$EventBus.$emit('HeaderActive', 'franchise')
-    console.log("카테고리:"+this.$route.params.categoryCode)
+    //console.log("카테고리:"+this.$route.params.categoryCode)
     if(this.$route.params.categoryCode === undefined){
       this.franchiseList('한식').then((result)=>{
         console.log(result)

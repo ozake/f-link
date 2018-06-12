@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import App from './App.vue'
-import Main from './Main.vue'
 import axios from 'axios'
 import Router from 'vue-router'
 import routes from './routes'
+// import VueAnalytics from 'vue-analytics'
 // import Autocomplete from 'v-autocomplete'
 // import ApiModel from './model/apiModel'; 
 /* import ChartJs from 'chart.js';
@@ -30,12 +30,18 @@ const router = new Router({
   linkActiveClass: "",
 })
 
-router.beforeEach((to, from, next) => {
+/* Vue.use(VueAnalytics, {
+  id: 'UA-120352121-1',
+  router,
+  checkDuplicatedScript: true
+}) */
+
+/* router.beforeEach((to, from, next) => {
   // ...
   //myStorage = window.localStorage;
   //console.log(sessionStorage)
   next()
-})
+}) */
 
 //Vue.prototype.$route = router
 

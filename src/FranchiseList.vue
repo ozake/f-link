@@ -99,44 +99,6 @@ export default {
   },
   data(){
     return {
-      items: [
-        {
-          id:1,
-          title: "test"
-        },
-        {
-          id:2,
-          title: "test"
-        },
-        {
-          id:3,
-          title: "test"
-        },
-        {
-          id:4,
-          title: "test"
-        },
-        {
-          id:5,
-          title: "test"
-        },
-        {
-          id:6,
-          title: "test"
-        },
-        {
-          id:7,
-          title: "test"
-        },
-        {
-          id:8,
-          title: "test"
-        },
-        {
-          id:9,
-          title: "test"
-        }
-      ],
       listItems : '',
       isIe:false,
       apiModel: new ApiModel(this.$http),

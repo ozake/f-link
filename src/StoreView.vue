@@ -55,7 +55,7 @@
 							<dt>연면적</dt>
 							<dd>{{item.grossArea}}㎡ </dd>
 							<dt>층수 </dt>
-							<dd>지하{{item.undFloor}}층~지상{{item.groFloo}}</dd>
+							<dd>지하{{item.undFloor}}층~지상{{item.groFloor}}층</dd>
 							<dt>지하철/버스  </dt>
 							<dd>{{item.subDist}}m / {{item.busDist}}m</dd>
 							<dt>주차대수</dt>
