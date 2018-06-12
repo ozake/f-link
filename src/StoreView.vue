@@ -314,13 +314,14 @@ export default {
 						}
 					}],
 					yAxes: [{
-						display: true,
+						display: false,
 						scaleLabel: {
-							display: true,
+							display: false,
 							labelString: '매출(만원)'
 						}
 					}]
-				}
+				},
+
 			},
 			averageChartLabels: [],
 			averageChartDatasets : [],
@@ -482,6 +483,7 @@ export default {
 						label : '일요일',
 						borderColor: '#4dc9f6',
 						backgroundColor: '#4dc9f6',
+						borderWidth: 1.5,
 						fill: false,
 						data: data.fpoplSun
 					},
@@ -489,6 +491,7 @@ export default {
 						label : '월요일',
 						borderColor: '#f67019',
 						backgroundColor: '#f67019',
+						borderWidth: 1.5,
 						fill: false,
 						data: data.fpoplMon
 					},
@@ -496,6 +499,7 @@ export default {
 						label : '화요일',
 						borderColor: '#f53794',
 						backgroundColor: '#f53794',
+						borderWidth: 1.5,
 						fill: false,
 						data: data.fpoplTue
 					},
@@ -503,6 +507,7 @@ export default {
 						label : '수요일',
 						borderColor: '#537bc4',
 						backgroundColor: '#537bc4',
+						borderWidth: 1.5,
 						fill: false,
 						data: data.fpoplWed
 					},
@@ -510,6 +515,7 @@ export default {
 						label : '목요일',
 						borderColor: '#acc236',
 						backgroundColor: '#acc236',
+						borderWidth: 1.5,
 						fill: false,
 						data: data.fpoplThu
 					},
@@ -517,6 +523,7 @@ export default {
 						label : '금요일',
 						borderColor: '#166a8f',
 						backgroundColor: '#166a8f',
+						borderWidth: 1.5,
 						fill: false,
 						data: data.fpoplFri
 					},
@@ -524,6 +531,7 @@ export default {
 						label : '토요일',
 						borderColor: '#00a950',
 						backgroundColor: '#00a950',
+						borderWidth: 1.5,
 						fill: false,
 						data: data.fpoplSat
 					}]
@@ -584,7 +592,7 @@ export default {
 							backgroundColor: '#4dc9f6',
 							fill: false,
 							data: tpindSlngPanalAvg
-						}, */
+						} */
 					]
 					this.averageChartDatasets = [
 						{

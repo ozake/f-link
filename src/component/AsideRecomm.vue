@@ -8,7 +8,7 @@
         </h5>
         <ul>
             <li class="question">이 지역에서 {{categoryName}} 업종 창업 시,<br>가장 유망한 위치는 어디?</li>
-            <router-link :to="{ name: 'store-view', params: {storeName: '추천건물', id:item.bdMgtSn , categoryCode:RecommCategory } }" v-for="item in data" style="color: #fff;">
+            <router-link :to="{ name: 'store-view', params: {storeName: '7LaU7LKc6rG066y8', id:item.bdMgtSn , categoryCode:RecommCategory } }" v-for="item in data" style="color: #fff;">
             <li class="bu_list" >
                     <img src="http://img.mk.co.kr/2018/franchise/icon_loca02.png" alt="건물위치 아이콘" >{{item.addr}}
                     <p>{{item.buldNm}}</p>
