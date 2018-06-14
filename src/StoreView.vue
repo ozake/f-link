@@ -331,11 +331,11 @@ export default {
 					position: 'top'
 				},
 				scales: {
-					ticks: {
-						beginAtZero: true
-					},
 					yAxes: [{
 						display: true,
+						ticks: {
+        			min: 0
+    				},
 						scaleLabel: {
 							display: true,
 							labelString: '영업기간(년도)'
