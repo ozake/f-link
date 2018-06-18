@@ -29,6 +29,9 @@ export default {
     $route : function(){
       if(this.$route.path === '/store'){
         this.footerFlag = false
+      }
+      else{
+        this.footerFlag = true
       } 
     }
   }

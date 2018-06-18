@@ -6,6 +6,7 @@
 		<!--관심브랜드-->
 		<ul class="brand">
 			<h4>관심브랜드<span>(중복선택 가능)</span></h4>
+			<p>◀ 관심 브랜드를 체크 <img src="http://img.mk.co.kr/2018/franchise/chech_on.jpg" alt="체크"> 하세요!</p>
 			<li v-for="item in checked">{{item.brand}}<!--<img src="http://img.mk.co.kr/2018/franchise/btn_close.jpg" alt="닫기">--></li>
 		</ul>
 		<!--//관심브랜드-->
@@ -22,7 +23,7 @@
 				<input type="hidden" name="category2" :value="categorycode2">
 			<fieldset>
 				<input name="name" title="이름" type="text" placeholder="이름" class="databox">
-				<input name="hp1" title="연락처" type="text" placeholder="" class="phonebox" maxlength="3">
+				<input name="hp1" title="연락처" type="text" placeholder="tel" class="phonebox" maxlength="3">
 				<input name="hp2" title="연락처" type="text" placeholder="" class="phonebox" maxlength="4">
 				<input name="hp3" title="연락처" type="text" placeholder="" class="phonebox" maxlength="4">
 			</fieldset>
@@ -111,12 +112,13 @@
 	padding-right: 0px;
 }
 .phonebox {
-	width: 65px;
+	width: 50px;
     border: 1px solid #dcdcdc;
     background-color: #f7f7f7;
     /* padding: 9px 15px; */
 	padding-bottom: 9px;
 	padding-top: 9px;
+	padding-left: 15px;
     font-size: 16px;
     color: #555;
     margin-bottom: 10px;

@@ -30,7 +30,7 @@
           <option>창업자금</option>
           <option>전체보기</option>
           <option :value="{min:1, max:50000}">5천만원 미만</option>
-          <option :value="{min:1, max:100000}">1억원미만</option>
+          <option :value="{min:50000, max:100000}">5천만원~1억원</option>
           <option :value="{min:100000, max:150000}">1억~1.5억원</option>
           <option :value="{min:150000, max:200000}">1.5~2억원</option>
           <option :value="{min:200000, max:250000}">2~2.5억원</option>
@@ -183,7 +183,7 @@ export default {
         let url = "../dist/sectorCode.json"
         if(location.hostname === "www.f-link.co.kr"){
           url = "http://www.f-link.co.kr/dist/sectorCode.json"
-        }else if(location.hostname === "www.f-link.co.kr"){
+        }else if(location.hostname === "f-link.co.kr"){
           url = "http://f-link.co.kr/dist/sectorCode.json"
         }else if(location.hostname === "110.13.170.148" || location.hostname === "127.0.0.1"){
           url = "/src/assets/sectorCode.json"

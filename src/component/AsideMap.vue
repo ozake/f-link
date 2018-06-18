@@ -30,7 +30,7 @@
 					<!-- <input class="chk" type="checkbox" id="allselect">
 					<label for="allselect">전체선택</label> -->
 
-					<input class="chk" type="checkbox" id="nofranchise" v-model="nonFranchise">
+					<input class="chk" type="checkbox" id="nofranchise" v-model="nonFranchise" ref="franchiseCk">
 					<label for="nofranchise">프랜차이즈 아닌 매장도 표시</label>
 				</div>
 
@@ -192,12 +192,15 @@ export default {
 	  brandCk : function (val) {
 		  //console.log(val)
 		  //let tmp = val.pop()
-		  //console.log(this.brandCk.length)
+			//console.log(this.brandCk.length)
+			
 		  if(Array.isArray(this.brandCk) && this.brandCk.length !== 0){
-			  this.$EventBus.$emit('brandChecked', this.brandCk)
+				this.$EventBus.$emit('brandChecked', this.brandCk)
+				this.$refs.franchiseCk.disabled = true
 		  }else{
 			  if(!this.updateFlag){
 				this.$EventBus.$emit('brandUnchecked')
+				this.$refs.franchiseCk.disabled = false
 			  }
 
 		  }

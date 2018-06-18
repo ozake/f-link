@@ -32,7 +32,7 @@
             <dd>{{item.fcount}}개</dd>
           </dl>
           </router-link>
-          <input type="checkbox" :id="index" class="check_info" v-model="checked" :value="{regnumber: item.regnumber, brand: item.brand}"/>
+          <input type="checkbox" :id="index" class="check_info" v-model="checked" :value="{regnumber: item.regnumber, brand: item.brand}" />
           <label :for="index" class="check_info_label">추가 정보 요청</label>     
           <!-- <a href="#"><button class="btn_info">추가 정보 요청 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </button></a> -->
         </ul>
@@ -41,7 +41,7 @@
         <!--페이징-->
       </div>
 
-      <RightCunsulting :checked="checked" :submitBrandCk="submitBrandCk" :categorycode1="categorycode1"></RightCunsulting>
+      <RightCunsulting :checked="checked" :submitBrandCk="submitBrandCk" :categorycode1="categorycode1" :categorycode2="categorycode2"></RightCunsulting>
     </div>
     <!--//프랜차이즈 현황 리스트-->
   </div>
@@ -106,6 +106,7 @@ export default {
       submitLayer: false,
       submitBrandCk: '',
       categorycode1: '',
+      categorycode2: '',
       category2: '',
       totalCount : 0,
       currentPage : 1,
@@ -137,7 +138,7 @@ export default {
     console.log("카테고리:"+this.$route.params.categoryCode)
     if(this.$route.params.categoryCode === undefined){
       this.franchiseList('한식').then((result)=>{
-        console.log('카테고리가 있는데 여기 탐!?')
+        //console.log('카테고리가 있는데 여기 탐!?')
         console.log(result)
         let data = result.data
         data = data[0]
@@ -213,6 +214,7 @@ export default {
             tmpdata = tmpdata[0]
             this.categorycode1 = tmpdata.code1
             this.category2 = tmpdata.category2
+            this.categorycode2 = tmpdata.code2
             for (const value of data) {
               let total = value.total
               total = total.slice(0,-1)
@@ -266,6 +268,16 @@ export default {
     submitBrand(val){
       this.submitBrandCk = val
       this.submitOnOff()
+    },
+    loginCk(){
+      if(sessionStorage.getItem('ID')) {
+        console.log('로그인 됨')
+        return true
+      }else{
+        console.log('로그인 안됨')
+        return false
+      }
+      
     }
 
   }

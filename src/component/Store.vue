@@ -12,9 +12,10 @@
 
     <!-- 지도검색 안내팝업 -->
     <transition name="slide-fade">
-      <div class="info_pop" v-if="infoPop" style="top:10px;">
-        지역을 입력하세요. <br>
+      <div class="info_pop" v-if="infoPop" style="top:10px; padding-top:5px;">
+        구·동 단위를 입력하세요. <br>
           예시) 강남구, 서초동
+          <p style="color:#07CD07; font-weight: bold;">※ 서울시만 검색 가능합니다.</p>
         <a href="#none" @click="infoPop = false"><img alt="닫기" src="http://img.mk.co.kr/2018/franchise/btn_close1.gif"></a>
       </div>
     </transition>
@@ -631,7 +632,7 @@ export default {
           if(value.isFranchise === '1'){
             marker = this.setMaker(x,y,value)
             overlay = this.setOverlay(marker,value)
-            this.overlayEventListener(marker,overlay,value.bdMgtSn)
+            this.overlayEventListener(marker,overlay,value)
             this.queue.setQueue(marker)
           }
         }
@@ -674,7 +675,7 @@ export default {
           marker = this.setMaker(x,y,value)
           overlay = this.setOverlay(marker,value)
 
-          this.overlayEventListener(marker,overlay,value.bdMgtSn)
+          this.overlayEventListener(marker,overlay,value)
 
           this.queue.setQueue(marker)
           flag = tmpQueue.setNoOverlapQue(value.franchiseNo)
@@ -751,7 +752,8 @@ export default {
                   <p>전화번호 : ${value.tel}</p>
                   <p>주소 : ${value.addr}</p>
                 </div>
-                <a href='${url}'><button type='button'>자세히 보기</button></a>
+                <!--<a href='${url}'><button type='button'>자세히 보기</button></a>-->
+                <button type='button' id='infoBtn${value.bdMgtSn}'>자세히 보기</button>
               </div>
             </div>
 					</div>
@@ -763,16 +765,22 @@ export default {
         position: marker.getPosition(),
 
       })
-      overlay.setZIndex(100)
+      overlay.setZIndex(1000)
       return overlay
     },
-    overlayEventListener(marker,overlay,bdMgtSn){
+    overlayEventListener(marker,overlay,value){
       // 마커를 클릭했을 때 커스텀 오버레이를 표시합니다
       daum.maps.event.addListener(marker, 'click', ()=>{
           overlay.setMap(this.mapInstance);
-          let closeBtnDom = document.getElementById('img'+bdMgtSn)
+          let closeBtnDom = document.getElementById('img'+value.bdMgtSn)
             closeBtnDom.addEventListener('click',()=>{
             overlay.setMap(null)
+          })
+          let infoBtn = document.getElementById('infoBtn'+value.bdMgtSn)
+          infoBtn.addEventListener('click',()=>{
+            let refBnm = value.refBnm
+            refBnm = Base64.encode(refBnm)
+            this.$router.push({ name: 'store-view', params: {categoryCode: this.ftcCate2Cd, storeName: refBnm, id: value.bdMgtSn  } })
           })
       })
       /* daum.maps.event.addListener(closeBtnDom, 'click', ()=>{

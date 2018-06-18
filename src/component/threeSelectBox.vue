@@ -1,7 +1,7 @@
 <template>
     <div>
-    <!--분류별검색-->
-    <div class="select">
+      <!--분류별검색-->
+      <div class="select">
 
         <!--대분류-->
         <div class="select-box">
@@ -27,7 +27,7 @@
             <option>창업자금</option>
             <option>전체보기</option>
             <option :value="{min:1, max:50000}">5천만원 미만</option>
-            <option :value="{min:1, max:100000}">1억원미만</option>
+            <option :value="{min:50000, max:100000}">5천만원~1억원</option>
             <option :value="{min:100000, max:150000}">1억~1.5억원</option>
             <option :value="{min:150000, max:200000}">1.5~2억원</option>
             <option :value="{min:200000, max:250000}">2~2.5억원</option>
@@ -36,9 +36,9 @@
             </select>
         </div>
         <!--//창업 자금  -->
-        </div>
-        <!--//분류별검색-->
-        <p class="sectxt">※ 매장 임대료 제외</p>
+      </div>
+      <!--//분류별검색-->
+      <p class="sectxt">※ 매장 임대료 제외</p>
 
     </div>
 </template>

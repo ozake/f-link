@@ -72,7 +72,7 @@
 				<!--건물 내 업체 현황-->
 
 				<div class="binfo1">
-				<h4>건물 내 업체 현황</h4>
+				<h4>건물 내 프랜차이즈 업체 현황</h4>
 					<div class="binfoWrap">
 						<div v-for="item in buildIn" class="binfoItem">
 							<span>{{item.refNm}} {{item.refBnm}}</span><span>{{item.tel}}</span>
@@ -149,8 +149,8 @@
 					  </tr>
 					  <tr>
 						<th rowspan="2" align="center">배후지 영역</th>
-						<td height="30" align="center">지하철역 수</td>
-						<td height="30" align="center">{{ basedInfo.subCnt}}개</td>
+						<td height="30" align="center">지하철역 입구 수</td>
+						<td height="30" align="center">{{basedInfo.subCnt}}개</td>
 					  </tr>
 					  <tr>
 						<td height="30" align="center">버스정류장 수</td>
@@ -169,7 +169,7 @@
 						<div class="lindGraphContainer">
 							<chart-line :labels="salesChartLabels" :datasets="salesChartDatasets" :options="salesChartOption"></chart-line>
 						      <!--그래프 없을경우 -->
-						      <!-- <p class="nograph">해당업종 정보가 5건 이하로 그래프를 제공하지 않습니다.</p> -->
+						      <!-- <p v-if="tpindSlngFlag" class="nograph">해당업종 정보가 5건 이하로 그래프를 제공하지 않습니다.</p> -->
 							  <!--//그래프 없을경우 -->
 						</div>
 						<!--//그래프영역 -->
@@ -294,7 +294,7 @@ export default {
 					}]
 				}
 			},
-			salesChartLabels : ['12','1',	'2', '3', '4', '5', '6', '7',	'8', '9',	'10',	'11',	'12'],
+			salesChartLabels : ['2017.02','2017.03',	'2017.04', '2017.05', '2017.06', '2017.07', '2017.08', '2017.09',	'2017.10', '2017.11',	'2017.12',	'2018.01',	'2018.02'],
 			salesChartDatasets : [],
 			salesChartOption : {
 				tooltips: {
@@ -347,7 +347,8 @@ export default {
       ageText: '',
 			catStoreList: [],
 			catStoreListNum: 0,
-			sectorName: ''
+			sectorName: '',
+			tpindSlngFlag: false
     }
 	},
 	/* computed: {
@@ -578,6 +579,10 @@ export default {
 					let tpindSlngPanalAvg = JSON.parse(data.tpindSlngPanalAvg)
 					let mktPerd = Number(data.mktPerd)
 					let mktPerdAvg = Number(data.mktPerdAvg)
+					/* let tpindSlngFlag = tpindSlngPanal.every((item, index, array)=>{
+						return !!~item.search(null)
+					}) */
+					//this.tpindSlngFlag = tpindSlngFlag
 					this.salesChartDatasets = [
 						{
 							label : '배후지',
@@ -1018,13 +1023,16 @@ export default {
 	background-color: rgba(133, 172, 85, 0.911);
 }
 .ageBlock:nth-child(4) {
-	background-color: rgba(91, 117, 59, 0.911);
+	background-color: rgba(102, 131, 75, 0.911);
 }
 .ageBlock:nth-child(5) {
-	background-color: rgba(79, 102, 52, 0.911);
+	background-color: rgba(91, 119, 59, 0.911);
 }
 .ageBlock:nth-child(6) {
-	background-color: rgba(52, 68, 33, 0.911);
+	background-color: rgba(64, 83, 41, 0.911);
+}
+.ageBlock:nth-child(7) {
+	background-color: rgba(29, 37, 18, 0.911);
 }
 .lindGraphContainer {
 	width:1003px;

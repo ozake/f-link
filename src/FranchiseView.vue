@@ -1,6 +1,6 @@
 <template>
   <div id="content">
-    <SubHeaderSelect ></SubHeaderSelect>
+    <SubHeaderSelect></SubHeaderSelect>
     <!--프랜차이즈 현황 뷰-->
     <div class="frlist">
 
@@ -27,6 +27,19 @@
             <dd>{{this.displayItem.url}}</dd>
             <p>※ 본 서비스는 공정거래위원회 ‘가맹사업거래 정보공개서’에 기초한 정보입니다.</p>
           </dl>
+
+          <!--버튼추가0611-->
+          <div class="frbtn">
+            <button type="button" @click="consultSubmit">착한 컨설팅 신청</button>
+            <button type="button" @click="alertMethod('준비중입니다.')">가맹본사 상담받기</button>
+          </div>
+          <!--버튼추가0611-->
+          <form action="http://www.f-link.co.kr/index.php?TM=C&MM=4" method="post" ref="consultFrm">
+            <input type="hidden" name="brand" :value="displayItem.regnumber">
+				    <input type="hidden" name="category1" :value="displayItem.code1">
+				    <input type="hidden" name="category2" :value="displayItem.code2">
+          </form>
+
 
         </div>
         <!--//프랜차이즈 기본정보-->
@@ -168,6 +181,51 @@
 					</div>
 				<!--//가맹 사업 규모-->
 
+        <!--가맹 재무 상황0611-->
+					<div class="frinfo2">
+						<h5>가맹 재무 상황<span>(단위:만원)</span></h5>
+
+						<!--가맹 재무 상황-->
+						<table width="805"  border="0" cellpadding="0" cellspacing="0" class="infotable1">
+							 <caption>가맹 재무 상황</caption>		
+
+							<colgroup> 
+                <col width="115">
+								<col width="115">
+								<col width="115">
+								<col width="115">
+								<col width="115">
+								<col width="115">
+								<col width="115">  															
+              </colgroup>
+
+							<tr>
+								<th>연도 </th>
+								<th>자산</th>
+								<th>부채</th>
+								<th>자본 </th>
+								<th>매출액 </th>
+								<th>영업이익</th>
+								<th>단기순이익</th>
+							</tr>			 
+							  
+							<tr v-for="fdata in finenceYearData">
+								<td>{{fdata.year}} </td>
+								<td>{{fdata.assets}}</td>
+								<td>{{fdata.debt}}</td>
+								<td>{{fdata.capital}}</td>
+								<td>{{fdata.sales}}</td>
+								<td>{{fdata.profit}}</td>
+								<td>{{fdata.income}}</td>
+							</tr>
+
+						</table>	
+						
+		
+					</div>
+				<!--//가맹 재무 상황-->
+
+
 
       <!--지점안내-->
       <div class="frinfo2">
@@ -175,13 +233,13 @@
         <div class="mapinfo">
 
           <!--분류별검색-->
-          <div class="select">
+          <div class="select-wrap">
 
             <span>지역선택</span>
 
             <!--대분류-->
             <div class="select-box">
-              <select v-bind:class="[this.isIe ? ieClass : '', nonIeClass]" >
+              <select class="box_title" >
                 <option>서울</option>
               </select>
             </div>
@@ -189,7 +247,7 @@
 
             <!--중분류-->
             <div class="select-box">
-              <select v-bind:class="[this.isIe ? ieClass : '', nonIeClass]" v-model="selected">
+              <select class="box_title" v-model="selected">
                 <option>시/군/구</option>
                 <option :value="{code:110, name:'종로구'}">종로구</option>
 				    		<option :value="{code:140, name:'중구'}">중구</option>
@@ -222,7 +280,7 @@
 
             <!--창업 자금  -->
             <div class="select-box">
-              <select v-bind:class="[this.isIe ? ieClass : '', nonIeClass]" v-model="selectedStore">
+              <select class="box_title" v-model="selectedStore">
                 <option>지점</option>
                 <option v-for="(store,idx) in storeList" :value="store.position">{{store.refBnm}}</option>
               </select>
@@ -276,8 +334,19 @@
   </div>
 </template>
 <style scoped>
+.select-wrap {
+  margin: 0 auto;
+  width: 718px;
+  position: relative;
+  z-index: 100000000;
+}
+.select-wrap span {
+    float: left;
+    padding: 5px 29px 0 0;
+    font-size: 17px;
+}
 .select-box {
-  width: 157px;
+  width: 186px;
   height: 40px;
   float: left;
   margin-right: 30px;
@@ -294,7 +363,7 @@
 }
 
 .box_title {
-  width: 157px;
+  width: 150px;
   height: 40px;
   background: transparent;
   display: block;
@@ -306,6 +375,9 @@
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
+}
+.box_title::-ms-expand {
+   display: none;            /* 화살표 없애기 for IE10, 11*/
 }
 .box_title_ie {
   width: 175px;
@@ -353,7 +425,8 @@ export default {
       selected: "시/군/구",
       selectedStore: "지점",
       brandMemo: false,
-      categoryCode: ''
+      categoryCode: '',
+      finenceYearData: []
     };
   },
   computed: {
@@ -372,10 +445,13 @@ export default {
     }
     let ap1 = this.getFranchiseView(this.$route.params.id);
     let ap2 = this.getFranchiseYearData(this.$route.params.id);
-    Promise.all([ap1, ap2]).then(result => {
+    let ap3 = this.getFinenceYearData(this.$route.params.id);
+    Promise.all([ap1, ap2, ap3]).then(result => {
       //console.log(result)
       let data1 = result[0];
       let data2 = result[1];
+      let data3 = result[2];
+      console.log(data3)
       let tmpArray = [];
       if(typeof data1 === 'string'){
         /* data = data.replace(/\r/g, "")
@@ -413,6 +489,8 @@ export default {
         tmpArray.push(v);
       }
       this.yearData = tmpArray;
+
+      this.finenceYearData = data3
 
       /* this.addressTogeocode(data1[0].address).then((coords)=>{
         console.log(coords)
@@ -570,6 +648,22 @@ export default {
         //console.log(data)
         return data;
       }
+    },
+    async getFinenceYearData(frnchiseCode) {
+      let result = await this.apiModel.getFinanceYearData(frnchiseCode);
+      let data = null;
+      if (result.status === 200) {
+        data = result.data;
+        for (const value of data) {  
+          value.assets = this.numberFormating(value.assets)     
+          value.capital = this.numberFormating(value.capital)
+          value.debt = this.numberFormating(value.debt)
+          value.sales = this.numberFormating(value.sales)
+          value.profit = this.numberFormating(value.profit)
+          value.income = this.numberFormating(value.income)
+        }
+      }
+      return data;
     },
     numberFormating(num) {
       num = num.slice(0, -1);
@@ -775,7 +869,18 @@ export default {
         }
       }
       return formatNum;
-    }
+    },
+    consultSubmit() {
+      if(sessionStorage.getItem('ID')) {
+        this.$refs.consultFrm.submit()
+      }else {
+        alert('로그인후 이용해주세요.')
+        location.href="http://www.f-link.co.kr/index.php?TM=M&MM=1"
+      }
+    },
+    alertMethod(val){
+			alert(val)
+		},
   }
 };
 </script>
