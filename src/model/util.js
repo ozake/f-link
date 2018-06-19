@@ -15,3 +15,38 @@ import proj4 from 'proj4';
 
     return convertRes
   }
+
+  /**
+   * 전화번호 문자열을 3자리로 전화번호 타입으로 변환
+   * @param {String} num 포맷팅할 번호 문자열
+   * @param {Number} type 0이면 중간번호 별표 표시 
+   * @returns {String} 변환된 전화번호 문자열
+   */
+  export function phoneFomatter(num, type) {
+    let formatNum = "";
+
+    if (num.length == 11) {
+      if (type == 0) {
+        formatNum = num.replace(/(\d{3})(\d{4})(\d{4})/, "$1-****-$3");
+      } else {
+        formatNum = num.replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3");
+      }
+    } else if (num.length == 8) {
+      formatNum = num.replace(/(\d{4})(\d{4})/, "$1-$2");
+    } else {
+      if (num.indexOf("02") == 0) {
+        if (type == 0) {
+          formatNum = num.replace(/(\d{2})(\d{4})(\d{4})/, "$1-****-$3");
+        } else {
+          formatNum = num.replace(/(\d{2})(\d{4})(\d{4})/, "$1-$2-$3");
+        }
+      } else {
+        if (type == 0) {
+          formatNum = num.replace(/(\d{3})(\d{3})(\d{4})/, "$1-***-$3");
+        } else {
+          formatNum = num.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3");
+        }
+      }
+    }
+    return formatNum;
+  }

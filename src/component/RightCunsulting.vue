@@ -76,7 +76,7 @@
 
 		<!--버튼-->
 		<button type="button" class="btn_con" @click="cunsulting()">착한 컨설팅 신청</button>
-		<button type="button" class="btn_con" @click="alertMethod('오픈준비중입니다.')">가맹본사 상담받기</button>
+		<button type="button" class="btn_con" @click="alertMethod('준비중입니다.')">가맹본사 상담받기</button>
 
 	</div>
 	<!--//착한 컨설팅-->
@@ -131,11 +131,13 @@
 </style>
 
 <script>
+import ApiModel from '../model/apiModel.js'
 export default {
   name: 'RightCunsulting',
 	data(){
 		return {
-			isIe: false
+			isIe: false,
+			model: new ApiModel(this.$http)
 		}
 	},
 	props: {
@@ -172,6 +174,38 @@ export default {
 			}else{
 				if(checked.length === 0){
 				alert('브랜드를 선택해주세요')
+				}else {
+					let form = this.$refs.form
+					if(form.elements['name'].value === ''){
+						alert('이름을 입력해주세요')
+					}else if(form.elements['hp1'].value === '') {
+						alert('잔화번호 앞자리를 입력해주세요')
+					}
+					else if(form.elements['hp2'].value === '') {
+						alert('잔화번호를 중간자리를 입력해주세요.')
+					}
+					else if(form.elements['hp3'].value === '') {
+						alert('잔화번호를 뒷자리를 입력해주세요.')
+					}
+					else {
+						this.$EventBus.$emit('submitOnOff')
+					}
+				}
+			}
+			
+			
+			//if(form.)
+			//this.$EventBus.$emit('submitOnOff')
+		},
+		counsltingSubmit(){
+			let form = this.$refs.form
+			form.submit()
+		},
+		emailSend() {
+			let checked = this.checked
+			
+			if(this.checked.length === 0){
+				alert('브랜드를 선택해주세요')
 			}else {
 				let form = this.$refs.form
 				if(form.elements['name'].value === ''){
@@ -186,19 +220,47 @@ export default {
 					alert('잔화번호를 뒷자리를 입력해주세요.')
 				}
 				else {
-					this.$EventBus.$emit('submitOnOff')
+					
+					let data = this.checked
+					let name = form.elements['name'].value
+					let hp1 = form.elements['hp1'].value
+					let hp2 = form.elements['hp2'].value
+					let hp3 = form.elements['hp3'].value
+					let age = form.elements['age'].value
+					let gender = form.elements['gender'].value
+					let capital = form.elements['captial'].value
+					let emailArr = []
+					let brandArr = []
+					for (const value of data) {
+						if(value.email){
+							emailArr.push(value.email)
+							brandArr.push(value.brand)
+						}
+					}
+					if(emailArr.length !== 0){
+						let sendObject = {
+							'name' : name,
+							'hp1' : hp1,
+							'hp2' : hp2,
+							'hp3' : hp3,
+							'age' : age,
+							'gender' : gender,
+							'captial' : capital,
+							'brand' : brandArr,
+							'email' : emailArr
+						}
+						this.model.sendEmail(sendObject).then((result)=>{
+							if(result.status === 200){
+								console.log(result)
+							}
+						})
+					}
+					
+
 				}
 			}
-			}
-			
-			
-			//if(form.)
-			//this.$EventBus.$emit('submitOnOff')
-		},
-		counsltingSubmit(){
-			let form = this.$refs.form
-			form.submit()
 		}
+
 	}
 }
 </script>

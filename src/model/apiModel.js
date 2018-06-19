@@ -446,7 +446,7 @@ export default class ApiModel {
 
     /**
      *  매물 번호를 통한 매물 리스트  조회 메소드
-     * @param {String} code 쉼표로 구분된 매물 번호 스트링
+     * @param {String} memulSeq 쉼표로 구분된 매물 번호 스트링
      * @returns {promise}
      */
     getEstateListToSeq(memulSeq){
@@ -455,7 +455,28 @@ export default class ApiModel {
       this.config.data = `memulSeq=${memulSeq}`
       return this.http(this.config)
     }
+    
+    /**
+     *  브랜드 번호를 통한 브랜드 담당자 조회 메소드
+     * @param {String} franchiseNo 쉼표로 구분된 브랜드 번호 스트링
+     * @returns {promise}
+     */
+    getEstateListToSeq(franchiseNo){
+      this.apiNo = '1005'
+      this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
+      this.config.data = `franchiseNo=${franchiseNo}`
+      return this.http(this.config)
+    }
 
+    /**
+     * 이메일 전송을 위한 메소드
+     * @param {Object} dataObject 
+     */
+    sendEmail(dataObject) {
+      this.config.url = 'http://220.73.139.114/f-link/mail.php'
+      this.config.data = dataObject
+      return this.http(this.config)
+    }
 
 
 

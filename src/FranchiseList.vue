@@ -32,7 +32,7 @@
             <dd>{{item.fcount}}개</dd>
           </dl>
           </router-link>
-          <input type="checkbox" :id="index" class="check_info" v-model="checked" :value="{regnumber: item.regnumber, brand: item.brand}" />
+          <input type="checkbox" :id="index" class="check_info" v-model="checked" :value="{regnumber: item.regnumber, brand: item.brand, email: item.email }" />
           <label :for="index" class="check_info_label">추가 정보 요청</label>     
           <!-- <a href="#"><button class="btn_info">추가 정보 요청 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </button></a> -->
         </ul>

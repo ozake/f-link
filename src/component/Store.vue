@@ -51,6 +51,7 @@ import RecommBld from "./RecommBld.vue"
 import proj4 from "proj4"
 import ApiModel from "../model/apiModel.js"
 import { Queue } from '../model/colections'
+import { phoneFomatter } from '../model/util.js'
 import { Base64 } from 'js-base64'
 export default {
   name: 'store',
@@ -640,7 +641,7 @@ export default {
           marker = this.setMaker(x,y,value)
           overlay = this.setOverlay(marker,value)
 
-          this.overlayEventListener(marker,overlay,value.bdMgtSn)
+          this.overlayEventListener(marker,overlay,value)
 
           this.queue.setQueue(marker)
         }
@@ -734,7 +735,14 @@ export default {
       let url = `http://www.f-link.co.kr/storeView/${this.ftcCate2Cd}/${refBnm}/${value.bdMgtSn}`
       if(location.hostname === "110.13.170.148"){
 			  url = `http://110.13.170.148:8080/storeView/${this.ftcCate2Cd}/${refBnm}/${value.bdMgtSn}`
-		  }
+      }
+      let tel = value.tel
+      if (tel.slice(3, 4) === "2") {
+        tel = tel.slice(2)
+      }else{
+        tel = tel.slice(1)
+      }
+      tel = phoneFomatter(tel)
       //console.log(refBnm.length)
       /* if(refBnm.length > 15){
         refBnm = refBnm.slice(0,15)
@@ -749,11 +757,11 @@ export default {
               <img src="${img}" alt="${value.refBnm}" class="logo">
               <div class="branch_right_box">
                 <div class="branch_right_text">
-                  <p>전화번호 : ${value.tel}</p>
+                  <p>전화번호 : ${tel}</p>
                   <p>주소 : ${value.addr}</p>
                 </div>
-                <!--<a href='${url}'><button type='button'>자세히 보기</button></a>-->
-                <button type='button' id='infoBtn${value.bdMgtSn}'>자세히 보기</button>
+                <a href='${url}' target='_blank'><button type='button'>자세히 보기</button></a>
+                <!--<button type='button' id='infoBtn${value.bdMgtSn}'>자세히 보기</button>-->
               </div>
             </div>
 					</div>
@@ -776,12 +784,12 @@ export default {
             closeBtnDom.addEventListener('click',()=>{
             overlay.setMap(null)
           })
-          let infoBtn = document.getElementById('infoBtn'+value.bdMgtSn)
+          /* let infoBtn = document.getElementById('infoBtn'+value.bdMgtSn)
           infoBtn.addEventListener('click',()=>{
             let refBnm = value.refBnm
             refBnm = Base64.encode(refBnm)
             this.$router.push({ name: 'store-view', params: {categoryCode: this.ftcCate2Cd, storeName: refBnm, id: value.bdMgtSn  } })
-          })
+          }) */
       })
       /* daum.maps.event.addListener(closeBtnDom, 'click', ()=>{
           overlay.setMap(null);
