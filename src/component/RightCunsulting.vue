@@ -229,10 +229,12 @@ export default {
 					let age = form.elements['age'].value
 					let gender = form.elements['gender'].value
 					let capital = form.elements['capital'].value
-					//let id = ''
-					//let email = ''
-
-					
+					let id = ''
+					let userEmail = ''
+					if(sessionStorage.getItem('ID')){
+						id = sessionStorage.getItem('ID')
+						userEmail = sessionStorage.getItem('EMAIL')
+					}			
 					let emailStr = ''
 					let brandStr = ''
 					let alertBrand = ''
@@ -259,6 +261,8 @@ export default {
 							'age' : age,
 							'gender' : gender,
 							'capital' : capital,
+							'id' : id,
+							'userEmail' : userEmail,
 							'brand' : brandStr,
 							'email' : emailStr
 						}

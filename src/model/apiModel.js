@@ -477,7 +477,7 @@ export default class ApiModel {
     consultHeadOffice(dataObject) {
       this.config.url = 'http://www.f-link.co.kr/consult/consultMailingProc.php'
       this.config.data = `name=${dataObject.name}&hp1=${dataObject.hp1}&hp2=${dataObject.hp2}
-      &hp3=${dataObject.hp3}&age=${dataObject.age}&gender=${dataObject.gender}&capital=${dataObject.capital}`
+      &hp3=${dataObject.hp3}&age=${dataObject.age}&gender=${dataObject.gender}&capital=${dataObject.capital}&userEmail=${dataObject.userEmail}&id=${dataObject.id}`
       return this.http(this.config)
     }
 
