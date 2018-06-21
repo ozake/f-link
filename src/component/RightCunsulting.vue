@@ -76,7 +76,7 @@
 
 		<!--버튼-->
 		<button type="button" class="btn_con" @click="cunsulting()">착한 컨설팅 신청</button>
-		<button type="button" class="btn_con" @click="alertMethod('준비중입니다.')">가맹본사 상담받기</button>
+		<button type="button" class="btn_con" @click="emailSend">가맹본사 상담받기</button>
 
 	</div>
 	<!--//착한 컨설팅-->
@@ -203,11 +203,12 @@ export default {
 		},
 		emailSend() {
 			let checked = this.checked
+			let form = this.$refs.form
 			
 			if(this.checked.length === 0){
 				alert('브랜드를 선택해주세요')
 			}else {
-				let form = this.$refs.form
+				
 				if(form.elements['name'].value === ''){
 					alert('이름을 입력해주세요')
 				}else if(form.elements['hp1'].value === '') {
@@ -219,25 +220,37 @@ export default {
 				else if(form.elements['hp3'].value === '') {
 					alert('잔화번호를 뒷자리를 입력해주세요.')
 				}
-				else {
-					
-					let data = this.checked
+				else {	
+					let data = checked
 					let name = form.elements['name'].value
 					let hp1 = form.elements['hp1'].value
 					let hp2 = form.elements['hp2'].value
 					let hp3 = form.elements['hp3'].value
 					let age = form.elements['age'].value
 					let gender = form.elements['gender'].value
-					let capital = form.elements['captial'].value
-					let emailArr = []
-					let brandArr = []
+					let capital = form.elements['capital'].value
+					//let id = ''
+					//let email = ''
+
+					
+					let emailStr = ''
+					let brandStr = ''
+					let alertBrand = ''
 					for (const value of data) {
+						alertBrand += `${value.brand},`
 						if(value.email){
-							emailArr.push(value.email)
-							brandArr.push(value.brand)
+							//emailArr.push(value.email)
+							emailStr += `${value.email},`
+							brandStr += `${value.brand},`
+							//brandArr.push(value.brand)
 						}
 					}
-					if(emailArr.length !== 0){
+					emailStr = emailStr.slice(0,-1)
+					brandStr = brandStr.slice(0,-1)
+					alertBrand = alertBrand.slice(0,-1)
+					
+
+					if(emailStr !== ''){
 						let sendObject = {
 							'name' : name,
 							'hp1' : hp1,
@@ -245,15 +258,22 @@ export default {
 							'hp3' : hp3,
 							'age' : age,
 							'gender' : gender,
-							'captial' : capital,
-							'brand' : brandArr,
-							'email' : emailArr
+							'capital' : capital,
+							'brand' : brandStr,
+							'email' : emailStr
 						}
 						this.model.sendEmail(sendObject).then((result)=>{
 							if(result.status === 200){
-								console.log(result)
+								alert(`[${alertBrand}] 담당자에게 상담을 의뢰했습니다. 3 영업일 이내에 전화드리겠습니다.`)
+								this.model.consultHeadOffice(sendObject).then((result)=>{
+									if(result.status === 200){
+										//console.log(result)
+									}
+								})
 							}
 						})
+					}else{
+						alert(`[${alertBrand}] 담당자에게 상담을 의뢰했습니다. 3 영업일 이내에 전화드리겠습니다.`)
 					}
 					
 

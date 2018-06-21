@@ -58,13 +58,13 @@ export default {
     let ml = parseInt(cw - sw) / 4;		//가운데 띄우기위한 창의 x위치
     let mt = parseInt(ch - sh) / 10;		//가운데 띄우기위한 창의 y위치
     document.getElementById("layerPop").style.display = 'inline';
-    document.getElementById('layerPop').style.left = ml+'px';
-    document.getElementById('layerPop').style.top = mt+'px';
+    document.getElementById('layerPop').style.left = '100px';
+    document.getElementById('layerPop').style.top = '100px';
     document.getElementById('layerIframe').style.width = sw+'px';
     document.getElementById('layerIframe').style.height = sh+'px';
     document.getElementById('layerIframe').src = 'http://www.f-link.co.kr/popup/layerPopup.php';
     window.addEventListener('message', (e) => {
-      console.log(e.data); // { hello: 'parent' }
+      //console.log(e.data); // { hello: 'parent' }
       if(e.data === 'popupNone'){
         this.$refs.layerPop.style = 'display:none'
         this.$refs.layerPopIframe.style = 'display:none'

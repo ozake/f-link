@@ -455,26 +455,29 @@ export default class ApiModel {
       this.config.data = `memulSeq=${memulSeq}`
       return this.http(this.config)
     }
-    
+
     /**
-     *  브랜드 번호를 통한 브랜드 담당자 조회 메소드
-     * @param {String} franchiseNo 쉼표로 구분된 브랜드 번호 스트링
-     * @returns {promise}
+     * 가맹본사 상담 이메일 전송을 위한 메소드
+     * @param {Object} dataObject
+     * @returns {promise} 
      */
-    getEstateListToSeq(franchiseNo){
-      this.apiNo = '1005'
-      this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
-      this.config.data = `franchiseNo=${franchiseNo}`
+    sendEmail(dataObject) {
+      this.config.url = 'http://220.73.139.114/f-link/mail.php'
+      this.config.data = `name=${dataObject.name}&hp1=${dataObject.hp1}&hp2=${dataObject.hp2}
+      &hp3=${dataObject.hp3}&age=${dataObject.age}&gender=${dataObject.gender}&capital=${dataObject.capital}
+      &brand=${dataObject.brand}&email=${dataObject.email}`
       return this.http(this.config)
     }
 
     /**
-     * 이메일 전송을 위한 메소드
-     * @param {Object} dataObject 
+     * 가맹본사 상담자 정보 저장 메소드
+     * @param {Object} dataObject
+     * @returns {promise} 
      */
-    sendEmail(dataObject) {
-      this.config.url = 'http://220.73.139.114/f-link/mail.php'
-      this.config.data = dataObject
+    consultHeadOffice(dataObject) {
+      this.config.url = 'http://www.f-link.co.kr/consult/consultMailingProc.php'
+      this.config.data = `name=${dataObject.name}&hp1=${dataObject.hp1}&hp2=${dataObject.hp2}
+      &hp3=${dataObject.hp3}&age=${dataObject.age}&gender=${dataObject.gender}&capital=${dataObject.capital}`
       return this.http(this.config)
     }
 

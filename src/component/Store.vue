@@ -496,7 +496,7 @@ export default {
       this.apiModel.getOP501(code, ftcCate2Cd, rows, 1, emdCd).then((result)=>{
         if(result.status === 200){
           console.log('501응답')
-          //console.log(result)
+          console.log(result)
           let data = result.data.data.rows
           let brandCkArr = this.franchiseNo
           //console.log("브랜드 체크 갯수:"+brandCkArr.length)
@@ -1215,7 +1215,7 @@ export default {
     estateClusterList(seq){
       this.apiModel.getEstateListToSeq(seq).then((result)=>{
         if(result.status === 200){
-          //console.log(result.data)
+          console.log(result)
           let data = result.data
           let paging = data.shift()
           for (const value of data) {
