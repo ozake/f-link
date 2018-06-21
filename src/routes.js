@@ -1,18 +1,16 @@
-import Store from './component/Store.vue'
-import StoreView from './StoreView.vue'
-import Main from './Main.vue'
-//import Main2 from './Main.1.vue'
-import Franchise from './Franchise.vue'
-import FranchiseList from './FranchiseList.vue'
-import FranchiseView from './FranchiseView.vue'
-import ThemeBest from './ThemeBest.vue'
-import SnsBest from './SnsBest.vue'
-import sCapitalBest from './sCapitalBest.vue'
-import SteadyBest from './SteadyBest.vue'
-import GrowthBest from './GrowthBest.vue'
-import SalesView from './SalesView.vue'
-import EstateList from './eatateListC.vue'
-//import CounterPage from 'components/CounterPage'
+const Store = () => import('./component/Store.vue')
+const StoreView = () => import('./StoreView.vue')
+const Main = () => import('./Main.vue')
+const Franchise = () => import('./Franchise.vue')
+const FranchiseList = () => import('./FranchiseList.vue')
+const FranchiseView = () => import('./FranchiseView.vue')
+const ThemeBest = () => import('./ThemeBest.vue')
+const SnsBest = () => import('./SnsBest.vue')
+const sCapitalBest = () => import('./sCapitalBest.vue')
+const SteadyBest = () => import('./SteadyBest.vue')
+const GrowthBest = () => import('./GrowthBest.vue')
+const SalesView = () => import('./SalesView.vue')
+const EstateList = () => import('./eatateListC.vue')
 
 export default [
   {
