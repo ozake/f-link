@@ -1,5 +1,9 @@
 <template>
   <div id="content">
+    <!-- 검정배경-->
+    <div class="black" v-if="consultLayer" v-on:click="consultOnOff"></div>
+    <!-- //검정배경-->
+    <layer-cst-hoffice v-if="consultLayer"></layer-cst-hoffice>
     <SubHeaderSelect></SubHeaderSelect>
     <!--프랜차이즈 현황 뷰-->
     <div class="frlist">
@@ -31,7 +35,7 @@
           <!--버튼추가0611-->
           <div class="frbtn">
             <button type="button" @click="consultSubmit">착한 컨설팅 신청</button>
-            <button type="button" @click="alertMethod('준비중입니다.')">가맹본사 상담받기</button>
+            <button type="button" @click="consultOnOff">가맹본사 상담받기</button>
           </div>
           <!--버튼추가0611-->
           <form action="http://www.f-link.co.kr/index.php?TM=C&MM=4" method="post" ref="consultFrm">
@@ -397,6 +401,7 @@
 <script>
 import SubHeaderSelect from "./component/SubHeaderSelect.vue";
 import RightSales from "./component/RightSales.vue";
+import LayerCstHoffice from "./component/layerCstHoffice.vue"
 import ApiModel from "./model/apiModel.js";
 import { convertGeo } from "./model/util.js";
 import { Queue } from "./model/colections";
@@ -406,7 +411,8 @@ export default {
   name: "FranchiseView",
   components: {
     SubHeaderSelect,
-    RightSales
+    RightSales,
+    LayerCstHoffice
   },
   data() {
     return {
@@ -426,7 +432,8 @@ export default {
       selectedStore: "지점",
       brandMemo: false,
       categoryCode: '',
-      finenceYearData: []
+      finenceYearData: [],
+      consultLayer: false
     };
   },
   computed: {
@@ -497,7 +504,7 @@ export default {
         //this.setMapCenter(coords)
       }) */
     });
-
+    this.$EventBus.$on("consultOff", consultOnOff());
     /* this.getFranchiseView(this.$route.params.id).then((result)=>{
       console.log(result[0])
       this.displayItem = result[0]
@@ -880,7 +887,14 @@ export default {
     },
     alertMethod(val){
 			alert(val)
-		},
+    },
+    consultOnOff() {
+      if(!this.consultLayer){
+        this.consultLayer = true
+      } else{
+        this.consultLayer = false
+      }
+    }
   }
 };
 </script>

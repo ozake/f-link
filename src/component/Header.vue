@@ -2,7 +2,7 @@
   <!-- 헤더 -->
 <div id="header">
   <!-- 로고,로그인 -->
-  <h1><router-link to="/"><img src="http://img.mk.co.kr/2018/franchise/fc_logo.jpg" alt="franchise link"></router-link></h1>
+  <h1><router-link to="/"><img src="http://img.mk.co.kr/2018/franchise/fc_logo1.jpg" alt="franchise link"></router-link></h1>
   <p class="login">
     <a v-if="Nauth" href="http://www.f-link.co.kr/index.php?TM=M&MM=1">로그인</a><template v-else><span class='id'>{{sessionstroage.ID}}</span>&nbsp; <a v-if="isMkUser" href="http://www.f-link.co.kr/index.php?TM=M&MM=6">비밀번호 변경</a></template><span class="line">|</span>
     <template v-if="Nauth"><a href="http://www.f-link.co.kr/index.php?TM=M&MM=2">회원가입</a><span class="line">|</span><a href="http://www.f-link.co.kr/index.php?TM=M&MM=3">아이디·비밀번호찾기</a></template>
@@ -13,14 +13,23 @@
   <!-- GNB -->
   <div class="gnb">
     <ul>
-      <li v-bind:class="[franchiseActive ? activeClass : inActiveClass]"><router-link :to="{ name: 'franchise-default' }">프랜차이즈 현황</router-link></li>
-      <li v-bind:class="[themeBestActive ? activeClass : inActiveClass]"><router-link :to="{ name: 'theme-best' }">테마별 베스트</router-link> </li>
-      <li v-bind:class="[storeActive ? activeClass : inActiveClass]"><router-link :to="{ name: 'store-page' }">매장&매물</router-link> </li>
-      <li class="off"><a href="http://www.f-link.co.kr/index.php?TM=C">착한 컨설팅</a></li>
-      <li class="off"><a href="http://www.f-link.co.kr/index.php?TM=N&MM=1&SC=61000013">뉴스ㆍ이벤트</a></li>
+      <li v-bind:class="[storeActive ? activeClass : inActiveClass]" @mouseover="submenuHover('out')"><router-link :to="{ name: 'store-page' }">매장&매물</router-link> </li>
+      <li v-bind:class="[franchiseActive ? activeClass : inActiveClass]" @mouseover="submenuHover('over')" ><router-link :to="{ name: 'franchise-default' }">브랜드</router-link></li>
+      <li class="off" @mouseover="submenuHover('out')"><a href="http://www.f-link.co.kr/index.php?TM=C">착한 컨설팅</a></li>
+      <li class="off" @mouseover="submenuHover('out')"><a href="http://www.f-link.co.kr/index.php?TM=N&MM=1&SC=61000013">뉴스ㆍ이벤트</a></li>
     </ul>
   </div>
   <!-- //GNB -->
+
+  <!-- Submenu -->
+  <div class="submenu" v-show="submenuFlag" @mouseout="submenuHover('out')">
+    <ul @mouseover="submenuHover('over')">					
+      <li v-bind:class="[franchiseActive ? activeClass : inActiveClass]"><router-link :to="{ name: 'franchise-default' }">전체 브랜드 검색</router-link></li>
+      <li v-bind:class="[themeBestActive ? activeClass : inActiveClass]"><router-link :to="{ name: 'theme-best' }">테마별 베스트 브랜드 </router-link></li>
+    </ul>
+  </div>
+  <!-- //Submenu -->
+
 </div>
 <!-- //헤더 -->
 
@@ -44,7 +53,8 @@ export default {
       isMkUser : false,
       activeClass : 'on',
       inActiveClass : 'off',
-      sessionstroage : ''
+      sessionstroage : '',
+      submenuFlag : false
     }
   },
   created() {
@@ -108,6 +118,15 @@ export default {
       else{
 
       }
+    },
+    submenuHover(val) {
+      if(val === 'over'){
+        this.submenuFlag = true
+      }else if(val === 'out'){
+        this.submenuFlag = false
+      }
+      
+    
     }
   }
 }

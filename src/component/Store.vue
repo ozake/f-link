@@ -101,14 +101,14 @@ export default {
   },
   computed: {
     styles: function() {
-      let height = window.innerHeight - 143
+      let height = window.innerHeight - 77
 
       return {
         height: height + 'px'
       }
     },
     estateHeight: function() {
-      let height = window.innerHeight - 555
+      let height = window.innerHeight - 429
       return {
         height: height + 'px'
       }
@@ -198,10 +198,8 @@ export default {
 
       this.$EventBus.$on('recommOnOff', this.recommBldOnOff)
 
-      if(this.$route.params.categoryCode && this.$route.params.addr){
-        this.addressTogeocode(this.$route.params.addr).then(()=>{
-          this.ftcCate2Cd = this.$route.params.categoryCode
-        })
+      if(this.$route.params.addr){
+        this.addressTogeocode(this.$route.params.addr)
       }
 
       this.$EventBus.$on('addrSearch', (val)=>{

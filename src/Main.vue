@@ -3,7 +3,7 @@
   <div id="content">
     <!-- 메인이미지 영역-->
     <div class="mcontent" >
-      <h2>더 나은 내일을 만들어 줄 <br><span>나의 프랜차이즈를 찾아보세요</span></h2>
+      <h2>더 나은 내일을 만들어 줄 <br><span>올바른 창업의 길을 만나보세요</span></h2>
       <MainSearch></MainSearch>
     </div>
     <!-- //메인이미지 영역-->

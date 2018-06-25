@@ -161,10 +161,10 @@ export default {
   }, */
   created(){
 		this.getSector()
-		if(this.$route.params.categoryCode){
+		/* if(this.$route.params.categoryCode){
 			let categoryCode = this.$route.params.categoryCode
       this.selected = categoryCode.substr(0,2)
-		}
+		} */
 		
     /* const agent = navigator.userAgent.toLowerCase()
     if ( (navigator.appName == 'Netscape' && agent.indexOf('trident') != -1) || (agent.indexOf("msie") != -1)) {
@@ -297,11 +297,11 @@ export default {
 			  if(result.status === 200){
 				  let data = result.data
 					this.sector = data.sector
-					if(this.$route.params.categoryCode){
+					/* if(this.$route.params.categoryCode){
 						let categoryCode = this.$route.params.categoryCode
             this.getSectorM(categoryCode.substr(0,2))
             this.sectorSelected = categoryCode
-					}
+					} */
 					
 			  }
 		  })

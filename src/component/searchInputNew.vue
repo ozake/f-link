@@ -8,7 +8,7 @@
             <input v-if="fActive" name="s_keyword" title="검색어 입력" type="text" placeholder="프랜차이즈명 or 회사명으로 검색" 
             @input="keyword" v-bind:value="searchTxt" @keydown.up="keyUp" @keydown.down="keyDown" 
             @keyup.enter="keyEnter" @keyup.space="keyEnter" @blur="blur" @focus="focus" ref="search" autocomplete="off">
-            <input v-if="storeActive" name="s_keyword" title="검색어 입력" type="text" placeholder="지역 + 업종으로 검색 (지역을 선택한 후, 업종을 입력하세요!)" 
+            <input v-if="storeActive" name="s_keyword" title="검색어 입력" type="text" placeholder="지역(구,동)을 입력해주세요." 
             @input="keyword" v-bind:value="searchTxt" @keydown.up="keyUp" @keydown.down="keyDown" 
             @keyup.enter="keyEnter" @keyup.space="keyEnter" @blur="blur" @focus="focus" ref="search" autocomplete="off">
             <button type="button" v-on:click="searchResMove"><img src="http://img.mk.co.kr/2018/franchise/msearch.png" alt="검색하기"></button>
@@ -49,6 +49,7 @@ export default {
       T : '',
       searchTxt: '',
       fSelected: {},
+      fSelectedFlag: false,
       searchAreaToggle: false,
       addrSelected: {},
       addrOrgsearchTxt: '',
@@ -74,15 +75,18 @@ export default {
                 }
             }
             else if(this.storeActive){
-                let searchArr = []
+                if(e.target.value !== ''){
+                    this.searchAddr(e.target.value)
+                }
+                /* let searchArr = []
                 searchArr = e.target.value.split( ' ', 2 )
                 this.searchArr = searchArr
                 if(!this.addrSelected && searchArr.length === 2){
                     this.searchTxt = ''
                 }else{
 
-                }
-                if(searchArr.length === 1){
+                } */
+                /* if(searchArr.length === 1){
                     if(this.addrSelectedFlag){
                         if(this.addrSelected.txt !== searchArr[0]){
                             this.addrSelectedFlag = false
@@ -109,7 +113,7 @@ export default {
                         
                     }
                     
-                }
+                } */
                 
                 
             }
@@ -157,17 +161,6 @@ export default {
             if(result.status === 200){
                 //console.log(result)
                 let data = []
-                /* for(let i=0; i<10; i++){
-                    console.log(result.data[i])
-                    let tmpdata ={}
-                    tmpdata.txt = result.data[i].area2
-                    if(result.data[i].area3){
-                        tmpdata.txt = tmpdata.txt + "(" + result.data[i].area3 + ")"
-                    }
-                    tmpdata.no = result.data[i].code
-                    tmpdata.flag = 'addr'
-                    data.push(tmpdata)
-                } */
                 let i=0
                 for (const value of result.data) {
                     let tmpdata ={}
@@ -272,13 +265,19 @@ export default {
         if(this.fActive){
           this.searchTxt = item.txt
           this.fSelected = item
+          this.fSelectedFlag = true
           //location.href = `./franchiseView/${item.no}`
           this.$router.push({ name: 'franchise-view', params: {id:item.no } })
           /* let url = this.$refs.franRes
           url.$el.click() */
         }
         else if(this.storeActive){
-            if(item.flag === 'addr'){
+            this.searchTxt = item.txt
+            this.addrSelected = item
+            this.searchAreaToggle = false
+            this.addrSelectedFlag = true
+            this.$router.push({ name: 'store-search', params: { addr: item.txt } })
+            /* if(item.flag === 'addr'){
                 this.addrOrgsearchTxt = this.searchTxt
                 this.searchTxt = item.txt+' '
                 this.addrSelected = item
@@ -291,11 +290,11 @@ export default {
                 this.sectorSelected = item
                 this.sectorSelectedFlag = true
                 this.searchAreaToggle = false
-                /* if(this.addrSelectedFlag && this.sectorSelectedFlag){
+                if(this.addrSelectedFlag && this.sectorSelectedFlag){
                     location.href = `./store/${item.no}/${this.addrSelected.txt}`
-                } */
+                }
 
-            }
+            } */
         }
         //this.$emit('item-selected', item)
       } 
@@ -311,15 +310,16 @@ export default {
     },
     searchResMove(){
         if(this.fActive){
-
-        }else if(this.storeActive){
-            if(this.sectorSelectedFlag && this.addrSelectedFlag){
-                //location.href = `./store/${this.sectorSelected.no}/${this.addrSelected.txt}`
-                this.$router.push({ name: 'store-search', params: {categoryCode: this.sectorSelected.no, addr: this.addrSelected.txt } })
-                /* let url = this.$refs.storeRes
-                url.$el.click() */
+            if(this.fSelectedFlag){
+                this.$router.push({ name: 'franchise-view', params: {id:this.fSelected.no } })
             }else{
-                alert('지역 + 업종을 서제스트에서 선택해주세요.')
+                alert('프랜차이즈명을 서제스트에서 선택해주세요.')
+            }
+        }else if(this.storeActive){
+            if(this.addrSelectedFlag){
+                this.$router.push({ name: 'store-search', params: { addr: this.addrSelected.txt } })
+            }else{
+                alert('지역을 서제스트에서 선택해주세요.')
             }
         }
         

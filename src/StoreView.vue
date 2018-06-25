@@ -812,7 +812,7 @@ export default {
 
 				console.log(result.data)
 				let data = result.data.data.rows[0]
-				//console.log(data)
+				console.log(data)
 				let direction = data.direction
 				data.direction = this.changeDirectionName(direction)
 				/* let geomJson = data.geomJson

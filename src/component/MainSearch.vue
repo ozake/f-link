@@ -4,8 +4,8 @@
 
       <!-- 메인 탭-->
       <ul class="mtab">
-        <li v-bind:class="[ fActive ? activeClass : inActiveClass ]" v-on:click="tabOnOff('franchise')"><a href="#none" >프랜차이즈 검색</a></li>
         <li v-bind:class="[ storeActive ? activeClass : inActiveClass ]" v-on:click="tabOnOff('store')"><a href="#none" >매장&매물 찾기</a></li>
+        <li v-bind:class="[ fActive ? activeClass : inActiveClass ]" v-on:click="tabOnOff('franchise')"><a href="#none" >프랜차이즈 검색</a></li>     
       </ul>
       <!-- //메인 탭-->
       <SearchInput :fActive="fActive" :storeActive="storeActive"></SearchInput>
@@ -20,8 +20,8 @@ export default {
   components: { SearchInput },
   data(){
     return {
-      fActive: true,
-      storeActive: false,
+      fActive: false,
+      storeActive: true,
       activeClass: 'mtab_on',
       inActiveClass: 'mtab_off'
     }

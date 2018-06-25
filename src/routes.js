@@ -24,7 +24,7 @@ export default [
     component: Store,
     children: [
       {
-        path: ':categoryCode/:addr',
+        path: ':addr',
         name: 'store-search',
         props: true,
         component: Store
