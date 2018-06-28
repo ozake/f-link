@@ -3,7 +3,7 @@
     <!-- 검정배경-->
     <div class="black" v-if="consultLayer" v-on:click="consultOnOff"></div>
     <!-- //검정배경-->
-    <layer-cst-hoffice v-if="consultLayer"></layer-cst-hoffice>
+    <layer-cst-hoffice v-if="consultLayer" :brand="displayItem.brand" :regnumber="displayItem.regnumber" :email="displayItem.email"></layer-cst-hoffice>
     <SubHeaderSelect></SubHeaderSelect>
     <!--프랜차이즈 현황 뷰-->
     <div class="frlist">
@@ -397,6 +397,9 @@
   -webkit-appearance: none;
   -moz-appearance: none;
 }
+.black {
+  z-index: 10000;
+}
 </style>
 <script>
 import SubHeaderSelect from "./component/SubHeaderSelect.vue";
@@ -433,7 +436,8 @@ export default {
       brandMemo: false,
       categoryCode: '',
       finenceYearData: [],
-      consultLayer: false
+      consultLayer: false,
+      submitBrandCk: [this.$route.params.id]
     };
   },
   computed: {
@@ -504,7 +508,7 @@ export default {
         //this.setMapCenter(coords)
       }) */
     });
-    this.$EventBus.$on("consultOff", consultOnOff());
+    this.$EventBus.$on("consultOff", this.consultOnOff)
     /* this.getFranchiseView(this.$route.params.id).then((result)=>{
       console.log(result[0])
       this.displayItem = result[0]
@@ -570,6 +574,7 @@ export default {
 
       console.log("마운티드 종료");
       //this.searchAddrFromCoords(geocoder, map.getCenter(), this.displayCenterInfo)
+
     });
   },
   methods: {
@@ -889,6 +894,7 @@ export default {
 			alert(val)
     },
     consultOnOff() {
+      
       if(!this.consultLayer){
         this.consultLayer = true
       } else{

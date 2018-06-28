@@ -88,6 +88,9 @@
   -webkit-appearance: none;
   -moz-appearance: none;
 }
+#content .lcontent .select {
+  z-index: 0;
+}
 </style>
 <style>
 /* .select-box {

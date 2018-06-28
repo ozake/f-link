@@ -10,8 +10,9 @@
             </ul>
         </div>
     <SubHeaderSelect :isIe="isIe" :categorycode1="categorycode1" :category2="category2" :capital="capital"></SubHeaderSelect>
+    <no-result v-if="noResultFlag"></no-result>
     <!--프랜차이즈 현황 리스트-->
-		<div class="frlist">
+		<div class="frlist" v-else>
 			<div class="frlistbox">
 
         <!-- <CardBox  v-for="(item, index) in listItems" :index="index" :item="item" v-model="checked"></CardBox> -->
@@ -87,6 +88,7 @@ import SubHeaderSelect from "./component/SubHeaderSelect.vue"
 import CardBox from "./component/CardBox.vue"
 import RightCunsulting from "./component/RightCunsulting.vue"
 import Pagination from './component/Pagination.vue'
+import noResult from './component/noResult.vue'
 import ApiModel from "./model/apiModel.js"
 import numeral from "numeral";
 export default {
@@ -95,7 +97,8 @@ export default {
     SubHeaderSelect,
     CardBox,
     RightCunsulting,
-    Pagination
+    Pagination,
+    noResult
   },
   data(){
     return {
@@ -115,7 +118,8 @@ export default {
       routeName : 'franchise-list-page',
       capital : {},
       minprice : 0,
-      maxprice : 0
+      maxprice : 0,
+      noResultFlag: false
     }
   },
   props:{
@@ -174,12 +178,23 @@ export default {
         
         this.franchiseList(this.$route.params.categoryCode, page, this.$route.params.minprice, this.$route.params.maxprice).then((result)=>{
           //this.listItems = this.makeArrayModuler(result,5)
-          this.listItems = result
+          if(result.length !== 0){
+            this.listItems = result
+            this.noResultFlag = false
+          }else{
+            this.noResultFlag = true
+          }
+          
         })
       }else{
         this.franchiseList(this.$route.params.categoryCode, page).then((result)=>{
           //this.listItems = this.makeArrayModuler(result,5)
-          this.listItems = result
+          if(result.length !== 0){
+            this.listItems = result
+            this.noResultFlag = false
+          }else{
+            this.noResultFlag = true
+          }
         })
       }
       //alert(this.$route.params.categoryCode)
@@ -188,9 +203,9 @@ export default {
       let data = null
       //page = Number(page)
       if(categoryname === '' || categoryname === null || categoryname === undefined){
-        console.log("error")
+        //console.log("error")
       }else{
-        console.log(min+' '+max)
+        //console.log(min+' '+max)
         //let model = new ApiModel(this.$http)
         /* model.getFranchiseList(categoryname).then((result)=>{
           //console.log(result)
@@ -203,9 +218,13 @@ export default {
         }) */
         let result = await this.apiModel.getFranchiseList(categoryname,this.pageRows,page,min,max)
         if(result.status === 200){
-            //console.log(result)
+            console.log(result)
             let data = []
             data = result.data
+            if(!data){
+              this.noResultFlag = true
+              return data
+            }
             let paging = data.shift()
             console.log(paging)
             this.totalCount = Number(paging.totalCount)
@@ -271,10 +290,10 @@ export default {
     },
     loginCk(){
       if(sessionStorage.getItem('ID')) {
-        console.log('로그인 됨')
+        //console.log('로그인 됨')
         return true
       }else{
-        console.log('로그인 안됨')
+        //console.log('로그인 안됨')
         return false
       }
       
