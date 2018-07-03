@@ -1,7 +1,7 @@
 <template>
   <!-- 메인이미지 영역-->
   <div class="lcontent">
-    <h2>나에게 적합한 프랜차이즈를 찾아보세요<img src="http://img.mk.co.kr/2018/franchise/search_w.png" alt="검색"></h2>
+    <h2>나에게 적합한 브랜드를 찾아보세요<img src="http://img.mk.co.kr/2018/franchise/search_w.png" alt="검색"></h2>
 
     <!--분류별검색-->
     <div class="select">

@@ -71,7 +71,7 @@
 
 				<!--건물 내 업체 현황-->
 
-				<div class="binfo1">
+				<div class="binfo1" style="overflow:hidden;">
 				<h4>건물 내 프랜차이즈 업체 현황</h4>
 					<div class="binfoWrap">
 						<div v-for="item in buildIn" class="binfoItem">
@@ -167,9 +167,11 @@
 						<!--그래프영역 -->
 
 						<div class="lindGraphContainer">
-							<chart-line :labels="salesChartLabels" :datasets="salesChartDatasets" :options="salesChartOption"></chart-line>
+							<chart-line v-show="tpindSlngFlag" :labels="salesChartLabels" :datasets="salesChartDatasets" :options="salesChartOption"></chart-line>
 						      <!--그래프 없을경우 -->
-						      <!-- <p v-if="tpindSlngFlag" class="nograph">해당업종 정보가 5건 이하로 그래프를 제공하지 않습니다.</p> -->
+									<div v-if="!tpindSlngFlag" style="background-color:#f2f2f2; width:100%; height: 100%;">
+										<p class="nograph">해당업종 정보가 5건 이하로 그래프를 제공하지 않습니다.</p>
+									</div>
 							  <!--//그래프 없을경우 -->
 						</div>
 						<!--//그래프영역 -->
@@ -579,10 +581,16 @@ export default {
 					let tpindSlngPanalAvg = JSON.parse(data.tpindSlngPanalAvg)
 					let mktPerd = Number(data.mktPerd)
 					let mktPerdAvg = Number(data.mktPerdAvg)
-					/* let tpindSlngFlag = tpindSlngPanal.every((item, index, array)=>{
-						return !!~item.search(null)
-					}) */
-					//this.tpindSlngFlag = tpindSlngFlag
+					let tpindSlngFlag = tpindSlngPanal.every((item, index, array)=>{
+						//console.log(item)
+						
+						let flag = true
+						if(item === null){
+							flag = false
+						}
+						return flag
+					})
+					this.tpindSlngFlag = tpindSlngFlag
 					this.salesChartDatasets = [
 						{
 							label : '배후지',
