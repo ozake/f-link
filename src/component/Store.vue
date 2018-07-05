@@ -108,7 +108,7 @@ export default {
       }
     },
     estateHeight: function() {
-      let height = window.innerHeight - 429
+      let height = window.innerHeight - 489
       return {
         height: height + 'px'
       }
@@ -1022,6 +1022,15 @@ export default {
           let listArr = []
           let i = 1
           for (const value of data) {
+            let subwayInfo = value.subway_info
+            subwayInfo = subwayInfo.split(',')
+            let str = ''
+            if(subwayInfo.length > 1){
+              str = `${subwayInfo[0]}, ${subwayInfo[1]}`
+            }else{
+              str = subwayInfo[0]
+            }
+            value.subway_info = str
             listArr.push(value)
             if(i === 10){
               break
