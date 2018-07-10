@@ -1,6 +1,6 @@
 <template>
   <div id="content">
-    <SubHeaderTitle :title="this.title" :subTitle="this.subTitle" :flag="flag"></SubHeaderTitle>
+    <SubHeaderTitle :title="this.title" :subTitle="this.subTitle" :flag="flag" :routeName="routeName"></SubHeaderTitle>
 		<div class="frlist">
       <!--프랜차이즈 현황 리스트-->
 			<div class="thlistbox">
@@ -49,7 +49,7 @@ export default {
     $route: function () {
       this.currentPage = this.$route.params.page
       this.$nextTick(function(){
-        this.getGrowthBest(this.currentPage)
+        this.getGrowthBest(this.$route.params.categoryCode,this.currentPage)
       })
     }
   },
@@ -58,12 +58,12 @@ export default {
     if(this.$route.params.page){
       this.currentPage = Number(this.$route.params.page)
     }
-    this.getGrowthBest(this.currentPage)
+    this.getGrowthBest(this.$route.params.categoryCode,this.currentPage)
   },
   methods : {
-    getGrowthBest(page){
+    getGrowthBest(categoryCode,page){
       let rPage = page - 1
-      this.apiModel.getGrowthBest(rPage).then((result)=>{
+      this.apiModel.getGrowthBest(categoryCode,rPage).then((result)=>{
         if(result.status === 200){
           let data = result.data
           let paging = data.shift()

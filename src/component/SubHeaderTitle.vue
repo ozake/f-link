@@ -4,7 +4,7 @@
     <h2>{{title}}
       <p class="line1"><hr/></p>
       <span>{{subTitle}}</span>
-      <div class="select" v-if="selectbox">
+      <div class="select">
         <!--대분류-->
         <div class="select-box">
           <select v-bind:class="[this.isIe ? ieClass : '', nonIeClass]" v-model="selected" >
@@ -37,6 +37,7 @@ export default {
     title : '',
     subTitle : '',
     flag : String,
+    routeName : String 
   },
    data(){
      return {
@@ -100,14 +101,12 @@ export default {
     if ( (navigator.appName == 'Netscape' && agent.indexOf('trident') != -1) || (agent.indexOf("msie") != -1)) {
      this.isIe = true
     }
-    if(this.flag === 'sns'){
-      this.selectbox = true
-      this.getSector()
-      let categoryCode = this.$route.params.categoryCode
-      this.selected = categoryCode.substr(0,2)
-      
-      
-    }
+    this.selectbox = true
+    this.getSector()
+    let categoryCode = this.$route.params.categoryCode
+    this.selected = categoryCode.substr(0,2)
+    /* if(this.flag === 'sns'){
+    } */
     
   },
   methods: {
@@ -137,7 +136,7 @@ export default {
     sectorChange(){
       this.$nextTick(function () {
         if(this.sectorSelected !== '중분류'){
-          this.$router.push({ name: 'sns-best', params: {categoryCode:this.sectorSelected } })
+          this.$router.push({ name: this.routeName, params: {categoryCode:this.sectorSelected, page:1 } })
         }
       })
     }

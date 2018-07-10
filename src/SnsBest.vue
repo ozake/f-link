@@ -1,31 +1,14 @@
 <template>
   <div id="content">
-    <SubHeaderTitle :title="this.title" :subTitle="this.subTitle" :flag="flag"></SubHeaderTitle>
+    <SubHeaderTitle :title="this.title" :subTitle="this.subTitle" :flag="flag" :routeName="routeName"></SubHeaderTitle>
 		<div class="frlist">
       <!--프랜차이즈 현황 리스트-->
 			<div class="thlistbox">
         <CardBoxNbtn v-for="(item, index) in listItems" :index="index" :item="item"></CardBoxNbtn>
 			</div>
 			<!--//프랜차이즈 현황 리스트-->
+      <!-- <Pagination :totalCount="totalCount" :currentPage="currentPage" :pageingRange="pageingRange" :pageRows="pageRows" :routeName="routeName"></Pagination> -->
 
-      <!--페이징-->
-            <!--
-      <div class="paging">
-        <a class="pre" href="#"></a>
-        <a class="on" href="#"><strong>1</strong></a>
-        <a href="#">2</a>
-        <a href="#">3</a>
-        <a href="#">4</a>
-        <a href="#">5</a>
-        <a href="#">6</a>
-        <a href="#">7</a>
-        <a href="#">8</a>
-        <a href="#">9</a>
-        <a href="#">10</a>
-        <a class="next" href="#"></a>
-      </div>
-      -->
-      <!--//페이징-->
   </div>
 
 
@@ -34,13 +17,15 @@
 <script>
 import SubHeaderTitle from './component/SubHeaderTitle.vue'
 import CardBoxNbtn from './component/CardBoxNbtn.vue'
+import Pagination from './component/Pagination.vue'
 import ApiModel from './model/apiModel.js'
 import numeral from "numeral"
 export default {
   name: 'SnsBest',
   components:{
     SubHeaderTitle,
-    CardBoxNbtn
+    CardBoxNbtn,
+    Pagination
   },
   data(){
     return {
@@ -48,17 +33,23 @@ export default {
       title : 'SNS 조회 BEST',
       subTitle : '포털과 SNS에서 많이 언급되는 브랜드',
       categoryCode : this.$route.params.categoryCode,
+      totalCount : 0,
+      currentPage : 1,
+      pageingRange : 10,
+      pageRows : 16,
+      routeName : 'sns-list',
       flag: 'sns'
     }
   },
   watch: {
     $route: function() {
-      this.getSnsBestList(this.$route.params.categoryCode)
+      this.currentPage = this.$route.params.page
+      this.getSnsBestList(this.$route.params.categoryCode, this.pageRows, this.currentPage)
     }
   },
   created(){
     this.$EventBus.$emit('HeaderActive', 'theme')
-    this.getSnsBestList(this.$route.params.categoryCode)
+    this.getSnsBestList(this.$route.params.categoryCode, this.pageRows, this.currentPage)
   },
   methods : {
     nullFilter(item) {
@@ -81,12 +72,14 @@ export default {
       }
       return tmpArr
     },
-    getSnsBestList(sectorCode) {
+    getSnsBestList(sectorCode, row, page) {
       let model = new ApiModel(this.$http)
-      model.getOP403(sectorCode).then((result)=>{
+      model.getOP403(sectorCode, row ,page).then((result)=>{
         if(result.status === 200){
+          //console.log(result)
           let data = result.data.data
           data = data.rows
+          
           data = this.FilterArr(data)
           for (const value of data) {
             let total = value.total

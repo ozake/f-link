@@ -303,7 +303,7 @@
             <!--지점리스트-->
             <div class="branch_list">
               <ul>
-                <li v-for="(store,idx) in storeList">
+                <li v-for="(store,idx) in storeList" class="item-store" :class="{'item-store-active': idx === cursor}">
                   <router-link :to="{name: 'store-view', params: { categoryCode: store.categoryCode, storeName: store.storeNameEncode, id: store.bdMgtSn }}">
                   <span>{{idx+1}}</span>
                   <p class="branch_name">{{store.refBnm}}</p>
@@ -400,6 +400,9 @@
 .black {
   z-index: 10000;
 }
+.item-store-active {
+    background-color: antiquewhite;
+}
 </style>
 <script>
 import SubHeaderSelect from "./component/SubHeaderSelect.vue";
@@ -437,7 +440,8 @@ export default {
       categoryCode: '',
       finenceYearData: [],
       consultLayer: false,
-      submitBrandCk: [this.$route.params.id]
+      submitBrandCk: [this.$route.params.id],
+      cursor: 0
     };
   },
   computed: {
@@ -733,9 +737,9 @@ export default {
                   value.storeNameEncode = Base64.encode(value.refBnm)
                   tmparr.push(value);
                 }
-                console.log(tmparr)
+                //console.log(tmparr)
                 this.storeList = tmparr;
-                this.makeMakers(result.rows);
+                this.makeMakers(tmparr);
               });
             }
             //this.setAddr(addrText+"/ 법정동코드: "+code)
@@ -749,24 +753,61 @@ export default {
       let x = null;
       let y = null;
       this.makersClean();
+      let idx = 0;
       for (const value of rows) {
         //console.log(value)
-        x = Number(value.xAxis);
-        y = Number(value.yAxis);
+        //x = Number(value.xAxis);
+        //y = Number(value.yAxis);
         let marker = null;
-        marker = this.setMaker(x, y, value);
+        value.idx = idx;
+        marker = this.setMaker(value);
+        this.makeInfoWindow(marker, value);
+        this.clickAddEvnentListener(marker, value);
         this.queue.setQueue(marker);
+        idx++;
       }
     },
-    setMaker(x, y, value) {
+    setMaker(value) {
       let tmparr = [];
-      tmparr = convertGeo([x, y]);
+      //tmparr = convertGeo([x, y]);
+      tmparr = value.position;
       let marker = new daum.maps.Marker({
         map: this.mapInstance, // 마커를 표시할 지도
         position: new daum.maps.LatLng(tmparr[1], tmparr[0]), // 마커를 표시할 위치
         title: value.refBnm // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
       });
       return marker;
+    },
+    makeInfoWindow(marker, value){
+      // 마커에 커서가 오버됐을 때 마커 위에 표시할 인포윈도우를 생성합니다
+      let iwContent = `<div style="padding:5px;height:25px;">${value.refBnm}</div>` // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+
+      // 인포윈도우를 생성합니다
+      let infowindow = new daum.maps.InfoWindow({
+          content : iwContent
+      })
+      infowindow.setZIndex(100)
+
+      // 마커에 마우스오버 이벤트를 등록합니다
+      daum.maps.event.addListener(marker, 'mouseover', () => {
+        // 마커에 마우스오버 이벤트가 발생하면 인포윈도우를 마커위에 표시합니다
+          infowindow.open(this.mapInstance, marker)
+          this.cursor = value.idx
+          let activeItem = this.$el.getElementsByClassName('item-store')[value.idx]
+          activeItem.scrollIntoView(true)
+      })
+
+      // 마커에 마우스아웃 이벤트를 등록합니다
+      daum.maps.event.addListener(marker, 'mouseout', () => {
+          // 마커에 마우스아웃 이벤트가 발생하면 인포윈도우를 제거합니다
+          infowindow.close()
+      })
+    },
+    clickAddEvnentListener(marker, value){
+      daum.maps.event.addListener(marker, 'click', () => {
+        this.$router.push({ name: 'store-view', params: { categoryCode: value.categoryCode, storeName: value.storeNameEncode, id: value.bdMgtSn } })
+      })
+
     },
     makersClean() {
       let tmp = undefined;
@@ -779,6 +820,7 @@ export default {
           }
           tmp.setMap(null);
         }
+        this.cursor = 0;
       }
     },
     async addressTogeocode(address) {

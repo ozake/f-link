@@ -91,7 +91,7 @@
 			<div v-bind:style="estateHeight" class="loadingImgWrap" v-if="loadingImg"><img class="loadImgAside" src="http://img.mk.co.kr/2018/franchise/loading.gif" /></div>
 			<ul v-bind:style="estateHeight">
 				<li v-for="item in estateList" class="memul_list" style="margin-top:15px">
-					<router-link :to="{ name: 'sales-view', params: {id: item.memul_seq } }">
+					<router-link :to="{ name: 'sales-view', params: {id: item.memul_seq } }" target="_blank">
 						<h5> </h5>
 						<img v-bind:src="item.img_url" />
 						<p class="monthly"><span class="icon">월</span>보 {{item.month_deposit_price}} / 월{{item.month_price}}</p>

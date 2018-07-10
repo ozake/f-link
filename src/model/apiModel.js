@@ -52,11 +52,11 @@ export default class ApiModel {
      * @returns {promise}
      */
     getOP403(ftcCate2Cd='0101', row='16', pageNo='1'){
-      this.apiNo = '403';
+      this.apiNo = '403_2';
       this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
       this.config.data = {
-        'pageNo':'1',
-        'row':'16',
+        'pageNo':pageNo,
+        'row':row,
         'ftcCate2Cd': ftcCate2Cd
       }
       return this.http(this.config)
@@ -313,10 +313,10 @@ export default class ApiModel {
      * @param {*} pageNo
      * @returns {promise}
      */
-    getScapitalBest(pageNo='0'){
-      this.apiNo = '105'
+    getScapitalBest(categoryCode='0101',pageNo='0'){
+      this.apiNo = '105_2'
       this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
-      this.config.data = `cmd=1&page=${pageNo}`
+      this.config.data = `cmd=1&category2=${categoryCode}&page=${pageNo}`
       return this.http(this.config)
     }
 
@@ -326,10 +326,10 @@ export default class ApiModel {
      * @param {*} pageNo
      * @returns {promise}
      */
-    getSteadyBest(pageNo='0'){
-      this.apiNo = '105'
+    getSteadyBest(categoryCode='0101',pageNo='0'){
+      this.apiNo = '105_2'
       this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
-      this.config.data = `cmd=2&page=${pageNo}`
+      this.config.data = `cmd=2&category2=${categoryCode}&page=${pageNo}`
       return this.http(this.config)
     }
 
@@ -339,10 +339,10 @@ export default class ApiModel {
      * @param {*} pageNo
      * @returns {promise}
      */
-    getGrowthBest(pageNo='0'){
-      this.apiNo = '105'
+    getGrowthBest(categoryCode='0101',pageNo='0'){
+      this.apiNo = '105_2'
       this.config.url = `${this.baseURI}/container/OP-${this.apiNo}.php`;
-      this.config.data = `cmd=3&page=${pageNo}`
+      this.config.data = `cmd=3&category2=${categoryCode}&page=${pageNo}`
       return this.http(this.config)
     }
 

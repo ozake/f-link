@@ -83,10 +83,18 @@ export default [
   {
     path: '/snsBest/:categoryCode',
     name: 'sns-best',
-    component: SnsBest
+    component: SnsBest,
+    children: [
+      {
+        path: ':page',
+        name: 'sns-list',
+        props: true,
+        component: SnsBest
+      }
+    ]
   },
   {
-    path: '/scapitalBest',
+    path: '/scapitalBest/:categoryCode',
     name: 'scapital-default',
     component: sCapitalBest,
     children: [
@@ -99,7 +107,7 @@ export default [
     ]
   },
   {
-    path: '/steadyBest',
+    path: '/steadyBest/:categoryCode',
     name: 'steady-default',
     component: SteadyBest,
     children: [
@@ -112,7 +120,7 @@ export default [
     ]
   },
   {
-    path: '/growthBest',
+    path: '/growthBest/:categoryCode',
     name: 'growth-default',
     component: GrowthBest,
     children: [
