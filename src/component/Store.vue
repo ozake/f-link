@@ -476,8 +476,8 @@ export default {
       else {
         this.makersCleanPromise().then(()=>{
           this.getOP501(code, ftcCate2Cd, rows)
-          console.log(code)
-          console.log(ftcCate2Cd)
+          //console.log(code)
+          //console.log(ftcCate2Cd)
         })
         /* this.getOP404Fivetimes(code, ftcCate2Cd, rows).then(()=>{
           this.brand = this.brandQueue.getQueueAll()
@@ -494,7 +494,7 @@ export default {
       this.apiModel.getOP501(code, ftcCate2Cd, rows, 1, emdCd).then((result)=>{
         if(result.status === 200){
           console.log('501응답')
-          console.log(result)
+          //console.log(result)
           let data = result.data.data.rows
           let brandCkArr = this.franchiseNo
           //console.log("브랜드 체크 갯수:"+brandCkArr.length)

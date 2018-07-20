@@ -251,9 +251,7 @@ export default {
 					brandStr = brandStr.slice(0,-1)
 					alertBrand = alertBrand.slice(0,-1)
 					
-
-					if(emailStr !== ''){
-						let sendObject = {
+					let sendObject = {
 							'name' : name,
 							'hp1' : hp1,
 							'hp2' : hp2,
@@ -264,8 +262,12 @@ export default {
 							'id' : id,
 							'userEmail' : userEmail,
 							'brand' : brandStr,
-							'email' : emailStr
+							'email' : emailStr,
+							'alertBrand' : alertBrand
 						}
+
+					if(emailStr !== ''){
+						
 						this.model.sendEmail(sendObject).then((result)=>{
 							if(result.status === 200){
 								alert(`[${alertBrand}] 담당자에게 상담을 의뢰했습니다. 3 영업일 이내에 전화드리겠습니다.`)
@@ -277,7 +279,11 @@ export default {
 							}
 						})
 					}else{
-						alert(`[${alertBrand}] 담당자에게 상담을 의뢰했습니다. 3 영업일 이내에 전화드리겠습니다.`)
+						this.model.consultHeadOffice(sendObject).then((result)=>{
+							if(result.status === 200){
+								alert(`[${alertBrand}] 담당자에게 상담을 의뢰했습니다. 3 영업일 이내에 전화드리겠습니다.`)
+							}
+						})
 					}
 					
 

@@ -146,22 +146,21 @@ export default {
 					brandStr = brandStr.slice(0,-1)
 					alertBrand = alertBrand.slice(0,-1) */
 					
-
+                    let sendObject = {
+                        'name' : name,
+                        'hp1' : hp1,
+                        'hp2' : hp2,
+                        'hp3' : hp3,
+                        'age' : age,
+                        'gender' : gender,
+                        'capital' : capital,
+                        'id' : id,
+                        'userEmail' : userEmail,
+                        'brand' : brandStr,
+                        'email' : emailStr,
+                        'alertBrand' : brandStr
+					}
 					if(emailStr !== ''){
-						let sendObject = {
-							'name' : name,
-							'hp1' : hp1,
-							'hp2' : hp2,
-							'hp3' : hp3,
-							'age' : age,
-							'gender' : gender,
-							'capital' : capital,
-							'id' : id,
-							'userEmail' : userEmail,
-							'brand' : brandStr,
-							'email' : emailStr
-						}
-                        
 						this.model.sendEmail(sendObject).then((result)=>{
 							if(result.status === 200){
 								alert(`[${brandStr}] 담당자에게 상담을 의뢰했습니다. 3 영업일 이내에 전화드리겠습니다.`)
@@ -174,8 +173,13 @@ export default {
 							}
 						})
 					}else{
-						alert(`[${brandStr}] 담당자에게 상담을 의뢰했습니다. 3 영업일 이내에 전화드리겠습니다.`)
-                        this.consultOff()
+                        this.model.consultHeadOffice(sendObject).then((result)=>{
+                            if(result.status === 200){
+                                //console.log(result)
+                                alert(`[${brandStr}] 담당자에게 상담을 의뢰했습니다. 3 영업일 이내에 전화드리겠습니다.`)
+                                this.consultOff()
+                            }
+                        })
 					}
 					
 

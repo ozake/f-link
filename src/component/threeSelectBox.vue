@@ -52,7 +52,7 @@ export default {
         nonIeClass : 'box_title',
         sector: [],
        	sectorMcode : [],
-		selected : '업종',
+		    selected : '업종',
         sectorSelected : '중분류',
         apiModel : new ApiModel(this.$http),
         brandList: [],
