@@ -522,7 +522,7 @@ export default {
     // 라우트가 변경되면 메소드를 다시 호출됩니다.
     $route: "fetchData",
     selected: function(val) {
-      console.log(val);
+      //console.log(val);
       let code = "11" + val.code;
       this.getStoreList(this.$route.params.id, code).then(result => {
         this.storeList = result.rows;
@@ -531,7 +531,7 @@ export default {
       this.addressTogeocode(val.name);
     },
     selectedStore: function(val) {
-      console.log(val);
+      //console.log(val);
       let coords = new daum.maps.LatLng(val[1], val[0]);
       this.setMapCenter(coords);
     }
