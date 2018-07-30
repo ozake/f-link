@@ -71,7 +71,7 @@ export default {
   }
 }
 </script>
-<style scoped>
+<style>
 .line-height {
   line-height: 35px;
 }
@@ -104,7 +104,7 @@ export default {
   -webkit-appearance: none;
   -moz-appearance: none;
 }
-.box_title::-ms-expand {
+select::-ms-expand {
 	display: none;
 }
 </style>
